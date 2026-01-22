@@ -13,38 +13,41 @@
             font-family: 'Cairo', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #000;
         }
 
-        /* --- 1. خلفية التطبيق (العائلة) --- */
+        /* --- 1. الخلفية (تم الحفاظ عليها كما طلبت) --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
-            z-index: -10; 
-            /* تعتيم خفيف جداً لكي تظهر النصوص الزجاجية بوضوح */
-            filter: brightness(0.8); 
+            z-index: -10; filter: brightness(0.8);
         }
 
-        /* --- 2. شاشة الدخول (زجاجية) --- */
+        /* --- 2. شاشة الدخول (زجاجية شفافة لرؤية الخلفية) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.3); /* تعتيم بسيط جداً للخلفية */
+            backdrop-filter: blur(3px);
         }
         .login-box {
-            background: rgba(0, 0, 0, 0.5); /* زجاجي داكن */
+            /* 🔥 الزجاجية المطلوبة */
+            background: rgba(255, 255, 255, 0.15); 
             padding: 40px 30px; border-radius: 25px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3); /* حدود بيضاء خفيفة */
+            backdrop-filter: blur(15px); /* تغبيش قوي خلف المربع فقط */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .login-avatar {
             width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid #00deb6;
             background-image: url('girl.png'); background-size: cover; background-position: top center;
-            box-shadow: 0 0 20px rgba(0, 222, 182, 0.4);
+            box-shadow: 0 0 20px rgba(0, 222, 182, 0.6);
         }
-        .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 5px black; }
         .login-input {
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; color: white; text-align: center; outline: none;
+            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
+            background: rgba(0, 0, 0, 0.3); /* حقل نصي غامق شفاف */
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; 
+            color: white; text-align: center; outline: none; font-size: 16px;
         }
         .login-input::placeholder { color: #ccc; }
         .login-btn {
@@ -58,9 +61,8 @@
             display: none; flex-direction: column; height: 100%; 
             z-index: 50; position: relative; 
         }
-        /* الهيدر زجاجي */
         .app-header {
-            background: rgba(0, 128, 105, 0.8); color: white; padding: 15px 20px;
+            background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px;
             font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px);
         }
@@ -69,67 +71,51 @@
             flex: 1; overflow-y: auto; padding-top: 10px; 
         }
         
-        /* 🔥 القائمة الزجاجية الاحترافية (تظهر الخلفية من ورائها) */
         .contact-item {
             display: flex; align-items: center; padding: 15px; cursor: pointer; 
-            
-            /* السحر هنا: خلفية شفافة جداً */
-            background: rgba(255, 255, 255, 0.15); 
-            border: 1px solid rgba(255, 255, 255, 0.2); /* حدود ناعمة */
-            border-left: 4px solid #00deb6; /* لمسة جمالية ملونة */
-            
-            margin: 10px 15px; border-radius: 15px;
-            backdrop-filter: blur(5px); /* تغبيش الخلفية خلف العنصر */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #00deb6; margin: 10px 15px; border-radius: 15px;
+            backdrop-filter: blur(5px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .contact-item:active { transform: scale(0.98); background: rgba(255,255,255,0.25); }
         
         .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.8); flex-shrink: 0; }
         .info { flex: 1; }
-        /* النصوص بيضاء لتناسب الخلفيات الداكنة */
         .name { font-weight: 900; font-size: 18px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 4px black; }
         .last-msg { color: #eee; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
         .time { font-size: 12px; color: #ccc; margin-right: auto; }
 
-        /* 🔥 زر الألعاب (احترافي ومتحرك) */
+        /* 🔥 زر الألعاب (خلفية أنميشن متحركة) */
         .games-banner-container {
-            padding: 20px 15px 30px 15px;
-            background: transparent; 
-            margin-top: auto;
+            padding: 20px 15px 30px 15px; background: transparent; margin-top: auto;
         }
         .games-banner {
             padding: 25px;
-            /* تدرج لوني احترافي */
-            background: linear-gradient(45deg, #11998e, #38ef7d);
+            /* صورة متحركة (GIF) للخلفية */
+            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzRkZWRkY2Q1NmFhODQ2YzQ2NzY4YzM4YzM4YzM4YzM4YzM4YzM4eSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTiTnqUxyWbsAXqFFi/giphy.gif');
+            background-size: cover; background-position: center;
             border-radius: 20px; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 0 20px rgba(56, 239, 125, 0.4);
-            border: 1px solid rgba(255,255,255,0.3);
-            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 0 25px rgba(0, 222, 182, 0.5);
+            border: 2px solid #00deb6; position: relative; overflow: hidden; text-align: center;
         }
-        /* لمعة متحركة */
-        .games-banner::after {
-            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
-            transform: skewX(-25deg); animation: shine 3s infinite;
+        /* طبقة سوداء لزيادة وضوح النص */
+        .games-banner::before {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.5); z-index: 1;
         }
-        @keyframes shine { 100% { left: 200%; } }
-        
         .game-text-main { 
-            color: #fff; font-weight: 900; font-size: 24px; z-index: 2; 
-            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            color: #fff; font-weight: 900; font-size: 26px; z-index: 2; 
+            text-shadow: 0 0 10px #00deb6; margin-bottom: 5px;
         }
         .game-text-sub { 
-            color: #f0f0f0; font-size: 12px; z-index: 2; font-weight: bold; margin-top: 5px;
+            color: #eee; font-size: 12px; z-index: 2; font-weight: bold; 
         }
-        .game-icon-large { font-size: 40px; color: #fff; z-index: 2; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        /* --- 4. شاشة الدردشة (واتساب الأصلي) --- */
+        /* --- 4. شاشة الدردشة (واتساب) --- */
         #chat-screen {
             display: none; flex-direction: column; height: 100%; 
             position: fixed; top: 0; left: 0; width: 100%; 
-            /* خلفية واتساب الأصلية (بيج) */
             background-color: #efe7dd; 
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
             z-index: 100;
@@ -159,6 +145,9 @@
         .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 8px 0 8px 8px; }
         .msg-meta { font-size: 11px; color: #667781; margin-top: 2px; float: right; margin-left: 10px; display: flex; align-items: end; justify-content: flex-end; }
         .ticks { margin-right: 3px; font-size: 14px; color: #53bdeb; }
+        
+        /* صور داخل المحادثة */
+        .msg-img { max-width: 100%; border-radius: 5px; margin-bottom: 5px; }
 
         .chat-footer {
             background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center;
@@ -233,6 +222,9 @@
         .user-row { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
         .delete-btn { background: #ff3b30; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
         .add-user-form { background: white; padding: 20px; border-radius: 15px; margin-top: 20px; }
+
+        /* إخفاء عناصر الإدخال الحقيقية */
+        #file-input, #camera-input { display: none; }
 
     </style>
 </head>
@@ -329,23 +321,32 @@
 
     <div id="admin-panel"><div class="admin-header"><span>الإعدادات</span><span onclick="closeAdmin()">❌</span></div><div class="admin-content"><h3>المستخدمون:</h3><div id="users-list"></div><div class="add-user-form"><input type="text" id="new-name" class="login-input" style="background:#fff; color:black" placeholder="الاسم"><input type="text" id="new-user" class="login-input" style="background:#fff; color:black" placeholder="يوزر"><input type="text" id="new-pass" class="login-input" style="background:#fff; color:black" placeholder="باسورد"><select id="new-role" class="login-input" style="background:#fff; color:black"><option value="user">مستخدم</option><option value="admin">مدير</option></select><button class="login-btn" onclick="addUser()">إضافة</button></div></div></div>
 
+    <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(this)">
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(this)">
+
     <div id="chat-screen">
         <div class="chat-header">
             <div class="back-btn" onclick="closeChat()"><i class="fas fa-arrow-right"></i></div>
             <div id="chat-header-avatar" class="header-avatar"></div>
             <div class="header-info"><div id="chat-name" class="header-name"></div><div class="header-status">متصل الآن</div></div>
-            <div class="header-actions"><i class="fas fa-video"></i><i class="fas fa-phone"></i></div>
+            <div class="header-actions">
+                <i class="fas fa-video" onclick="startCall('video')"></i>
+                <i class="fas fa-phone" onclick="startCall('voice')"></i>
+            </div>
         </div>
         <div class="messages-area" id="msg-area">
             <div class="msg msg-out"><div>السلام عليكم</div><div class="msg-meta">10:00 م<span class="ticks">✓✓</span></div></div>
         </div>
         <div class="chat-footer">
-            <i class="fas fa-plus footer-icon" onclick="alert('قائمة المرفقات')"></i>
+            <i class="fas fa-plus footer-icon" onclick="triggerAttachment()"></i>
+            
             <div class="input-container">
                 <input type="text" class="chat-input" id="msg-input" placeholder="اكتب رسالة">
             </div>
-            <i class="fas fa-camera footer-icon" onclick="alert('الكاميرا')"></i>
-            <i class="fas fa-microphone footer-icon" onclick="alert('تسجيل صوتي')"></i>
+            
+            <i class="fas fa-camera footer-icon" onclick="triggerCamera()"></i>
+            <i class="fas fa-microphone footer-icon" onclick="triggerMic()"></i>
+            
             <div class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></div>
         </div>
     </div>
@@ -459,21 +460,15 @@
 
         // --- دوال الألعاب ---
         function playAudio(url) { const p = document.getElementById('quran-player'); p.src = url; p.play(); }
-        
-        // بيانو
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playNote(f) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.5, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+1); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+1); }
-
-        // تلوين
         let canvas, ctx, color = 'red';
         function initColoring() { canvas = document.getElementById('drawing-canvas'); ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight - 60; ctx.fillStyle='white'; ctx.fillRect(0,0,canvas.width,canvas.height); let drawing = false; const draw = (e) => { if(!drawing) return; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = color; const x = e.touches ? e.touches[0].clientX : e.clientX; const y = e.touches ? e.touches[0].clientY : e.clientY; ctx.lineTo(x, y - 50); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y - 50); }; canvas.onmousedown=(e)=>{drawing=true;draw(e)}; canvas.onmouseup=()=>{drawing=false;ctx.beginPath()}; canvas.onmousemove=draw; canvas.ontouchstart=(e)=>{drawing=true;draw(e)}; canvas.ontouchend=()=>{drawing=false;ctx.beginPath()}; canvas.ontouchmove=draw; }
         function setColor(c) { color = c; }
-
-        // XO
         let board = Array(9).fill(''); let player = 'X';
         function initXO() { board.fill(''); player = 'X'; document.getElementById('xo-status').innerText='الدور: X'; const d=document.getElementById('xo-board'); d.innerHTML=''; board.forEach((_,i)=>{ const c=document.createElement('div'); c.className='xo-cell'; c.onclick=()=>{ if(board[i]) return; board[i]=player; c.innerText=player; player=player==='X'?'O':'X'; document.getElementById('xo-status').innerText='الدور: '+player; }; d.appendChild(c); }); }
 
-        // --- الشات (تم الإصلاح) ---
+        // --- الشات (المحسّن) ---
         function openChat(name, bg, emoji) {
             document.getElementById('contact-list').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
@@ -484,12 +479,30 @@
             document.getElementById('chat-screen').style.display = 'none';
             document.getElementById('contact-list').style.display = 'flex';
         }
+        
+        // --- وظائف المراسلة الجديدة (الكاميرا، المايك، المرفقات) ---
+        function triggerAttachment() { document.getElementById('file-input').click(); }
+        function triggerCamera() { document.getElementById('camera-input').click(); }
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                const area = document.getElementById('msg-area');
+                area.innerHTML += `<div class="msg msg-out"><div>📷 تم إرسال صورة</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+                area.scrollTop = area.scrollHeight;
+            }
+        }
+        function triggerMic() {
+            const area = document.getElementById('msg-area');
+            area.innerHTML += `<div class="msg msg-out"><div>🎤 رسالة صوتية (0:05)</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+            area.scrollTop = area.scrollHeight;
+        }
+        function startCall(type) { alert(type === 'video' ? "جاري بدء مكالمة فيديو..." : "جاري الاتصال..."); }
+
         function sendMessage() {
             const input = document.getElementById('msg-input');
             const txt = input.value.trim();
             if(!txt) return;
             const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓✓</span></div></div>`;
+            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
             input.value = '';
             area.scrollTop = area.scrollHeight;
         }
