@@ -6,11 +6,8 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FamilyApp">
-    <link rel="apple-touch-icon" href="home.png">
-    <link rel="icon" type="image/png" href="home.png">
-
     <title>Family Super App</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     
@@ -23,7 +20,7 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- 1. الخلفية (العائلة) --- */
+        /* الخلفية */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
@@ -31,62 +28,62 @@
             z-index: -10; filter: brightness(0.9);
         }
         
-        /* دمج دينا (يسار تحت) */
         .bg-overlay-girl {
-            position: fixed; bottom: 0; left: 0; width: 60%; height: 70%;
+            position: fixed; bottom: 0; left: 0; width: 65%; height: 75%;
             background-image: url('girl.png'); 
             background-size: contain; background-repeat: no-repeat; background-position: bottom left;
             z-index: -5; opacity: 1;
-            /* تدرج شفاف عشان تندمج مع الخلفية */
-            -webkit-mask-image: linear-gradient(to right, black 30%, transparent 100%);
-            mask-image: linear-gradient(to right, black 30%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
+            mask-image: linear-gradient(to right, black 20%, transparent 100%);
         }
 
-        /* --- 2. شاشة الدخول (زجاجية) --- */
+        /* شاشة الدخول */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.1); 
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.1); padding: 40px 30px; border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 45px 30px; border-radius: 35px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(25px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
         }
         .login-avatar {
-            width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%; border: 3px solid #00deb6;
+            width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%; 
+            border: 3px solid rgba(255,255,255,0.5);
             background-image: url('girl.png'); background-size: cover; background-position: top center;
-            box-shadow: 0 0 20px rgba(0, 222, 182, 0.5);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
         }
-        .login-title { font-size: 26px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .login-title { font-size: 26px; font-weight: 900; margin-bottom: 30px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .login-input {
-            width: 100%; padding: 14px; margin-bottom: 15px; 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
             background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; 
             color: white; text-align: center; outline: none; font-size: 16px; font-weight: bold;
         }
-        .login-input::placeholder { color: #ccc; }
+        .login-input::placeholder { color: #ddd; }
         .login-btn {
-            width: 100%; padding: 14px; background: linear-gradient(135deg, #008069, #00deb6);
+            width: 100%; padding: 15px; margin-top: 10px;
+            background: linear-gradient(135deg, #00deb6, #008069);
             color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 900; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 222, 182, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 222, 182, 0.2);
         }
 
-        /* --- 3. الشاشة الرئيسية --- */
+        /* الشاشة الرئيسية */
         #contact-list { display: none; flex-direction: column; height: 100%; z-index: 50; position: relative; }
         .app-header {
             background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px; padding-top: 45px; 
             font-size: 22px; font-weight: 900; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px);
         }
         #dynamic-contacts { flex: 1; overflow-y: auto; padding-top: 15px; }
-        
         .contact-item {
             display: flex; align-items: center; padding: 15px; cursor: pointer; 
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2);
             border-left: 5px solid #00deb6; margin: 10px 15px; border-radius: 20px;
             backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: 0.2s;
         }
         .contact-item:active { transform: scale(0.97); background: rgba(255,255,255,0.25); }
         .avatar { width: 60px; height: 60px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.9); flex-shrink: 0; }
@@ -95,11 +92,10 @@
         .last-msg { color: #f0f0f0; font-weight: normal; font-size: 14px; text-shadow: 0 1px 3px black; }
         .time { font-size: 12px; color: #ddd; margin-right: auto; }
 
-        /* 🔥 زر الألعاب (أنميشن نيون) */
+        /* الألعاب */
         .games-banner-container { padding: 20px 15px 40px 15px; background: transparent; margin-top: auto; }
         .games-banner {
             padding: 30px;
-            /* خلفية متحركة */
             background: url('https://media.giphy.com/media/26tn33ai009QWJWplu/giphy.gif');
             background-size: cover; background-position: center;
             border-radius: 25px; cursor: pointer;
@@ -114,47 +110,6 @@
         }
         .game-text-sub { color: #fff; font-size: 14px; z-index: 2; font-weight: bold; text-shadow: 0 2px 5px black; }
 
-        /* --- 4. شاشة الدردشة (شفافة + أزرار تعمل) --- */
-        #chat-screen { 
-            display: none; flex-direction: column; height: 100%; 
-            position: fixed; top: 0; left: 0; width: 100%; 
-            /* خلفية شفافة لترى العائلة */
-            background-color: rgba(0,0,0,0.65); 
-            z-index: 100; 
-        }
-        .chat-header { 
-            background-color: rgba(0, 128, 105, 0.95); color: white; padding: 5px 10px; padding-top: 45px; 
-            display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-            z-index: 10; min-height: 90px; 
-        }
-        .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 24px; display: flex; align-items: center; }
-        .header-avatar { width: 45px; height: 45px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; border: 2px solid white; }
-        .header-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .header-name { font-weight: bold; font-size: 18px; margin-bottom: 2px; }
-        .header-status { font-size: 13px; opacity: 0.9; }
-        .header-actions i { margin-right: 25px; font-size: 24px; cursor: pointer; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .header-actions i:active { color: #00deb6; transform: scale(0.9); }
-
-        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
-        .msg { max-width: 85%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; box-shadow: 0 3px 8px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
-        .msg-in { align-self: flex-start; background: #fff; border-radius: 0 15px 15px 15px; color: #000; }
-        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 15px 0 15px 15px; color: #000; }
-        .msg-meta { font-size: 11px; color: #666; margin-top: 5px; align-self: flex-end; display: flex; align-items: center; }
-        .ticks { margin-right: 4px; color: #53bdeb; font-size: 14px; }
-        .msg-img { max-width: 100%; border-radius: 10px; margin-bottom: 5px; border: 1px solid #ccc; }
-
-        /* حالة التسجيل */
-        .recording-box { position: absolute; bottom: 80px; left: 0; width: 100%; background: #ff3b30; color: white; text-align: center; padding: 10px; font-weight: bold; display: none; z-index: 20; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-
-        .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 70px; padding-bottom: max(25px, env(safe-area-inset-bottom)); position: relative; z-index: 10; border-top: 1px solid #ccc; }
-        .footer-icon { font-size: 26px; color: #54656f; padding: 10px; cursor: pointer; transition: 0.2s; }
-        .footer-icon:active { color: #008069; transform: scale(1.1); }
-        .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 10px; display: flex; align-items: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        .chat-input { flex: 1; border: none; outline: none; font-size: 17px; width: 100%; background: transparent; text-align: right; }
-        .send-btn { background-color: #008069; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-        /* --- 🎮 مركز الألعاب --- */
         #games-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 200; flex-direction: column; }
         .game-header { padding: 15px; padding-top: 45px; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00deb6; }
         .game-categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; background: #222; }
@@ -165,40 +120,59 @@
         .game-img { height: 100%; width: 100%; background-size: cover; background-position: center; }
         .game-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, black, transparent); padding: 10px; color: white; font-weight: bold; text-align: center; }
 
-        /* حاوية الألعاب */
+        /* الشات */
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(0,0,0,0.65); z-index: 100; }
+        .chat-header { background-color: rgba(0, 128, 105, 0.95); color: white; padding: 5px 10px; padding-top: 45px; display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10; min-height: 90px; }
+        .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 24px; display: flex; align-items: center; }
+        .header-avatar { width: 45px; height: 45px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; border: 2px solid white; }
+        .header-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .header-name { font-weight: bold; font-size: 18px; margin-bottom: 2px; }
+        .header-status { font-size: 13px; opacity: 0.9; }
+        .header-actions i { margin-right: 25px; font-size: 24px; cursor: pointer; color: white; }
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+        .msg { max-width: 85%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; box-shadow: 0 3px 8px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .msg-in { align-self: flex-start; background: #fff; border-radius: 0 15px 15px 15px; color: #000; }
+        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 15px 0 15px 15px; color: #000; }
+        .msg-meta { font-size: 11px; color: #666; margin-top: 5px; align-self: flex-end; display: flex; align-items: center; }
+        .ticks { margin-right: 4px; color: #53bdeb; font-size: 14px; }
+        .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 70px; padding-bottom: max(25px, env(safe-area-inset-bottom)); position: relative; z-index: 10; border-top: 1px solid #ccc; }
+        .footer-icon { font-size: 26px; color: #54656f; padding: 10px; cursor: pointer; transition: 0.2s; }
+        .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 10px; display: flex; align-items: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .chat-input { flex: 1; border: none; outline: none; font-size: 17px; width: 100%; background: transparent; text-align: right; }
+        .send-btn { background-color: #008069; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 300; flex-direction: column; }
+        .admin-header { background: #333; color: white; padding: 15px; padding-top: 40px; font-weight: bold; display: flex; justify-content: space-between; }
+        .admin-content { flex: 1; padding: 20px; overflow-y: auto; }
+        .user-row { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .delete-btn { background: #ff3b30; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
+        .add-user-form { background: white; padding: 20px; border-radius: 15px; margin-top: 20px; }
+
+        /* 🔥 حاوية الفيديو المصححة */
+        #video-container { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: #000; z-index: 99999; display: none; 
+        }
+        /* تعديل زر الخروج من المكالمة ليكون ظاهراً */
+        .exit-call-btn {
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: red; color: white; padding: 15px 30px; border-radius: 30px;
+            font-weight: bold; z-index: 100000; cursor: pointer; border: 2px solid white;
+        }
+
         #game-frame-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #222; z-index: 300; flex-direction: column; }
         .game-toolbar { height: 85px; padding-top: 35px; background: #111; display: flex; align-items: center; justify-content: space-between; padding-left: 15px; padding-right: 15px; color: #00deb6; border-bottom: 1px solid #333; }
         .close-game-btn { background: #ff3b30; color: white; padding: 8px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         iframe { width: 100%; height: 100%; border: none; background: #fff; }
-
-        /* ألعاب داخلية */
+        
         #adnan-game-ui, #piano-game-ui, #coloring-game-ui, #xo-game-ui { display: none; flex-direction: column; height: 100%; align-items: center; justify-content: center; }
-        #adnan-game-ui { background: #e0f7fa; padding: 20px; }
-        .adnan-char { width: 130px; height: 130px; background-image: url('https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9'); background-size: contain; background-repeat: no-repeat; margin-bottom: 25px; border-radius: 50%; border: 5px solid #00acc1; background-color: white; }
-        .surah-btn { width: 100%; padding: 18px; margin: 10px 0; background: #00acc1; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 5px 0 #007c91; }
-        .surah-btn:active { transform: translateY(5px); box-shadow: none; }
-        
-        #piano-game-ui { background: #222; }
-        .piano-keys { display: flex; gap: 5px; background: #111; padding: 15px; border-radius: 15px; }
-        .key { width: 45px; height: 160px; background: white; border-radius: 0 0 8px 8px; }
-        .key.black { background: black; height: 100px; width: 35px; margin-left: -17px; margin-right: -17px; z-index: 2; position: relative; }
-        
-        #coloring-game-ui { background: white; }
-        #drawing-canvas { flex: 1; width: 100%; background: white; touch-action: none; }
-        .colors-bar { height: 70px; width: 100%; display: flex; justify-content: center; gap: 15px; background: #eee; align-items: center; }
-        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #ccc; cursor: pointer; }
-        
-        #xo-game-ui { background: #1a1a2e; color: white; }
-        .xo-board { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; margin: 30px; }
-        .xo-cell { width: 100px; height: 100px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; border: 3px solid #00deb6; border-radius: 15px; cursor: pointer; }
+        .surah-btn { width: 100%; padding: 18px; margin: 10px 0; background: #00acc1; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        #piano-game-ui .key { width: 45px; height: 160px; background: white; border-radius: 0 0 8px 8px; margin: 0 2px;}
+        #piano-game-ui .key.black { height: 100px; width: 35px; margin-left: -20px; margin-right: -20px; z-index: 2; position: relative; background: black;}
+        #coloring-game-ui .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #ccc; cursor: pointer; margin: 0 5px;}
+        #xo-game-ui .xo-cell { width: 100px; height: 100px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; border: 3px solid #00deb6; border-radius: 15px; cursor: pointer; margin: 5px;}
 
-        /* لوحة الأدمن */
-        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 300; flex-direction: column; }
-        #file-input, #camera-input { display: none; }
-        audio#msg-sound { display: none; }
-        /* فيديو ZegoCloud */
-        #video-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: none; }
-
+        #file-input, #camera-input, audio { display: none; }
     </style>
 </head>
 <body>
@@ -234,31 +208,28 @@
     </div>
 
     <div id="games-screen">
-        <div class="game-header">
-            <span>🎮 مكتبة الألعاب</span>
-            <span onclick="closeGames()" style="color:#ff3b30; font-size:24px; cursor:pointer;"><i class="fas fa-times-circle"></i></span>
-        </div>
+        <div class="game-header"><span>🎮 الألعاب</span><span onclick="closeGames()" style="color:#ff3b30; font-size:24px; cursor:pointer;"><i class="fas fa-times-circle"></i></span></div>
         <div class="game-categories">
             <button class="cat-btn active" onclick="filterGames('all')">الكل</button>
-            <button class="cat-btn" onclick="filterGames('family')">أونلاين (جماعي)</button>
-            <button class="cat-btn" onclick="filterGames('dina')">عالم دينا</button>
+            <button class="cat-btn" onclick="filterGames('family')">جماعي</button>
+            <button class="cat-btn" onclick="filterGames('dina')">دينا</button>
         </div>
         <div class="games-list" id="games-grid"></div>
     </div>
 
     <div id="game-frame-container">
-        <div class="game-toolbar"><span id="game-title">جاري اللعب...</span><div class="close-game-btn" onclick="closeGameFrame()">خروج</div></div>
+        <div class="game-toolbar"><span id="game-title">لعب</span><div class="close-game-btn" onclick="closeGameFrame()">خروج</div></div>
         <iframe id="game-frame" src=""></iframe>
-        <div id="adnan-game-ui"><div class="adnan-char"></div><h2 style="color:#00838f; margin-bottom:20px;">عدنان معلم القرآن</h2><button class="surah-btn" onclick="playAudio('https://server7.mp3quran.net/basit/Almusshaf_Al-Mojawwad/001.mp3')"><span>سورة الفاتحة</span><i class="fas fa-play-circle"></i></button><button class="surah-btn" onclick="playAudio('https://server7.mp3quran.net/basit/Almusshaf_Al-Mojawwad/112.mp3')"><span>سورة الإخلاص</span><i class="fas fa-play-circle"></i></button><audio id="quran-player" style="display:none;"></audio></div>
-        <div id="piano-game-ui"><h2 style="color:white; margin-bottom:20px;">بيانو دينا 🎵</h2><div class="piano-keys"><div class="key" onclick="playNote(261)"></div><div class="key black" onclick="playNote(277)"></div><div class="key" onclick="playNote(293)"></div><div class="key black" onclick="playNote(311)"></div><div class="key" onclick="playNote(329)"></div><div class="key" onclick="playNote(349)"></div><div class="key black" onclick="playNote(369)"></div><div class="key" onclick="playNote(392)"></div></div></div>
-        <div id="coloring-game-ui"><canvas id="drawing-canvas"></canvas><div class="colors-bar"><div class="color-dot" style="background:red" onclick="setColor('red')"></div><div class="color-dot" style="background:blue" onclick="setColor('blue')"></div><div class="color-dot" style="background:green" onclick="setColor('green')"></div><div class="color-dot" style="background:yellow" onclick="setColor('yellow')"></div><div class="color-dot" style="background:white; border-color:black" onclick="setColor('white')">🧽</div></div></div>
-        <div id="xo-game-ui"><h2>تحدي X O</h2><div class="xo-board" id="xo-board"></div><h3 id="xo-status">الدور: X</h3><button class="login-btn" style="width:auto; margin-top:20px;" onclick="initXO()">لعبة جديدة</button></div>
+        <div id="adnan-game-ui" style="background:#e0f7fa; padding:20px"><div class="adnan-char" style="width:130px;height:130px;background:url('https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9') center/contain no-repeat;border-radius:50%;border:5px solid #00acc1;background-color:white;margin-bottom:20px"></div><button class="surah-btn" onclick="playAudio('https://server7.mp3quran.net/basit/Almusshaf_Al-Mojawwad/001.mp3')"><span>الفاتحة</span><i class="fas fa-play"></i></button></div>
+        <div id="piano-game-ui" style="background:#222; justify-content:center"><div class="piano-keys" style="display:flex"><div class="key" onclick="playNote(261)"></div><div class="key black" onclick="playNote(277)"></div><div class="key" onclick="playNote(293)"></div><div class="key black" onclick="playNote(311)"></div><div class="key" onclick="playNote(329)"></div></div></div>
+        <div id="coloring-game-ui" style="background:white"><canvas id="drawing-canvas" style="flex:1;width:100%"></canvas><div class="colors-bar" style="height:60px;display:flex;justify-content:center;background:#eee"><div class="color-dot" style="background:red" onclick="setColor('red')"></div><div class="color-dot" style="background:blue" onclick="setColor('blue')"></div><div class="color-dot" style="background:white;border:2px solid black" onclick="setColor('white')"></div></div></div>
+        <div id="xo-game-ui" style="background:#1a1a2e;color:white"><div class="xo-board" id="xo-board" style="display:grid;grid-template-columns:repeat(3,100px);gap:10px"></div><button class="login-btn" style="width:auto;margin-top:20px" onclick="initXO()">إعادة</button></div>
     </div>
 
     <div id="admin-panel"><div class="admin-header"><span>الإعدادات</span><span onclick="closeAdmin()">❌</span></div><div class="admin-content"><h3>المستخدمون:</h3><div id="users-list"></div><div class="add-user-form"><input type="text" id="new-name" class="login-input" style="background:#fff; color:black" placeholder="الاسم"><input type="text" id="new-user" class="login-input" style="background:#fff; color:black" placeholder="يوزر"><input type="text" id="new-pass" class="login-input" style="background:#fff; color:black" placeholder="باسورد"><select id="new-role" class="login-input" style="background:#fff; color:black"><option value="user">مستخدم</option><option value="admin">مدير</option></select><button class="login-btn" onclick="addUser()">إضافة</button></div></div></div>
 
-    <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(this)">
-    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(this)">
+    <input type="file" id="file-input" onchange="handleFileSelect(this)">
+    <input type="file" id="camera-input" accept="image/*" capture="environment" onchange="handleFileSelect(this)">
 
     <div id="chat-screen">
         <div class="chat-header">
@@ -270,17 +241,12 @@
                 <i class="fas fa-phone" onclick="startCall(false)"></i>
             </div>
         </div>
-        <div class="messages-area" id="msg-area">
-            <div class="msg msg-out"><div>السلام عليكم</div><div class="msg-meta">10:00 م<span class="ticks">✓✓</span></div></div>
-        </div>
-        <div class="recording-box" id="rec-box">جاري التسجيل... 🎤</div>
+        <div class="messages-area" id="msg-area"></div>
         <div class="chat-footer">
-            <i class="fas fa-plus footer-icon" onclick="triggerAttachment()"></i>
-            <div class="input-container">
-                <input type="text" class="chat-input" id="msg-input" placeholder="اكتب رسالة">
-            </div>
-            <i class="fas fa-camera footer-icon" onclick="triggerCamera()"></i>
-            <i class="fas fa-microphone footer-icon" id="mic-btn" onclick="toggleRecording()"></i>
+            <i class="fas fa-plus footer-icon" onclick="document.getElementById('file-input').click()"></i>
+            <div class="input-container"><input type="text" class="chat-input" id="msg-input" placeholder="اكتب رسالة"></div>
+            <i class="fas fa-camera footer-icon" onclick="document.getElementById('camera-input').click()"></i>
+            <i class="fas fa-microphone footer-icon" onclick="alert('تسجيل الصوت قيد التطوير')"></i>
             <div class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></div>
         </div>
     </div>
@@ -289,7 +255,7 @@
 
     <script>
         const defaultUsers = [
-            { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ متصل" },
+            { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
             { name: "ماما (عايضه)", user: "aida", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
             { name: "فهد", user: "fahad", pass: "2222", role: "user", avatar: "👦🏻", lastMsg: "ألعب كود" },
             { name: "ديالا", user: "diyala", pass: "3333", role: "user", avatar: "👱🏻‍♀️", lastMsg: "مساء الخير" },
@@ -326,7 +292,6 @@
             } else { alert("بيانات الدخول خطأ!"); }
         }
         function logout() { localStorage.removeItem('currentUser'); location.reload(); }
-        
         function renderContacts() {
             const list = document.getElementById('dynamic-contacts'); list.innerHTML = '';
             users.forEach(u => {
@@ -336,14 +301,42 @@
             });
         }
 
+        function startCall(isVideo) { 
+            const videoContainer = document.getElementById('video-container'); 
+            videoContainer.style.display = 'block'; 
+            
+            // إضافة زر خروج يدوي
+            const exitBtn = document.createElement('div');
+            exitBtn.className = 'exit-call-btn';
+            exitBtn.innerText = 'إنهاء المكالمة ❌';
+            exitBtn.onclick = () => { location.reload(); }; // إعادة تحميل للخروج القسري
+            videoContainer.appendChild(exitBtn);
+
+            const roomID = "Family_Room_Unified"; // غرفة موحدة للجميع
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, currentUser.user + Date.now(), currentUser.name);
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            
+            zp.joinRoom({ 
+                container: videoContainer, 
+                showPreJoinView: false, // دخول فوري
+                scenario: { mode: ZegoUIKitPrebuilt.GroupCall }, 
+                turnOnCameraWhenJoining: isVideo,
+                turnOnMicrophoneWhenJoining: true,
+                showLeaveRoomConfirmDialog: false,
+                onLeaveRoom: () => { 
+                    videoContainer.style.display = 'none'; 
+                    videoContainer.innerHTML = ''; // تنظيف الحاوية
+                }
+            });
+        }
+
         const games = [
             { id: "smash", title: "سباق سيارات", cat: "family", type: "external", url: "https://smashkarts.io/", img: "https://smashkarts.io/images/icon-192.png", badge: "أونلاين" },
             { id: "krunker", title: "حرب (Krunker)", cat: "family", type: "external", url: "https://krunker.io/?game=BHG", img: "https://assets.krunker.io/promo/og.png", badge: "أونلاين" },
-            { id: "skribbl", title: "رسم وتخمين", cat: "family", type: "external", url: "https://skribbl.io/", img: "https://skribbl.io/res/logo_128.png", badge: "جماعي" },
             { id: "adnan", title: "عدنان (قرآن)", cat: "dina", type: "internal", action: "adnan", img: "https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9", badge: "تعليمي" },
             { id: "xo", title: "تحدي X O", cat: "family", type: "internal", action: "xo", img: "https://cdn-icons-png.flaticon.com/512/566/566294.png", badge: "جديد" },
-            { id: "piano", title: "بيانو دينا 🎹", cat: "dina", type: "internal", action: "piano", img: "https://cdn-icons-png.flaticon.com/512/3233/3233483.png", badge: "أطفال" },
-            { id: "coloring", title: "تلوين 🎨", cat: "dina", type: "internal", action: "coloring", img: "https://cdn-icons-png.flaticon.com/512/2919/2919652.png", badge: "أطفال" }
+            { id: "piano", title: "بيانو", cat: "dina", type: "internal", action: "piano", img: "https://cdn-icons-png.flaticon.com/512/3233/3233483.png", badge: "أطفال" },
+            { id: "coloring", title: "تلوين", cat: "dina", type: "internal", action: "coloring", img: "https://cdn-icons-png.flaticon.com/512/2919/2919652.png", badge: "أطفال" }
         ];
 
         function openGames() { document.getElementById('games-screen').style.display = 'flex'; filterGames('all'); }
@@ -371,81 +364,33 @@
                 if(game.action === 'xo') initXO();
             }
         }
-        function closeGameFrame() { document.getElementById('game-frame-container').style.display = 'none'; document.getElementById('game-frame').src = ""; const p = document.getElementById('quran-player'); p.pause(); }
+        function closeGameFrame() { document.getElementById('game-frame-container').style.display = 'none'; document.getElementById('game-frame').src = ""; }
 
-        function playAudio(url) { const p = document.getElementById('quran-player'); p.src = url; p.play(); }
+        function playAudio(url) { const a = new Audio(url); a.play(); }
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playNote(f) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.5, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+1); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+1); }
         let canvas, ctx, color = 'red';
         function initColoring() { canvas = document.getElementById('drawing-canvas'); ctx = canvas.getContext('2d'); canvas.width = window.innerWidth; canvas.height = window.innerHeight - 60; ctx.fillStyle='white'; ctx.fillRect(0,0,canvas.width,canvas.height); let drawing = false; const draw = (e) => { if(!drawing) return; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.strokeStyle = color; const x = e.touches ? e.touches[0].clientX : e.clientX; const y = e.touches ? e.touches[0].clientY : e.clientY; ctx.lineTo(x, y - 50); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y - 50); }; canvas.onmousedown=(e)=>{drawing=true;draw(e)}; canvas.onmouseup=()=>{drawing=false;ctx.beginPath()}; canvas.onmousemove=draw; canvas.ontouchstart=(e)=>{drawing=true;draw(e)}; canvas.ontouchend=()=>{drawing=false;ctx.beginPath()}; canvas.ontouchmove=draw; }
         function setColor(c) { color = c; }
         let board = Array(9).fill(''); let player = 'X';
-        function initXO() { board.fill(''); player = 'X'; document.getElementById('xo-status').innerText='الدور: X'; const d=document.getElementById('xo-board'); d.innerHTML=''; board.forEach((_,i)=>{ const c=document.createElement('div'); c.className='xo-cell'; c.onclick=()=>{ if(board[i]) return; board[i]=player; c.innerText=player; player=player==='X'?'O':'X'; document.getElementById('xo-status').innerText='الدور: '+player; }; d.appendChild(c); }); }
+        function initXO() { board.fill(''); player = 'X'; document.getElementById('xo-board').innerHTML=''; board.forEach((_,i)=>{ const c=document.createElement('div'); c.className='xo-cell'; c.onclick=()=>{ if(board[i]) return; board[i]=player; c.innerText=player; player=player==='X'?'O':'X'; }; document.getElementById('xo-board').appendChild(c); }); }
 
         function openChat(name, bg, emoji) { document.getElementById('contact-list').style.display = 'none'; document.getElementById('chat-screen').style.display = 'flex'; document.getElementById('chat-name').innerText = name; document.getElementById('chat-header-avatar').innerText = emoji; }
         function closeChat() { document.getElementById('chat-screen').style.display = 'none'; document.getElementById('contact-list').style.display = 'flex'; }
         
-        function triggerAttachment() { document.getElementById('file-input').click(); }
-        function triggerCamera() { document.getElementById('camera-input').click(); }
-        function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 صورة مرسلة</div><img src="${URL.createObjectURL(input.files[0])}" class="msg-img"><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
-        
-        let mediaRecorder; let isRecording = false;
-        async function toggleRecording() {
-            const btn = document.getElementById('mic-btn');
-            const box = document.getElementById('rec-box');
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btn.style.color = 'red';
-                    box.style.display = 'block';
-                    let chunks = [];
-                    mediaRecorder.ondataavailable = e => chunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(chunks, { type: 'audio/mp3' });
-                        const url = URL.createObjectURL(blob);
-                        document.getElementById('msg-area').innerHTML += `<div class="msg msg-out"><audio controls src="${url}"></audio><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
-                        playSound();
-                    };
-                } catch(e) { alert("يجب السماح بالمايكروفون"); }
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-                btn.style.color = '#54656f';
-                box.style.display = 'none';
-            }
-        }
-
-        function startCall(isVideo) { 
-            const videoContainer = document.getElementById('video-container'); 
-            videoContainer.style.display = 'block'; 
-            // استخدام غرفة موحدة للجميع لضمان اللقاء
-            const roomID = "Family_Room_Connect";
-            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, currentUser.user + Date.now(), currentUser.name);
-            const zp = ZegoUIKitPrebuilt.create(kitToken);
-            zp.joinRoom({ 
-                container: videoContainer, 
-                showPreJoinView: false, // الدخول الفوري
-                scenario: { mode: ZegoUIKitPrebuilt.GroupCall }, // دعم المكالمات الجماعية
-                turnOnCameraWhenJoining: isVideo,
-                turnOnMicrophoneWhenJoining: true,
-                onLeaveRoom: () => { zp.destroy(); videoContainer.style.display = 'none'; }
-            });
-        }
+        function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 صورة</div><img src="${URL.createObjectURL(input.files[0])}" class="msg-img"><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
         
         function playSound() { const audio = document.getElementById('msg-sound'); audio.currentTime = 0; audio.play().catch(e => console.log(e)); }
 
         function sendMessage() {
             const input = document.getElementById('msg-input');
-            const txt = input.value.trim();
-            if(!txt) return;
-            const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
-            input.value = '';
-            area.scrollTop = area.scrollHeight;
-            playSound();
+            if(input.value.trim()) {
+                const area = document.getElementById('msg-area');
+                area.innerHTML += `<div class="msg msg-out"><div>${input.value}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+                input.value = '';
+                area.scrollTop = area.scrollHeight;
+                playSound();
+            }
         }
 
         function openAdmin() { if(currentUser.role!=='admin'){alert('للمدير فقط');return;} document.getElementById('admin-panel').style.display='flex'; renderAdminList(); }
