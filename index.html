@@ -13,113 +13,124 @@
             font-family: 'Cairo', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #000;
         }
 
-        /* --- 1. الخلفية (يجب أن ترفع صورة العائلة الكرتونية باسم home.png) --- */
+        /* --- 1. خلفية التطبيق (العائلة) --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
             z-index: -10; 
-            /* تعتيم خفيف جداً لكي تبقى الوجوه واضحة */
-            filter: brightness(0.9); 
+            /* تعتيم خفيف جداً لكي تظهر النصوص الزجاجية بوضوح */
+            filter: brightness(0.8); 
         }
 
-        /* --- 2. شاشة الدخول --- */
+        /* --- 2. شاشة الدخول (زجاجية) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(8px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.1); padding: 40px 30px; border-radius: 25px;
+            background: rgba(0, 0, 0, 0.5); /* زجاجي داكن */
+            padding: 40px 30px; border-radius: 25px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(15px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .login-avatar {
             width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid #00deb6;
             background-image: url('girl.png'); background-size: cover; background-position: top center;
-            box-shadow: 0 0 20px #00deb6;
+            box-shadow: 0 0 20px rgba(0, 222, 182, 0.4);
         }
         .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
         .login-input {
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.2);
+            width: 100%; padding: 12px 15px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; color: white; text-align: center; outline: none;
         }
-        .login-input::placeholder { color: #ddd; }
+        .login-input::placeholder { color: #ccc; }
         .login-btn {
             width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00deb6);
             color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0, 222, 182, 0.3);
         }
 
-        /* --- 3. الشاشة الرئيسية (القائمة الشفافة) --- */
+        /* --- 3. الشاشة الرئيسية --- */
         #contact-list { 
             display: none; flex-direction: column; height: 100%; 
             z-index: 50; position: relative; 
         }
+        /* الهيدر زجاجي */
         .app-header {
-            background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px;
+            background: rgba(0, 128, 105, 0.8); color: white; padding: 15px 20px;
             font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px);
         }
         
         #dynamic-contacts { 
             flex: 1; overflow-y: auto; padding-top: 10px; 
         }
         
-        /* كروت الأسماء (زجاجية شفافة لتظهر العائلة خلفها) */
+        /* 🔥 القائمة الزجاجية الاحترافية (تظهر الخلفية من ورائها) */
         .contact-item {
             display: flex; align-items: center; padding: 15px; cursor: pointer; 
-            background: rgba(0, 0, 0, 0.4); /* خلفية داكنة شفافة */
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            margin: 10px 15px; border-radius: 20px;
-            backdrop-filter: blur(3px); /* تغبيش خفيف */
+            
+            /* السحر هنا: خلفية شفافة جداً */
+            background: rgba(255, 255, 255, 0.15); 
+            border: 1px solid rgba(255, 255, 255, 0.2); /* حدود ناعمة */
+            border-left: 4px solid #00deb6; /* لمسة جمالية ملونة */
+            
+            margin: 10px 15px; border-radius: 15px;
+            backdrop-filter: blur(5px); /* تغبيش الخلفية خلف العنصر */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
-        .contact-item:active { transform: scale(0.98); }
+        .contact-item:active { transform: scale(0.98); background: rgba(255,255,255,0.25); }
         
-        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid #fff; flex-shrink: 0; }
+        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.8); flex-shrink: 0; }
         .info { flex: 1; }
+        /* النصوص بيضاء لتناسب الخلفيات الداكنة */
         .name { font-weight: 900; font-size: 18px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 4px black; }
-        .last-msg { color: #ddd; font-weight: normal; font-size: 13px; }
+        .last-msg { color: #eee; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
         .time { font-size: 12px; color: #ccc; margin-right: auto; }
 
-        /* 🔥 زر ألعاب العائلة (نفس تصميم الصورة: نار وبرواز أخضر) */
+        /* 🔥 زر الألعاب (احترافي ومتحرك) */
         .games-banner-container {
-            padding: 15px 15px 30px 15px;
+            padding: 20px 15px 30px 15px;
             background: transparent; 
-            margin-top: auto; /* يدفعه للأسفل */
+            margin-top: auto;
         }
         .games-banner {
             padding: 25px;
-            /* خلفية نارية */
-            background: url('https://img.freepik.com/free-vector/realistic-fire-background_125540-1074.jpg');
-            background-size: cover; background-position: center;
+            /* تدرج لوني احترافي */
+            background: linear-gradient(45deg, #11998e, #38ef7d);
             border-radius: 20px; cursor: pointer;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 20px rgba(0, 222, 182, 0.3); /* توهج أخضر خفيف */
-            border: 2px solid #00deb6; /* البرواز الأخضر */
-            position: relative; overflow: hidden; text-align: center;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 0 20px rgba(56, 239, 125, 0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative; overflow: hidden;
         }
-        /* طبقة سوداء خفيفة لتوضيح النص */
-        .games-banner::before {
-            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.4); z-index: 1;
+        /* لمعة متحركة */
+        .games-banner::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-25deg); animation: shine 3s infinite;
         }
+        @keyframes shine { 100% { left: 200%; } }
+        
         .game-text-main { 
-            color: #00deb6; /* النص أخضر مضيء */
-            font-weight: 900; font-size: 26px; z-index: 2; 
-            text-shadow: 0 2px 5px black; margin-bottom: 5px;
+            color: #fff; font-weight: 900; font-size: 24px; z-index: 2; 
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .game-text-sub { 
-            color: #fff; font-size: 12px; z-index: 2; font-weight: bold; 
-            text-shadow: 0 1px 3px black;
+            color: #f0f0f0; font-size: 12px; z-index: 2; font-weight: bold; margin-top: 5px;
         }
+        .game-icon-large { font-size: 40px; color: #fff; z-index: 2; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        /* --- 4. شاشة الدردشة (واتساب كامل) --- */
+        /* --- 4. شاشة الدردشة (واتساب الأصلي) --- */
         #chat-screen {
             display: none; flex-direction: column; height: 100%; 
             position: fixed; top: 0; left: 0; width: 100%; 
-            background-color: #efe7dd; /* لون واتساب */
+            /* خلفية واتساب الأصلية (بيج) */
+            background-color: #efe7dd; 
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
             z-index: 100;
         }
@@ -340,7 +351,7 @@
     </div>
 
     <script>
-        // --- 1. البيانات (تم إصلاح مشكلة undefined) ---
+        // --- 1. البيانات ---
         const defaultUsers = [
             { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
             { name: "ماما (عايضه)", user: "mom", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
@@ -386,7 +397,7 @@
                     list.innerHTML += `
                         <div class="contact-item" onclick="openChat('${u.name}', '', '${u.avatar}')">
                             <div class="avatar">${u.avatar}</div>
-                            <div class="info"><div class="name">${u.name}</div><div class="last-msg">${u.lastMsg}</div></div>
+                            <div class="info"><div class="name">${u.name}</div><div class="last-msg">${u.lastMsg || 'مرحباً'}</div></div>
                             <div class="time">الآن</div>
                         </div>
                     `;
@@ -462,7 +473,7 @@
         let board = Array(9).fill(''); let player = 'X';
         function initXO() { board.fill(''); player = 'X'; document.getElementById('xo-status').innerText='الدور: X'; const d=document.getElementById('xo-board'); d.innerHTML=''; board.forEach((_,i)=>{ const c=document.createElement('div'); c.className='xo-cell'; c.onclick=()=>{ if(board[i]) return; board[i]=player; c.innerText=player; player=player==='X'?'O':'X'; document.getElementById('xo-status').innerText='الدور: '+player; }; d.appendChild(c); }); }
 
-        // --- الشات (إصلاح الكاميرا والمايك) ---
+        // --- الشات (تم الإصلاح) ---
         function openChat(name, bg, emoji) {
             document.getElementById('contact-list').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
