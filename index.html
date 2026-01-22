@@ -6,14 +6,10 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FamilyApp">
-    <link rel="apple-touch-icon" href="home.png">
-    <link rel="icon" type="image/png" href="home.png">
-
     <title>Family Super App</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 
     <style>
@@ -23,35 +19,26 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- 1. الخلفية المدمجة (العائلة + دينا) --- */
+        /* --- 1. الخلفية --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
-            z-index: -10; filter: brightness(0.85); /* تعتيم خفيف للوضوح */
-        }
-        
-        /* دمج دينا في الزاوية اليسرى السفلية */
-        .bg-overlay-girl {
-            position: fixed; bottom: 0; left: 0; width: 65%; height: 75%;
-            background-image: url('girl.png'); 
-            background-size: contain; background-repeat: no-repeat; background-position: bottom left;
-            z-index: -5; opacity: 0.95;
-            /* قناع للدمج الناعم */
-            -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
-            mask-image: linear-gradient(to right, black 20%, transparent 100%);
+            z-index: -10; filter: brightness(0.9);
         }
 
-        /* --- 2. شاشة الدخول (زجاجية) --- */
+        /* --- 2. شاشة الدخول (زجاجية فخمة) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.15); padding: 40px 30px; border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 40px 30px; border-radius: 25px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
         .login-avatar {
@@ -59,7 +46,7 @@
             background-image: url('girl.png'); background-size: cover; background-position: top center;
             box-shadow: 0 0 20px rgba(0, 222, 182, 0.6);
         }
-        .login-title { font-size: 26px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 5px black; }
+        .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 5px black; }
         .login-input {
             width: 100%; padding: 12px 15px; margin-bottom: 15px; 
             background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; 
@@ -93,7 +80,7 @@
         .last-msg { color: #eee; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
         .time { font-size: 12px; color: #ccc; margin-right: auto; }
 
-        /* 🔥 زر الألعاب (أنميشن) */
+        /* 🔥 زر الألعاب */
         .games-banner-container { padding: 20px 15px 40px 15px; background: transparent; margin-top: auto; }
         .games-banner {
             padding: 25px;
@@ -107,19 +94,9 @@
         .game-text-main { color: #fff; font-weight: 900; font-size: 26px; z-index: 2; text-shadow: 0 0 10px #00deb6; margin-bottom: 5px; }
         .game-text-sub { color: #eee; font-size: 12px; z-index: 2; font-weight: bold; }
 
-        /* --- 4. شاشة الدردشة (شفافة لتظهر الخلفية) --- */
-        #chat-screen { 
-            display: none; flex-direction: column; height: 100%; 
-            position: fixed; top: 0; left: 0; width: 100%; 
-            /* 🔥 هنا التعديل: الخلفية شفافة لرؤية العائلة ودينا */
-            background-color: rgba(0,0,0,0.6); 
-            z-index: 100; 
-        }
-        .chat-header { 
-            background-color: #008069; color: white; padding: 5px 10px; padding-top: 40px; 
-            display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
-            z-index: 10; min-height: 85px; 
-        }
+        /* --- 4. شاشة الدردشة --- */
+        #chat-screen { display: none; flex-direction: column; height: 100%; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(0,0,0,0.6); z-index: 100; }
+        .chat-header { background-color: #008069; color: white; padding: 5px 10px; padding-top: 40px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); z-index: 10; min-height: 85px; }
         .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 22px; display: flex; align-items: center; }
         .header-avatar { width: 42px; height: 42px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; }
         .header-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -134,12 +111,11 @@
         .msg-meta { font-size: 11px; color: #667781; margin-top: 4px; float: right; margin-left: 5px; display: flex; align-items: end; justify-content: flex-end; }
         .ticks { margin-right: 3px; font-size: 14px; color: #53bdeb; }
         
-        /* تأثير التسجيل */
         .recording-active { color: #ff3b30 !important; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
 
         .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 60px; padding-bottom: max(20px, env(safe-area-inset-bottom)); position: relative; z-index: 10; }
-        .footer-icon { font-size: 24px; color: #54656f; padding: 10px; cursor: pointer; }
+        .footer-icon { font-size: 24px; color: #54656f; padding: 8px; cursor: pointer; }
         .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 8px; display: flex; align-items: center; }
         .chat-input { flex: 1; border: none; outline: none; font-size: 16px; width: 100%; background: transparent; text-align: right; }
         .send-btn { background-color: #008069; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
@@ -287,7 +263,7 @@
     <div id="video-container"></div>
 
     <script>
-        // --- 1. البيانات (تم تحديثها باليوزرات المطلوبة) ---
+        // --- 1. البيانات المصححة (عايضه، فهد، ديالا، دينا) ---
         const defaultUsers = [
             { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
             { name: "ماما (عايضه)", user: "aida", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
@@ -296,6 +272,7 @@
             { name: "دينا", user: "dina", pass: "4444", role: "user", avatar: "👧🏻", lastMsg: "❤️ أحبك" }
         ];
         
+        // فحص وإصلاح الذاكرة تلقائياً
         let users = JSON.parse(localStorage.getItem('familyUsers'));
         if (!users || users.length < 5) {
             users = defaultUsers;
@@ -391,7 +368,6 @@
         function triggerCamera() { document.getElementById('camera-input').click(); }
         function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 تم إرسال صورة</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
         
-        // --- تسجيل الصوت ---
         let mediaRecorder; let audioChunks = []; let isRecording = false;
         async function toggleRecording() {
             const micBtn = document.getElementById('mic-btn');
@@ -428,7 +404,7 @@
             const zp = ZegoUIKitPrebuilt.create(kitToken);
             zp.joinRoom({ 
                 container: videoContainer, 
-                showPreJoinView: false, // بدء فوري
+                showPreJoinView: false, 
                 scenario: { mode: ZegoUIKitPrebuilt.OneONoneCall },
                 turnOnCameraWhenJoining: isVideo,
                 turnOnMicrophoneWhenJoining: true,
@@ -443,7 +419,7 @@
             const txt = input.value.trim();
             if(!txt) return;
             const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓✓</span></div></div>`;
             input.value = '';
             area.scrollTop = area.scrollHeight;
             playSound();
