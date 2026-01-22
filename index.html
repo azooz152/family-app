@@ -6,11 +6,16 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FamilyApp">
+    <link rel="apple-touch-icon" href="home.png">
+    <link rel="icon" type="image/png" href="home.png">
+
     <title>Family Super App</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     
+    <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body {
@@ -18,56 +23,53 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- 1. الخلفية (تم الحفاظ عليها) --- */
+        /* --- 1. الخلفية المدمجة (العائلة + دينا) --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
-            z-index: -10; 
-            /* لا يوجد تعتيم قوي عشان الصورة تبان من وراء الزجاج */
-            filter: brightness(0.9);
+            z-index: -10; filter: brightness(0.85); /* تعتيم خفيف للوضوح */
+        }
+        
+        /* دمج دينا في الزاوية اليسرى السفلية */
+        .bg-overlay-girl {
+            position: fixed; bottom: 0; left: 0; width: 65%; height: 75%;
+            background-image: url('girl.png'); 
+            background-size: contain; background-repeat: no-repeat; background-position: bottom left;
+            z-index: -5; opacity: 0.95;
+            /* قناع للدمج الناعم */
+            -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
+            mask-image: linear-gradient(to right, black 20%, transparent 100%);
         }
 
-        /* --- 2. شاشة الدخول (ستايل آيفون زجاجي) --- */
+        /* --- 2. شاشة الدخول (زجاجية) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            /* خلفية الشاشة نفسها شفافة */
-            background: rgba(0,0,0,0.2); 
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
         }
         .login-box {
-            /* 🔥 الزجاجية الاحترافية (iOS Frosted Glass) */
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 45px 30px; border-radius: 30px;
+            background: rgba(255, 255, 255, 0.15); padding: 40px 30px; border-radius: 30px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.25); /* حدود بيضاء ناعمة */
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); /* التمويه القوي */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(20px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
         .login-avatar {
-            width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%; 
-            border: 3px solid rgba(255,255,255,0.8);
+            width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid #00deb6;
             background-image: url('girl.png'); background-size: cover; background-position: top center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 0 20px rgba(0, 222, 182, 0.6);
         }
-        .login-title { 
-            font-size: 26px; font-weight: 900; margin-bottom: 30px; color: #fff; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3); letter-spacing: 1px;
-        }
+        .login-title { font-size: 26px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 5px black; }
         .login-input {
-            width: 100%; padding: 15px; margin-bottom: 15px; 
-            background: rgba(0, 0, 0, 0.2); /* حقل نصي غامق شفاف */
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 15px; 
+            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
+            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; 
             color: white; text-align: center; outline: none; font-size: 16px; font-weight: bold;
-            transition: 0.3s;
         }
-        .login-input:focus { background: rgba(0, 0, 0, 0.4); border-color: #00deb6; }
-        .login-input::placeholder { color: #ddd; }
+        .login-input::placeholder { color: #ccc; }
         .login-btn {
-            width: 100%; padding: 15px; margin-top: 10px;
-            background: linear-gradient(135deg, #00deb6, #008069);
-            color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 900; cursor: pointer;
-            box-shadow: 0 5px 20px rgba(0, 222, 182, 0.3);
+            width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00deb6);
+            color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 222, 182, 0.3);
         }
 
         /* --- 3. الشاشة الرئيسية --- */
@@ -80,60 +82,65 @@
         #dynamic-contacts { flex: 1; overflow-y: auto; padding-top: 10px; }
         .contact-item {
             display: flex; align-items: center; padding: 15px; cursor: pointer; 
-            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.2);
-            border-left: 5px solid #00deb6; margin: 10px 15px; border-radius: 20px;
-            backdrop-filter: blur(8px); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 4px solid #00deb6; margin: 10px 15px; border-radius: 15px;
+            backdrop-filter: blur(5px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .contact-item:active { transform: scale(0.98); background: rgba(255,255,255,0.3); }
-        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.9); flex-shrink: 0; }
+        .contact-item:active { transform: scale(0.98); background: rgba(255,255,255,0.25); }
+        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.8); flex-shrink: 0; }
         .info { flex: 1; }
-        .name { font-weight: 900; font-size: 19px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 5px black; }
-        .last-msg { color: #f0f0f0; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
-        .time { font-size: 12px; color: #ddd; margin-right: auto; }
+        .name { font-weight: 900; font-size: 18px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 4px black; }
+        .last-msg { color: #eee; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
+        .time { font-size: 12px; color: #ccc; margin-right: auto; }
 
-        /* 🔥 زر الألعاب (تم التعديل: أنميشن + عربي فقط) */
+        /* 🔥 زر الألعاب (أنميشن) */
         .games-banner-container { padding: 20px 15px 40px 15px; background: transparent; margin-top: auto; }
         .games-banner {
-            padding: 30px 20px;
-            /* خلفية أنميشن ألعاب فخمة */
-            background: url('https://media.giphy.com/media/uYe2emzPgDfj2/giphy.gif');
+            padding: 25px;
+            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzRkZWRkY2Q1NmFhODQ2YzQ2NzY4YzM4YzM4YzM4YzM4YzM4YzM4eSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTiTnqUxyWbsAXqFFi/giphy.gif');
             background-size: cover; background-position: center;
-            border-radius: 25px; cursor: pointer;
+            border-radius: 20px; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.6); 
-            border: 2px solid rgba(255,255,255,0.5); 
-            position: relative; overflow: hidden; text-align: center;
+            box-shadow: 0 0 25px rgba(0, 222, 182, 0.5); border: 2px solid #00deb6; position: relative; overflow: hidden; text-align: center;
         }
-        /* طبقة تغميق عشان النص يبان */
-        .games-banner::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 1; }
-        .game-text-main { 
-            color: #00deb6; font-weight: 900; font-size: 28px; z-index: 2; 
-            text-shadow: 0 0 15px #00deb6, 0 2px 5px black; margin-bottom: 8px;
-            font-family: 'Cairo', sans-serif;
-        }
-        .game-text-sub { 
-            color: #fff; font-size: 14px; z-index: 2; font-weight: bold; 
-            text-shadow: 0 2px 4px black;
-        }
+        .games-banner::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1; }
+        .game-text-main { color: #fff; font-weight: 900; font-size: 26px; z-index: 2; text-shadow: 0 0 10px #00deb6; margin-bottom: 5px; }
+        .game-text-sub { color: #eee; font-size: 12px; z-index: 2; font-weight: bold; }
 
-        /* --- 4. شاشة الدردشة --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; position: fixed; top: 0; left: 0; width: 100%; background-color: #efe7dd; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); z-index: 100; }
-        .chat-header { background-color: #008069; color: white; padding: 5px 10px; padding-top: 40px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); z-index: 10; min-height: 85px; }
+        /* --- 4. شاشة الدردشة (شفافة لتظهر الخلفية) --- */
+        #chat-screen { 
+            display: none; flex-direction: column; height: 100%; 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            /* 🔥 هنا التعديل: الخلفية شفافة لرؤية العائلة ودينا */
+            background-color: rgba(0,0,0,0.6); 
+            z-index: 100; 
+        }
+        .chat-header { 
+            background-color: #008069; color: white; padding: 5px 10px; padding-top: 40px; 
+            display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
+            z-index: 10; min-height: 85px; 
+        }
         .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 22px; display: flex; align-items: center; }
         .header-avatar { width: 42px; height: 42px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; }
         .header-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .header-name { font-weight: bold; font-size: 17px; margin-bottom: 2px; }
         .header-status { font-size: 12px; opacity: 0.9; }
         .header-actions i { margin-right: 20px; font-size: 22px; cursor: pointer; }
+        
         .messages-area { flex: 1; padding: 10px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; z-index: 5; }
-        .msg { max-width: 80%; padding: 6px 10px 8px 10px; border-radius: 8px; font-size: 15px; position: relative; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); display: flex; flex-direction: column; }
-        .msg-in { align-self: flex-start; background: white; border-radius: 0 8px 8px 8px; }
-        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 8px 0 8px 8px; }
-        .msg-meta { font-size: 11px; color: #667781; margin-top: 2px; float: right; margin-left: 10px; display: flex; align-items: end; justify-content: flex-end; }
+        .msg { max-width: 80%; padding: 8px 12px 8px 12px; border-radius: 12px; font-size: 16px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .msg-in { align-self: flex-start; background: white; border-radius: 0 12px 12px 12px; }
+        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 12px 0 12px 12px; }
+        .msg-meta { font-size: 11px; color: #667781; margin-top: 4px; float: right; margin-left: 5px; display: flex; align-items: end; justify-content: flex-end; }
         .ticks { margin-right: 3px; font-size: 14px; color: #53bdeb; }
+        
+        /* تأثير التسجيل */
+        .recording-active { color: #ff3b30 !important; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
         .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 60px; padding-bottom: max(20px, env(safe-area-inset-bottom)); position: relative; z-index: 10; }
-        .footer-icon { font-size: 24px; color: #54656f; padding: 8px; cursor: pointer; }
-        .input-container { flex: 1; background: white; border-radius: 25px; padding: 9px 12px; margin: 0 8px; display: flex; align-items: center; }
+        .footer-icon { font-size: 24px; color: #54656f; padding: 10px; cursor: pointer; }
+        .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 8px; display: flex; align-items: center; }
         .chat-input { flex: 1; border: none; outline: none; font-size: 16px; width: 100%; background: transparent; text-align: right; }
         .send-btn { background-color: #008069; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
 
@@ -185,11 +192,15 @@
         /* 🔥 نغمة الرسالة */
         audio#msg-sound { display: none; }
 
+        /* الفيديو كونتينر */
+        #video-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #111; z-index: 9999; display: none; }
+
     </style>
 </head>
 <body>
 
     <div class="bg-base-family"></div>
+    <div class="bg-overlay-girl"></div>
     
     <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
 
@@ -255,8 +266,8 @@
             <div id="chat-header-avatar" class="header-avatar"></div>
             <div class="header-info"><div id="chat-name" class="header-name"></div><div class="header-status">متصل الآن</div></div>
             <div class="header-actions">
-                <i class="fas fa-video" onclick="startCall('video')"></i>
-                <i class="fas fa-phone" onclick="startCall('voice')"></i>
+                <i class="fas fa-video" onclick="startCall(true)"></i>
+                <i class="fas fa-phone" onclick="startCall(false)"></i>
             </div>
         </div>
         <div class="messages-area" id="msg-area">
@@ -268,13 +279,15 @@
                 <input type="text" class="chat-input" id="msg-input" placeholder="اكتب رسالة">
             </div>
             <i class="fas fa-camera footer-icon" onclick="triggerCamera()"></i>
-            <i class="fas fa-microphone footer-icon" onclick="triggerMic()"></i>
+            <i class="fas fa-microphone footer-icon" id="mic-btn" onclick="toggleRecording()"></i>
             <div class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></div>
         </div>
     </div>
 
+    <div id="video-container"></div>
+
     <script>
-        // --- البيانات: (عايضه، فهد، ديالا، دينا) ---
+        // --- 1. البيانات (تم تحديثها باليوزرات المطلوبة) ---
         const defaultUsers = [
             { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
             { name: "ماما (عايضه)", user: "aida", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
@@ -284,12 +297,14 @@
         ];
         
         let users = JSON.parse(localStorage.getItem('familyUsers'));
-        // إصلاح: التأكد من وجود المستخدمين الجدد
         if (!users || users.length < 5) {
             users = defaultUsers;
             localStorage.setItem('familyUsers', JSON.stringify(users));
         }
         let currentUser = null;
+
+        const appID = 1737796508; 
+        const serverSecret = "930ae2dcb4bc6bdd37cb5d00341bd5ea";
 
         window.onload = function() {
             const savedUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -375,8 +390,51 @@
         function triggerAttachment() { document.getElementById('file-input').click(); }
         function triggerCamera() { document.getElementById('camera-input').click(); }
         function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 تم إرسال صورة</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
-        function triggerMic() { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>🎤 رسالة صوتية (0:05)</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); }
-        function startCall(type) { alert(type === 'video' ? "جاري بدء مكالمة فيديو..." : "جاري الاتصال..."); }
+        
+        // --- تسجيل الصوت ---
+        let mediaRecorder; let audioChunks = []; let isRecording = false;
+        async function toggleRecording() {
+            const micBtn = document.getElementById('mic-btn');
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+                    isRecording = true;
+                    micBtn.classList.add('recording-active');
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const area = document.getElementById('msg-area');
+                        area.innerHTML += `<div class="msg msg-out"><audio controls src="${audioUrl}"></audio><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+                        area.scrollTop = area.scrollHeight;
+                        playSound();
+                    };
+                } catch(e) { alert("الرجاء السماح بالمايكروفون من إعدادات المتصفح"); }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                micBtn.classList.remove('recording-active');
+            }
+        }
+
+        function startCall(isVideo) { 
+            const videoContainer = document.getElementById('video-container'); 
+            videoContainer.style.display = 'block'; 
+            const roomID = "FamilyRoom_" + Math.floor(Math.random() * 1000);
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, currentUser.user, currentUser.name);
+            const zp = ZegoUIKitPrebuilt.create(kitToken);
+            zp.joinRoom({ 
+                container: videoContainer, 
+                showPreJoinView: false, // بدء فوري
+                scenario: { mode: ZegoUIKitPrebuilt.OneONoneCall },
+                turnOnCameraWhenJoining: isVideo,
+                turnOnMicrophoneWhenJoining: true,
+                onLeaveRoom: () => { zp.destroy(); videoContainer.style.display = 'none'; }
+            });
+        }
         
         function playSound() { const audio = document.getElementById('msg-sound'); audio.currentTime = 0; audio.play().catch(e => console.log(e)); }
 
@@ -385,7 +443,7 @@
             const txt = input.value.trim();
             if(!txt) return;
             const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓✓</span></div></div>`;
+            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
             input.value = '';
             area.scrollTop = area.scrollHeight;
             playSound();
