@@ -5,101 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Family Super App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Helvetica+Neue&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            background-color: #000;
+            font-family: 'Cairo', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #000;
         }
 
-        /* --- 1. خلفية التطبيق (صورة دينا والقلعة) --- */
+        /* --- 1. الخلفية (يجب أن ترفع صورة العائلة الكرتونية باسم home.png) --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            /* تأكد من تسمية الصورة التي رفعتها home.png */
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
             z-index: -10; 
-            filter: brightness(0.9); /* تعتيم بسيط جداً لتوضيح النصوص */
+            /* تعتيم خفيف جداً لكي تبقى الوجوه واضحة */
+            filter: brightness(0.9); 
         }
 
         /* --- 2. شاشة الدخول --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.95); padding: 40px 30px; border-radius: 20px;
-            width: 85%; max-width: 350px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            background: rgba(255, 255, 255, 0.1); padding: 40px 30px; border-radius: 25px;
+            width: 85%; max-width: 350px; text-align: center; 
+            border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .login-avatar {
-            width: 90px; height: 90px; margin: 0 auto 20px; border-radius: 50%;
-            background-image: url('girl.png'); background-size: cover; border: 3px solid #008069;
+            width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid #00deb6;
+            background-image: url('girl.png'); background-size: cover; background-position: top center;
+            box-shadow: 0 0 20px #00deb6;
         }
-        .login-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; color: #075e54; }
+        .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
         .login-input {
-            width: 100%; padding: 12px; margin-bottom: 15px; background: #fff;
-            border: 1px solid #ddd; border-radius: 25px; color: #333; text-align: center; outline: none; font-size: 16px;
+            width: 100%; padding: 12px 15px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; color: white; text-align: center; outline: none;
         }
+        .login-input::placeholder { color: #ddd; }
         .login-btn {
-            width: 100%; padding: 12px; background: #008069; color: white;
-            border: none; border-radius: 25px; font-size: 18px; font-weight: bold; cursor: pointer;
+            width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00deb6);
+            color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        /* --- 3. الشاشة الرئيسية (قائمة الدردشات) --- */
+        /* --- 3. الشاشة الرئيسية (القائمة الشفافة) --- */
         #contact-list { 
             display: none; flex-direction: column; height: 100%; 
             z-index: 50; position: relative; 
         }
         .app-header {
-            background-color: #008069; color: white; padding: 15px 20px;
+            background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px;
             font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px);
         }
-
+        
         #dynamic-contacts { 
             flex: 1; overflow-y: auto; padding-top: 10px; 
-            /* خلفية بيضاء شفافة خلف القائمة فقط */
-            background: rgba(255, 255, 255, 0.5); 
         }
-
+        
+        /* كروت الأسماء (زجاجية شفافة لتظهر العائلة خلفها) */
         .contact-item {
-            display: flex; align-items: center; padding: 15px; 
-            background: #fff; border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
+            display: flex; align-items: center; padding: 15px; cursor: pointer; 
+            background: rgba(0, 0, 0, 0.4); /* خلفية داكنة شفافة */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            margin: 10px 15px; border-radius: 20px;
+            backdrop-filter: blur(3px); /* تغبيش خفيف */
         }
-        .contact-item:active { background: #e9e9e9; }
-
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; flex-shrink: 0; }
+        .contact-item:active { transform: scale(0.98); }
+        
+        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid #fff; flex-shrink: 0; }
         .info { flex: 1; }
-        .name { font-weight: bold; font-size: 17px; margin-bottom: 5px; color: #000; }
-        .last-msg { color: #666; font-size: 14px; display: flex; align-items: center; }
-        .time { font-size: 12px; color: #999; margin-right: auto; }
+        .name { font-weight: 900; font-size: 18px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 4px black; }
+        .last-msg { color: #ddd; font-weight: normal; font-size: 13px; }
+        .time { font-size: 12px; color: #ccc; margin-right: auto; }
 
-        /* زر الألعاب (تصميم مميز) */
+        /* 🔥 زر ألعاب العائلة (نفس تصميم الصورة: نار وبرواز أخضر) */
         .games-banner-container {
-            padding: 15px; background: #fff; border-top: 1px solid #eee;
+            padding: 15px 15px 30px 15px;
+            background: transparent; 
+            margin-top: auto; /* يدفعه للأسفل */
         }
         .games-banner {
-            padding: 15px 20px;
-            background: linear-gradient(135deg, #128C7E, #25D366);
-            border-radius: 15px; cursor: pointer;
-            display: flex; align-items: center; justify-content: space-between;
-            color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 25px;
+            /* خلفية نارية */
+            background: url('https://img.freepik.com/free-vector/realistic-fire-background_125540-1074.jpg');
+            background-size: cover; background-position: center;
+            border-radius: 20px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 222, 182, 0.3); /* توهج أخضر خفيف */
+            border: 2px solid #00deb6; /* البرواز الأخضر */
+            position: relative; overflow: hidden; text-align: center;
         }
-        .game-text-main { font-weight: bold; font-size: 18px; }
-        .game-text-sub { font-size: 12px; opacity: 0.9; }
-        .game-icon-large { font-size: 30px; }
+        /* طبقة سوداء خفيفة لتوضيح النص */
+        .games-banner::before {
+            content: ''; position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.4); z-index: 1;
+        }
+        .game-text-main { 
+            color: #00deb6; /* النص أخضر مضيء */
+            font-weight: 900; font-size: 26px; z-index: 2; 
+            text-shadow: 0 2px 5px black; margin-bottom: 5px;
+        }
+        .game-text-sub { 
+            color: #fff; font-size: 12px; z-index: 2; font-weight: bold; 
+            text-shadow: 0 1px 3px black;
+        }
 
-        /* --- 4. شاشة الدردشة (مثل واتساب تماماً) --- */
+        /* --- 4. شاشة الدردشة (واتساب كامل) --- */
         #chat-screen {
             display: none; flex-direction: column; height: 100%; 
             position: fixed; top: 0; left: 0; width: 100%; 
-            /* خلفية واتساب الأصلية */
-            background-color: #efe7dd; 
+            background-color: #efe7dd; /* لون واتساب */
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
             z-index: 100;
         }
@@ -129,7 +149,6 @@
         .msg-meta { font-size: 11px; color: #667781; margin-top: 2px; float: right; margin-left: 10px; display: flex; align-items: end; justify-content: flex-end; }
         .ticks { margin-right: 3px; font-size: 14px; color: #53bdeb; }
 
-        /* شريط الكتابة (واتساب ستايل) */
         .chat-footer {
             background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center;
             min-height: 60px; padding-bottom: max(5px, env(safe-area-inset-bottom));
@@ -140,7 +159,7 @@
             flex: 1; background: white; border-radius: 20px; padding: 9px 12px;
             margin: 0 8px; display: flex; align-items: center;
         }
-        .chat-input { flex: 1; border: none; outline: none; font-size: 16px; width: 100%; background: transparent; }
+        .chat-input { flex: 1; border: none; outline: none; font-size: 16px; width: 100%; background: transparent; text-align: right; }
         .send-btn {
             background-color: #008069; color: white; width: 45px; height: 45px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -156,7 +175,6 @@
         .game-categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; background: #222; }
         .cat-btn { padding: 8px 15px; background: rgba(255,255,255,0.1); color: white; border-radius: 20px; white-space: nowrap; border: 1px solid #555; cursor: pointer; }
         .cat-btn.active { background: #00deb6; color: black; font-weight: bold; }
-
         .games-list { flex: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .game-card {
             background: #2a2a3e; border-radius: 15px; overflow: hidden; cursor: pointer;
@@ -177,18 +195,17 @@
         .close-game-btn { background: #ff3b30; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
         iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
-        /* ألعاب دينا (عدنان) */
-        #adnan-game-ui { display: none; flex-direction: column; height: 100%; background: #e0f7fa; align-items: center; justify-content: center; padding: 20px; }
+        /* ألعاب داخلية */
+        #adnan-game-ui, #piano-game-ui, #coloring-game-ui, #xo-game-ui { display: none; flex-direction: column; height: 100%; align-items: center; justify-content: center; }
+        #adnan-game-ui { background: #e0f7fa; padding: 20px; }
         .adnan-char { width: 120px; height: 120px; background-image: url('https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9'); background-size: contain; background-repeat: no-repeat; margin-bottom: 20px; border-radius: 50%; border: 4px solid #00acc1; background-color: white; }
         .surah-btn { width: 100%; padding: 15px; margin: 8px 0; background: #00acc1; color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
-
-        /* باقي الألعاب */
-        #piano-game-ui, #coloring-game-ui, #xo-game-ui { display: none; flex-direction: column; height: 100%; align-items: center; justify-content: center; }
+        
         #piano-game-ui { background: #222; }
         .piano-keys { display: flex; gap: 5px; background: #111; padding: 10px; border-radius: 10px; }
         .key { width: 40px; height: 150px; background: white; border-radius: 0 0 5px 5px; }
         .key.black { background: black; height: 90px; width: 30px; margin-left: -15px; margin-right: -15px; z-index: 2; }
-
+        
         #coloring-game-ui { background: white; }
         #drawing-canvas { flex: 1; width: 100%; background: white; }
         .colors-bar { height: 60px; width: 100%; display: flex; justify-content: center; gap: 10px; background: #eee; align-items: center; }
@@ -227,7 +244,7 @@
             <span>FamilyApp</span>
             <div><i class="fas fa-sign-out-alt" onclick="logout()" style="margin-left:15px; cursor:pointer"></i><i class="fas fa-cog" onclick="openAdmin()" style="cursor:pointer"></i></div>
         </div>
-
+        
         <div id="dynamic-contacts"></div>
 
         <div class="games-banner-container">
@@ -257,7 +274,7 @@
     <div id="game-frame-container">
         <div class="game-toolbar"><span id="game-title">جاري اللعب...</span><div class="close-game-btn" onclick="closeGameFrame()">خروج</div></div>
         <iframe id="game-frame" src=""></iframe>
-
+        
         <div id="adnan-game-ui">
             <div class="adnan-char"></div>
             <h2 style="color:#00838f; margin-bottom:20px;">عدنان معلم القرآن</h2>
@@ -323,7 +340,7 @@
     </div>
 
     <script>
-        // --- 1. البيانات ---
+        // --- 1. البيانات (تم إصلاح مشكلة undefined) ---
         const defaultUsers = [
             { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
             { name: "ماما (عايضه)", user: "mom", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
@@ -348,7 +365,7 @@
             const u = document.getElementById('login-user').value;
             const p = document.getElementById('login-pass').value;
             const foundUser = users.find(user => user.user === u && user.pass === p);
-
+            
             if (foundUser) {
                 currentUser = foundUser;
                 localStorage.setItem('currentUser', JSON.stringify(foundUser));
@@ -369,7 +386,7 @@
                     list.innerHTML += `
                         <div class="contact-item" onclick="openChat('${u.name}', '', '${u.avatar}')">
                             <div class="avatar">${u.avatar}</div>
-                            <div class="info"><div class="name">${u.name}</div><div class="last-msg">${u.lastMsg || 'مرحباً'}</div></div>
+                            <div class="info"><div class="name">${u.name}</div><div class="last-msg">${u.lastMsg}</div></div>
                             <div class="time">الآن</div>
                         </div>
                     `;
@@ -431,7 +448,7 @@
 
         // --- دوال الألعاب ---
         function playAudio(url) { const p = document.getElementById('quran-player'); p.src = url; p.play(); }
-
+        
         // بيانو
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playNote(f) { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.5, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+1); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+1); }
@@ -445,7 +462,7 @@
         let board = Array(9).fill(''); let player = 'X';
         function initXO() { board.fill(''); player = 'X'; document.getElementById('xo-status').innerText='الدور: X'; const d=document.getElementById('xo-board'); d.innerHTML=''; board.forEach((_,i)=>{ const c=document.createElement('div'); c.className='xo-cell'; c.onclick=()=>{ if(board[i]) return; board[i]=player; c.innerText=player; player=player==='X'?'O':'X'; document.getElementById('xo-status').innerText='الدور: '+player; }; d.appendChild(c); }); }
 
-        // --- الشات (تم الإصلاح) ---
+        // --- الشات (إصلاح الكاميرا والمايك) ---
         function openChat(name, bg, emoji) {
             document.getElementById('contact-list').style.display = 'none';
             document.getElementById('chat-screen').style.display = 'flex';
@@ -461,7 +478,7 @@
             const txt = input.value.trim();
             if(!txt) return;
             const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
+            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓✓</span></div></div>`;
             input.value = '';
             area.scrollTop = area.scrollHeight;
         }
