@@ -6,10 +6,14 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FamilyApp">
+    <link rel="apple-touch-icon" href="home.png">
+    <link rel="icon" type="image/png" href="home.png">
+
     <title>Family Super App</title>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
 
     <style>
@@ -19,157 +23,181 @@
             overscroll-behavior-y: none;
         }
 
-        /* --- 1. الخلفية --- */
+        /* --- 1. الخلفية (العائلة) --- */
         .bg-base-family {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('home.png'); 
             background-size: cover; background-position: center;
             z-index: -10; filter: brightness(0.9);
         }
+        
+        /* دمج دينا (يسار تحت) */
+        .bg-overlay-girl {
+            position: fixed; bottom: 0; left: 0; width: 60%; height: 70%;
+            background-image: url('girl.png'); 
+            background-size: contain; background-repeat: no-repeat; background-position: bottom left;
+            z-index: -5; opacity: 1;
+            /* تدرج شفاف عشان تندمج مع الخلفية */
+            -webkit-mask-image: linear-gradient(to right, black 30%, transparent 100%);
+            mask-image: linear-gradient(to right, black 30%, transparent 100%);
+        }
 
-        /* --- 2. شاشة الدخول (زجاجية فخمة) --- */
+        /* --- 2. شاشة الدخول (زجاجية) --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(4px);
         }
         .login-box {
-            background: rgba(255, 255, 255, 0.1); 
-            padding: 40px 30px; border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1); padding: 40px 30px; border-radius: 30px;
             width: 85%; max-width: 350px; text-align: center; 
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(25px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
         }
         .login-avatar {
-            width: 100px; height: 100px; margin: 0 auto 20px; border-radius: 50%; border: 3px solid #00deb6;
+            width: 110px; height: 110px; margin: 0 auto 25px; border-radius: 50%; border: 3px solid #00deb6;
             background-image: url('girl.png'); background-size: cover; background-position: top center;
-            box-shadow: 0 0 20px rgba(0, 222, 182, 0.6);
+            box-shadow: 0 0 20px rgba(0, 222, 182, 0.5);
         }
-        .login-title { font-size: 24px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 5px black; }
+        .login-title { font-size: 26px; font-weight: 900; margin-bottom: 25px; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         .login-input {
-            width: 100%; padding: 12px 15px; margin-bottom: 15px; 
-            background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; 
+            width: 100%; padding: 14px; margin-bottom: 15px; 
+            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; 
             color: white; text-align: center; outline: none; font-size: 16px; font-weight: bold;
         }
         .login-input::placeholder { color: #ccc; }
         .login-btn {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #008069, #00deb6);
-            color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 222, 182, 0.3);
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #008069, #00deb6);
+            color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 222, 182, 0.3);
         }
 
         /* --- 3. الشاشة الرئيسية --- */
         #contact-list { display: none; flex-direction: column; height: 100%; z-index: 50; position: relative; }
         .app-header {
-            background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px; padding-top: 40px; 
-            font-size: 20px; font-weight: bold; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px);
+            background: rgba(0, 128, 105, 0.85); color: white; padding: 15px 20px; padding-top: 45px; 
+            font-size: 22px; font-weight: 900; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
         }
-        #dynamic-contacts { flex: 1; overflow-y: auto; padding-top: 10px; }
+        #dynamic-contacts { flex: 1; overflow-y: auto; padding-top: 15px; }
+        
         .contact-item {
             display: flex; align-items: center; padding: 15px; cursor: pointer; 
             background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.2);
-            border-left: 4px solid #00deb6; margin: 10px 15px; border-radius: 15px;
-            backdrop-filter: blur(5px); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #00deb6; margin: 10px 15px; border-radius: 20px;
+            backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: 0.2s;
         }
-        .contact-item:active { transform: scale(0.98); background: rgba(255,255,255,0.25); }
-        .avatar { width: 55px; height: 55px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.8); flex-shrink: 0; }
+        .contact-item:active { transform: scale(0.97); background: rgba(255,255,255,0.25); }
+        .avatar { width: 60px; height: 60px; border-radius: 50%; background: #ddd; margin-left: 15px; background-size: cover; border: 2px solid rgba(255,255,255,0.9); flex-shrink: 0; }
         .info { flex: 1; }
-        .name { font-weight: 900; font-size: 18px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 4px black; }
-        .last-msg { color: #eee; font-weight: normal; font-size: 13px; text-shadow: 0 1px 2px black; }
-        .time { font-size: 12px; color: #ccc; margin-right: auto; }
+        .name { font-weight: 900; font-size: 19px; margin-bottom: 5px; color: #fff; text-shadow: 0 2px 5px black; }
+        .last-msg { color: #f0f0f0; font-weight: normal; font-size: 14px; text-shadow: 0 1px 3px black; }
+        .time { font-size: 12px; color: #ddd; margin-right: auto; }
 
-        /* 🔥 زر الألعاب */
+        /* 🔥 زر الألعاب (أنميشن نيون) */
         .games-banner-container { padding: 20px 15px 40px 15px; background: transparent; margin-top: auto; }
         .games-banner {
-            padding: 25px;
-            background: url('https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzRkZWRkY2Q1NmFhODQ2YzQ2NzY4YzM4YzM4YzM4YzM4YzM4YzM4eSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTiTnqUxyWbsAXqFFi/giphy.gif');
+            padding: 30px;
+            /* خلفية متحركة */
+            background: url('https://media.giphy.com/media/26tn33ai009QWJWplu/giphy.gif');
             background-size: cover; background-position: center;
-            border-radius: 20px; cursor: pointer;
+            border-radius: 25px; cursor: pointer;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 25px rgba(0, 222, 182, 0.5); border: 2px solid #00deb6; position: relative; overflow: hidden; text-align: center;
+            box-shadow: 0 0 30px rgba(0, 222, 182, 0.6); 
+            border: 2px solid #00deb6; position: relative; overflow: hidden; text-align: center;
         }
-        .games-banner::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 1; }
-        .game-text-main { color: #fff; font-weight: 900; font-size: 26px; z-index: 2; text-shadow: 0 0 10px #00deb6; margin-bottom: 5px; }
-        .game-text-sub { color: #eee; font-size: 12px; z-index: 2; font-weight: bold; }
+        .games-banner::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); z-index: 1; }
+        .game-text-main { 
+            color: #00deb6; font-weight: 900; font-size: 28px; z-index: 2; 
+            text-shadow: 0 0 15px #00deb6; margin-bottom: 5px; font-family: 'Cairo', sans-serif;
+        }
+        .game-text-sub { color: #fff; font-size: 14px; z-index: 2; font-weight: bold; text-shadow: 0 2px 5px black; }
 
-        /* --- 4. شاشة الدردشة --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; position: fixed; top: 0; left: 0; width: 100%; background-color: rgba(0,0,0,0.6); z-index: 100; }
-        .chat-header { background-color: #008069; color: white; padding: 5px 10px; padding-top: 40px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); z-index: 10; min-height: 85px; }
-        .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 22px; display: flex; align-items: center; }
-        .header-avatar { width: 42px; height: 42px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; }
+        /* --- 4. شاشة الدردشة (شفافة + أزرار تعمل) --- */
+        #chat-screen { 
+            display: none; flex-direction: column; height: 100%; 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            /* خلفية شفافة لترى العائلة */
+            background-color: rgba(0,0,0,0.65); 
+            z-index: 100; 
+        }
+        .chat-header { 
+            background-color: rgba(0, 128, 105, 0.95); color: white; padding: 5px 10px; padding-top: 45px; 
+            display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+            z-index: 10; min-height: 90px; 
+        }
+        .back-btn { margin-left: 5px; cursor: pointer; padding: 10px; font-size: 24px; display: flex; align-items: center; }
+        .header-avatar { width: 45px; height: 45px; border-radius: 50%; background-size: cover; margin-left: 10px; background-color: #ddd; border: 2px solid white; }
         .header-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .header-name { font-weight: bold; font-size: 17px; margin-bottom: 2px; }
-        .header-status { font-size: 12px; opacity: 0.9; }
-        .header-actions i { margin-right: 20px; font-size: 22px; cursor: pointer; }
-        
-        .messages-area { flex: 1; padding: 10px 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; z-index: 5; }
-        .msg { max-width: 80%; padding: 8px 12px 8px 12px; border-radius: 12px; font-size: 16px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
-        .msg-in { align-self: flex-start; background: white; border-radius: 0 12px 12px 12px; }
-        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 12px 0 12px 12px; }
-        .msg-meta { font-size: 11px; color: #667781; margin-top: 4px; float: right; margin-left: 5px; display: flex; align-items: end; justify-content: flex-end; }
-        .ticks { margin-right: 3px; font-size: 14px; color: #53bdeb; }
-        
-        .recording-active { color: #ff3b30 !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .header-name { font-weight: bold; font-size: 18px; margin-bottom: 2px; }
+        .header-status { font-size: 13px; opacity: 0.9; }
+        .header-actions i { margin-right: 25px; font-size: 24px; cursor: pointer; color: white; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .header-actions i:active { color: #00deb6; transform: scale(0.9); }
 
-        .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 60px; padding-bottom: max(20px, env(safe-area-inset-bottom)); position: relative; z-index: 10; }
-        .footer-icon { font-size: 24px; color: #54656f; padding: 8px; cursor: pointer; }
-        .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 8px; display: flex; align-items: center; }
-        .chat-input { flex: 1; border: none; outline: none; font-size: 16px; width: 100%; background: transparent; text-align: right; }
-        .send-btn { background-color: #008069; color: white; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .messages-area { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; z-index: 5; }
+        .msg { max-width: 85%; padding: 10px 15px; border-radius: 15px; font-size: 16px; position: relative; box-shadow: 0 3px 8px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .msg-in { align-self: flex-start; background: #fff; border-radius: 0 15px 15px 15px; color: #000; }
+        .msg-out { align-self: flex-end; background: #d9fdd3; border-radius: 15px 0 15px 15px; color: #000; }
+        .msg-meta { font-size: 11px; color: #666; margin-top: 5px; align-self: flex-end; display: flex; align-items: center; }
+        .ticks { margin-right: 4px; color: #53bdeb; font-size: 14px; }
+        .msg-img { max-width: 100%; border-radius: 10px; margin-bottom: 5px; border: 1px solid #ccc; }
+
+        /* حالة التسجيل */
+        .recording-box { position: absolute; bottom: 80px; left: 0; width: 100%; background: #ff3b30; color: white; text-align: center; padding: 10px; font-weight: bold; display: none; z-index: 20; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        .chat-footer { background: #f0f2f5; padding: 5px 10px; display: flex; align-items: center; min-height: 70px; padding-bottom: max(25px, env(safe-area-inset-bottom)); position: relative; z-index: 10; border-top: 1px solid #ccc; }
+        .footer-icon { font-size: 26px; color: #54656f; padding: 10px; cursor: pointer; transition: 0.2s; }
+        .footer-icon:active { color: #008069; transform: scale(1.1); }
+        .input-container { flex: 1; background: white; border-radius: 25px; padding: 10px 15px; margin: 0 10px; display: flex; align-items: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .chat-input { flex: 1; border: none; outline: none; font-size: 17px; width: 100%; background: transparent; text-align: right; }
+        .send-btn { background-color: #008069; color: white; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 5px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* --- 🎮 مركز الألعاب --- */
         #games-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a2e; z-index: 200; flex-direction: column; }
-        .game-header { padding: 15px; padding-top: 40px; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00deb6; }
+        .game-header { padding: 15px; padding-top: 45px; background: #111; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00deb6; }
         .game-categories { display: flex; overflow-x: auto; padding: 15px; gap: 10px; background: #222; }
-        .cat-btn { padding: 8px 15px; background: rgba(255,255,255,0.1); color: white; border-radius: 20px; white-space: nowrap; border: 1px solid #555; cursor: pointer; }
-        .cat-btn.active { background: #00deb6; color: black; font-weight: bold; }
-        .games-list { flex: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 50px; }
-        .game-card { background: #2a2a3e; border-radius: 15px; overflow: hidden; cursor: pointer; border: 1px solid #444; transition: 0.2s; position: relative; height: 160px; }
+        .cat-btn { padding: 8px 20px; background: rgba(255,255,255,0.1); color: white; border-radius: 20px; white-space: nowrap; border: 1px solid #555; cursor: pointer; font-weight: bold; }
+        .cat-btn.active { background: #00deb6; color: black; border-color: #00deb6; }
+        .games-list { flex: 1; overflow-y: auto; padding: 15px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding-bottom: 60px; }
+        .game-card { background: #2a2a3e; border-radius: 20px; overflow: hidden; cursor: pointer; border: 1px solid #444; transition: 0.2s; position: relative; height: 160px; }
         .game-img { height: 100%; width: 100%; background-size: cover; background-position: center; }
         .game-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, black, transparent); padding: 10px; color: white; font-weight: bold; text-align: center; }
 
         /* حاوية الألعاب */
         #game-frame-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #222; z-index: 300; flex-direction: column; }
-        .game-toolbar { height: 80px; padding-top: 30px; background: #111; display: flex; align-items: center; justify-content: space-between; padding-left: 15px; padding-right: 15px; color: #00deb6; }
-        .close-game-btn { background: #ff3b30; color: white; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+        .game-toolbar { height: 85px; padding-top: 35px; background: #111; display: flex; align-items: center; justify-content: space-between; padding-left: 15px; padding-right: 15px; color: #00deb6; border-bottom: 1px solid #333; }
+        .close-game-btn { background: #ff3b30; color: white; padding: 8px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         iframe { width: 100%; height: 100%; border: none; background: #fff; }
 
         /* ألعاب داخلية */
         #adnan-game-ui, #piano-game-ui, #coloring-game-ui, #xo-game-ui { display: none; flex-direction: column; height: 100%; align-items: center; justify-content: center; }
         #adnan-game-ui { background: #e0f7fa; padding: 20px; }
-        .adnan-char { width: 120px; height: 120px; background-image: url('https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9'); background-size: contain; background-repeat: no-repeat; margin-bottom: 20px; border-radius: 50%; border: 4px solid #00acc1; background-color: white; }
-        .surah-btn { width: 100%; padding: 15px; margin: 8px 0; background: #00acc1; color: white; border: none; border-radius: 15px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .adnan-char { width: 130px; height: 130px; background-image: url('https://play-lh.googleusercontent.com/8Qn9a9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9q9'); background-size: contain; background-repeat: no-repeat; margin-bottom: 25px; border-radius: 50%; border: 5px solid #00acc1; background-color: white; }
+        .surah-btn { width: 100%; padding: 18px; margin: 10px 0; background: #00acc1; color: white; border: none; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 5px 0 #007c91; }
+        .surah-btn:active { transform: translateY(5px); box-shadow: none; }
+        
         #piano-game-ui { background: #222; }
-        .piano-keys { display: flex; gap: 5px; background: #111; padding: 10px; border-radius: 10px; }
-        .key { width: 40px; height: 150px; background: white; border-radius: 0 0 5px 5px; }
-        .key.black { background: black; height: 90px; width: 30px; margin-left: -15px; margin-right: -15px; z-index: 2; }
+        .piano-keys { display: flex; gap: 5px; background: #111; padding: 15px; border-radius: 15px; }
+        .key { width: 45px; height: 160px; background: white; border-radius: 0 0 8px 8px; }
+        .key.black { background: black; height: 100px; width: 35px; margin-left: -17px; margin-right: -17px; z-index: 2; position: relative; }
+        
         #coloring-game-ui { background: white; }
-        #drawing-canvas { flex: 1; width: 100%; background: white; }
-        .colors-bar { height: 60px; width: 100%; display: flex; justify-content: center; gap: 10px; background: #eee; align-items: center; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ccc; }
+        #drawing-canvas { flex: 1; width: 100%; background: white; touch-action: none; }
+        .colors-bar { height: 70px; width: 100%; display: flex; justify-content: center; gap: 15px; background: #eee; align-items: center; }
+        .color-dot { width: 35px; height: 35px; border-radius: 50%; border: 3px solid #ccc; cursor: pointer; }
+        
         #xo-game-ui { background: #1a1a2e; color: white; }
-        .xo-board { display: grid; grid-template-columns: repeat(3, 100px); gap: 5px; margin: 20px; }
-        .xo-cell { width: 100px; height: 100px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold; border: 2px solid #00deb6; }
+        .xo-board { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; margin: 30px; }
+        .xo-cell { width: 100px; height: 100px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: bold; border: 3px solid #00deb6; border-radius: 15px; cursor: pointer; }
 
         /* لوحة الأدمن */
         #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 300; flex-direction: column; }
-        .admin-header { background: #333; color: white; padding: 15px; padding-top: 40px; font-weight: bold; display: flex; justify-content: space-between; }
-        .admin-content { flex: 1; padding: 20px; overflow-y: auto; }
-        .user-row { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .delete-btn { background: #ff3b30; color: white; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
-        .add-user-form { background: white; padding: 20px; border-radius: 15px; margin-top: 20px; }
-
-        /* إخفاء عناصر الإدخال الحقيقية */
         #file-input, #camera-input { display: none; }
-
-        /* 🔥 نغمة الرسالة */
         audio#msg-sound { display: none; }
-
-        /* الفيديو كونتينر */
-        #video-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #111; z-index: 9999; display: none; }
+        /* فيديو ZegoCloud */
+        #video-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999; display: none; }
 
     </style>
 </head>
@@ -177,7 +205,6 @@
 
     <div class="bg-base-family"></div>
     <div class="bg-overlay-girl"></div>
-    
     <audio id="msg-sound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
 
     <div id="login-screen">
@@ -195,16 +222,13 @@
             <span>FamilyApp</span>
             <div><i class="fas fa-sign-out-alt" onclick="logout()" style="margin-left:15px; cursor:pointer"></i><i class="fas fa-cog" onclick="openAdmin()" style="cursor:pointer"></i></div>
         </div>
-        
         <div id="dynamic-contacts"></div>
-
         <div class="games-banner-container">
             <div class="games-banner" onclick="openGames()">
                 <div>
                     <div class="game-text-main">ألعاب العائلة</div>
                     <div class="game-text-sub">تحدى مع ديالا، فهد، عايضه، ودينا ❤️</div>
                 </div>
-                <div class="game-icon-large"><i class="fas fa-gamepad"></i></div>
             </div>
         </div>
     </div>
@@ -212,7 +236,7 @@
     <div id="games-screen">
         <div class="game-header">
             <span>🎮 مكتبة الألعاب</span>
-            <span onclick="closeGames()" style="color:#ff3b30; font-size:22px; cursor:pointer;"><i class="fas fa-times-circle"></i></span>
+            <span onclick="closeGames()" style="color:#ff3b30; font-size:24px; cursor:pointer;"><i class="fas fa-times-circle"></i></span>
         </div>
         <div class="game-categories">
             <button class="cat-btn active" onclick="filterGames('all')">الكل</button>
@@ -249,6 +273,7 @@
         <div class="messages-area" id="msg-area">
             <div class="msg msg-out"><div>السلام عليكم</div><div class="msg-meta">10:00 م<span class="ticks">✓✓</span></div></div>
         </div>
+        <div class="recording-box" id="rec-box">جاري التسجيل... 🎤</div>
         <div class="chat-footer">
             <i class="fas fa-plus footer-icon" onclick="triggerAttachment()"></i>
             <div class="input-container">
@@ -263,21 +288,16 @@
     <div id="video-container"></div>
 
     <script>
-        // --- 1. البيانات المصححة (عايضه، فهد، ديالا، دينا) ---
         const defaultUsers = [
-            { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ في المكتب" },
+            { name: "بابا (عبد العزيز)", user: "admin", pass: "1234", role: "admin", avatar: "👨🏻", lastMsg: "✅ متصل" },
             { name: "ماما (عايضه)", user: "aida", pass: "1111", role: "user", avatar: "👩🏻", lastMsg: "وينكم؟" },
             { name: "فهد", user: "fahad", pass: "2222", role: "user", avatar: "👦🏻", lastMsg: "ألعب كود" },
             { name: "ديالا", user: "diyala", pass: "3333", role: "user", avatar: "👱🏻‍♀️", lastMsg: "مساء الخير" },
             { name: "دينا", user: "dina", pass: "4444", role: "user", avatar: "👧🏻", lastMsg: "❤️ أحبك" }
         ];
         
-        // فحص وإصلاح الذاكرة تلقائياً
         let users = JSON.parse(localStorage.getItem('familyUsers'));
-        if (!users || users.length < 5) {
-            users = defaultUsers;
-            localStorage.setItem('familyUsers', JSON.stringify(users));
-        }
+        if (!users || users.length < 5) { users = defaultUsers; localStorage.setItem('familyUsers', JSON.stringify(users)); }
         let currentUser = null;
 
         const appID = 1737796508; 
@@ -306,6 +326,7 @@
             } else { alert("بيانات الدخول خطأ!"); }
         }
         function logout() { localStorage.removeItem('currentUser'); location.reload(); }
+        
         function renderContacts() {
             const list = document.getElementById('dynamic-contacts'); list.innerHTML = '';
             users.forEach(u => {
@@ -366,46 +387,48 @@
         
         function triggerAttachment() { document.getElementById('file-input').click(); }
         function triggerCamera() { document.getElementById('camera-input').click(); }
-        function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 تم إرسال صورة</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
+        function handleFileSelect(input) { if (input.files && input.files[0]) { const area = document.getElementById('msg-area'); area.innerHTML += `<div class="msg msg-out"><div>📷 صورة مرسلة</div><img src="${URL.createObjectURL(input.files[0])}" class="msg-img"><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`; area.scrollTop = area.scrollHeight; playSound(); } }
         
-        let mediaRecorder; let audioChunks = []; let isRecording = false;
+        let mediaRecorder; let isRecording = false;
         async function toggleRecording() {
-            const micBtn = document.getElementById('mic-btn');
+            const btn = document.getElementById('mic-btn');
+            const box = document.getElementById('rec-box');
             if (!isRecording) {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     mediaRecorder = new MediaRecorder(stream);
                     mediaRecorder.start();
                     isRecording = true;
-                    micBtn.classList.add('recording-active');
-                    audioChunks = [];
-                    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                    btn.style.color = 'red';
+                    box.style.display = 'block';
+                    let chunks = [];
+                    mediaRecorder.ondataavailable = e => chunks.push(e.data);
                     mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-                        const audioUrl = URL.createObjectURL(audioBlob);
-                        const area = document.getElementById('msg-area');
-                        area.innerHTML += `<div class="msg msg-out"><audio controls src="${audioUrl}"></audio><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
-                        area.scrollTop = area.scrollHeight;
+                        const blob = new Blob(chunks, { type: 'audio/mp3' });
+                        const url = URL.createObjectURL(blob);
+                        document.getElementById('msg-area').innerHTML += `<div class="msg msg-out"><audio controls src="${url}"></audio><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
                         playSound();
                     };
-                } catch(e) { alert("الرجاء السماح بالمايكروفون من إعدادات المتصفح"); }
+                } catch(e) { alert("يجب السماح بالمايكروفون"); }
             } else {
                 mediaRecorder.stop();
                 isRecording = false;
-                micBtn.classList.remove('recording-active');
+                btn.style.color = '#54656f';
+                box.style.display = 'none';
             }
         }
 
         function startCall(isVideo) { 
             const videoContainer = document.getElementById('video-container'); 
             videoContainer.style.display = 'block'; 
-            const roomID = "FamilyRoom_" + Math.floor(Math.random() * 1000);
-            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, currentUser.user, currentUser.name);
+            // استخدام غرفة موحدة للجميع لضمان اللقاء
+            const roomID = "Family_Room_Connect";
+            const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, currentUser.user + Date.now(), currentUser.name);
             const zp = ZegoUIKitPrebuilt.create(kitToken);
             zp.joinRoom({ 
                 container: videoContainer, 
-                showPreJoinView: false, 
-                scenario: { mode: ZegoUIKitPrebuilt.OneONoneCall },
+                showPreJoinView: false, // الدخول الفوري
+                scenario: { mode: ZegoUIKitPrebuilt.GroupCall }, // دعم المكالمات الجماعية
                 turnOnCameraWhenJoining: isVideo,
                 turnOnMicrophoneWhenJoining: true,
                 onLeaveRoom: () => { zp.destroy(); videoContainer.style.display = 'none'; }
@@ -419,7 +442,7 @@
             const txt = input.value.trim();
             if(!txt) return;
             const area = document.getElementById('msg-area');
-            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓✓</span></div></div>`;
+            area.innerHTML += `<div class="msg msg-out"><div>${txt}</div><div class="msg-meta">الآن<span class="ticks">✓</span></div></div>`;
             input.value = '';
             area.scrollTop = area.scrollHeight;
             playSound();
