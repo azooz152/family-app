@@ -6,7 +6,13 @@
     <title>Azooz TV Player</title>
     <style>
         body {
-            background-color: #1a1a1a;
+            /* هنا تم استرجاع صورة الخلفية home.png */
+            background-image: url('home.png');
+            background-size: cover; /* تجعل الصورة تغطي كامل الشاشة */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -14,19 +20,33 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            overflow: hidden; /* لمنع التمرير في التلفزيون */
+            overflow: hidden;
         }
+
+        /* طبقة تعتيم خفيفة عشان الكلام يوضح فوق الصورة */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* تعتيم بنسبة 50% */
+            z-index: -1;
+        }
+
         .login-box {
-            background: #333;
+            background: rgba(0, 0, 0, 0.7); /* خلفية الصندوق شفافة قليلاً */
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            /* تأثيرات النيون والتوهج */
+            box-shadow: 0 0 20px #00ffcc, 0 0 40px rgba(0, 255, 204, 0.2); 
             text-align: center;
             width: 80%;
             max-width: 400px;
-            border: 2px solid #00ffcc; /* لون نيون متناسق مع الأيقونة */
+            border: 2px solid #00ffcc;
+            backdrop-filter: blur(5px); /* تأثير ضبابي جميل خلف الصندوق */
         }
-        h2 { margin-bottom: 20px; color: #00ffcc; }
+
+        h2 { margin-bottom: 20px; color: #00ffcc; text-shadow: 0 0 10px #00ffcc; }
+        
         input {
             width: 90%;
             padding: 15px;
@@ -34,7 +54,9 @@
             border-radius: 5px;
             border: none;
             font-size: 18px;
+            text-align: center;
         }
+
         button {
             width: 100%;
             padding: 15px;
@@ -46,22 +68,30 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
+            box-shadow: 0 0 15px #00ffcc; /* توهج للزر */
+            transition: 0.3s;
         }
-        button:hover { background-color: #00cca3; }
-        .hidden { display: none; } /* لإخفاء خانة السيرفر */
+
+        button:hover { 
+            background-color: #00cca3; 
+            transform: scale(1.05); /* تكبير بسيط عند الضغط */
+        }
+
+        .hidden { display: none; } /* إخفاء السيرفر */
     </style>
 </head>
 <body>
 
     <div class="login-box">
         <h2>AZOOZ TV</h2>
+        
         <input type="text" id="host" value="http://aseaf1.me:8080" class="hidden">
         
-        <input type="text" id="username" placeholder="اسم المستخدم (Username)">
-        <input type="text" id="password" placeholder="كلمة المرور (Password)">
+        <input type="text" id="username" placeholder="اسم المستخدم">
+        <input type="text" id="password" placeholder="كلمة المرور">
         
-        <button onclick="connect()">دخول ومشاهدة 📺</button>
-        <p id="status" style="color: yellow; margin-top: 10px;"></p>
+        <button onclick="connect()">دخول 📺</button>
+        <p id="status" style="color: #ffcc00; margin-top: 10px; font-weight:bold;"></p>
     </div>
 
     <script>
@@ -72,17 +102,15 @@
             var status = document.getElementById("status");
 
             if(user === "" || pass === "") {
-                status.innerText = "⚠️ الرجاء كتابة اليوزر والباسورد";
+                status.innerText = "⚠️ اكتب اليوزر والباسورد يا غالي";
                 return;
             }
 
             status.innerText = "⏳ جاري الاتصال...";
 
-            // هنا يتم توجيه اللاعب لرابط التحميل المباشر (M3U)
-            // هذا أبسط نوع تشغيل ويتوافق مع أغلب المشغلات
+            // رابط التحميل المباشر
             var targetUrl = host + "/get.php?username=" + user + "&password=" + pass + "&type=m3u_plus&output=ts";
-
-            // فتح القائمة
+            
             window.location.href = targetUrl;
         }
     </script>
