@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azooz TV</title>
+    <title>Azooz TV Private</title>
     <style>
-        /* إعدادات الصفحة - خفيفة وسريعة */
         body {
+            /* الخلفية */
             background-image: url('home.png');
             background-size: cover;
             background-position: center;
-            background-color: #0d0d0d; /* لون احتياطي لو الصورة ما حملت */
+            background-color: #000;
             color: white;
-            font-family: Tahoma, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -20,222 +20,109 @@
             margin: 0;
             overflow: hidden;
         }
-
-        /* تخفيف التعتيم لتحسين الأداء */
+        
+        /* طبقة تعتيم */
         body::before {
             content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.7); z-index: -1;
         }
 
-        .main-container {
-            background: #1a1a1a;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #00ffcc; /* حدود نيون خفيفة */
-            width: 90%;
-            max-width: 450px;
+        .loader-box {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #00ffcc;
             text-align: center;
-            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+            width: 80%;
+            max-width: 400px;
         }
 
-        h2 { color: #00ffcc; margin-top: 0; text-shadow: 0 0 5px #00ffcc; }
+        h2 { color: #00ffcc; margin-bottom: 10px; font-size: 28px; }
+        p { font-size: 18px; color: #ddd; margin: 10px 0; }
 
-        /* خانات الإدخال - واضحة وسهلة للريموت */
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 5px;
-            border: 1px solid #555;
-            background: #333;
-            color: white;
-            text-align: center;
-            font-size: 18px;
-            box-sizing: border-box;
-            outline: none;
+        /* دائرة التحميل */
+        .spinner {
+            margin: 20px auto;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #333;
+            border-top: 5px solid #00ffcc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        input:focus {
-            border-color: yellow;
-            background: #444;
-            transform: scale(1.02); /* تكبير خفيف جداً لا يسبب تعليق */
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* زر الدخول */
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background-color: #00ffcc;
-            color: black;
-            border: none;
-            border-radius: 5px;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        button:focus, button:hover {
-            background-color: #00e6b8;
-            box-shadow: 0 0 10px #00ffcc;
-        }
-
-        /* --- شريط التقدم الاحترافي --- */
-        .progress-area {
-            display: none; /* مخفي في البداية */
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .progress-label {
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: #ddd;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 10px;
-            background-color: #333;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #00ffcc;
-            transition: width 0.5s ease; /* حركة ناعمة */
-        }
-
-        /* زر التشغيل النهائي */
-        #finalPlayBtn {
+        /* زر الطوارئ (يظهر لو تأخر الدخول) */
+        #manualBtn {
             display: none;
+            margin-top: 20px;
             background: #ff0044;
             color: white;
-            padding: 15px;
-            width: 100%;
+            padding: 15px 30px;
             text-decoration: none;
             font-size: 20px;
             font-weight: bold;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: block;
-            box-sizing: border-box;
-            animation: none; /* أزلنا الحركة المستمرة لتخفيف الثقل */
+            border-radius: 10px;
+            animation: pulse 1.5s infinite;
+            border: 2px solid white;
         }
         
-        #finalPlayBtn:focus {
-            border: 3px solid white;
-            transform: scale(1.02);
+        #manualBtn:focus {
+            transform: scale(1.1);
+            border-color: yellow;
         }
 
-        .hidden { display: none !important; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <h2 id="titleText">AZOOZ TV</h2>
+    <div class="loader-box">
+        <h2>AZOOZ TV</h2>
+        <p>جاري الدخول إلى اشتراكك... 🚀</p>
         
-        <input type="text" id="host" value="http://c2026o.com:80" class="hidden">
+        <div class="spinner"></div>
         
-        <div id="loginForm">
-            <input type="text" id="username" placeholder="اسم المستخدم">
-            <input type="text" id="password" placeholder="كلمة المرور">
-            <button onclick="startLoginProcess()">دخول النظام 📺</button>
-        </div>
-
-        <div id="loadingArea" class="progress-area">
-            <div class="progress-label">
-                <span id="stepText">جاري الاتصال...</span>
-                <span id="percentText">0%</span>
-            </div>
-            <div class="progress-track">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
-        </div>
-
-        <a id="finalPlayBtn" href="#" class="hidden"> اضغط هنا لتشغيل القنوات ▶ </a>
+        <p id="statusText" style="color: yellow; font-size: 14px; margin-top:10px;">لحظات فقط...</p>
+        
+        <a id="manualBtn" href="#"> اضغط هنا للمشاهدة ▶ </a>
     </div>
 
     <script>
-        function startLoginProcess() {
-            var user = document.getElementById("username").value;
-            var pass = document.getElementById("password").value;
-            
-            // تحقق بسيط
-            if(user === "" || pass === "") {
-                alert("⚠️ الرجاء كتابة الاسم وكلمة المرور");
-                return;
-            }
-
-            // إخفاء فورم الدخول وإظهار شريط التحميل
-            document.getElementById("loginForm").classList.add("hidden");
-            document.getElementById("loadingArea").style.display = "block";
-            document.getElementById("titleText").innerText = "جاري الدخول...";
-
-            // محاكاة عملية الدخول (خط زمني)
-            var bar = document.getElementById("progressBar");
-            var step = document.getElementById("stepText");
-            var percent = document.getElementById("percentText");
-            var width = 0;
-
-            // الخطوة 1: الاتصال بالسيرفر
-            setTimeout(function() {
-                width = 30; updateBar(width, "جاري الاتصال بالسيرفر...");
-            }, 300);
-
-            // الخطوة 2: التحقق من البيانات
-            setTimeout(function() {
-                width = 70; updateBar(width, "التحقق من بيانات الاشتراك...");
-            }, 1200);
-
-            // الخطوة 3: تجهيز القنوات والنجاح
-            setTimeout(function() {
-                width = 100; updateBar(width, "✅ تم الدخول بنجاح!");
-                finishLogin(user, pass);
-            }, 2000);
-
-            function updateBar(w, text) {
-                bar.style.width = w + "%";
-                percent.innerText = w + "%";
-                step.innerText = text;
-            }
-        }
-
-        function finishLogin(user, pass) {
-            var host = document.getElementById("host").value;
-            // تجهيز الرابط النهائي
-            var targetUrl = host + "/get.php?username=" + user + "&password=" + pass + "&type=m3u_plus&output=ts";
-            
-            var btn = document.getElementById("finalPlayBtn");
-            
-            // تأخير بسيط قبل إظهار الزر النهائي
-            setTimeout(function() {
-                document.getElementById("loadingArea").style.display = "none"; // إخفاء شريط التحميل
-                document.getElementById("titleText").innerText = "أهلاً بك 👋";
-                
-                btn.href = targetUrl;
-                btn.classList.remove("hidden"); // إظهار الزر الأحمر
-                btn.style.display = "block"; 
-                btn.focus(); // وضع التركيز عليه مباشرة
-                
-                // فتح الرابط تلقائياً
-                window.location.href = targetUrl;
-            }, 500);
-        }
+        // ====================================================
+        // 👇 بياناتك مدمجة هنا 👇
+        // ====================================================
         
-        // دعم زر الإنتر في الكيبورد
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                 if(!document.getElementById("loginForm").classList.contains("hidden")){
-                     startLoginProcess();
-                 }
-            }
-        });
+        var myUsername = "1847951727";  
+        var myPassword = "8412504721";
+        var host = "http://c2026o.com:80"; 
+
+        // ====================================================
+
+        window.onload = function() {
+            var status = document.getElementById("statusText");
+            var btn = document.getElementById("manualBtn");
+
+            // تجهيز الرابط
+            var targetUrl = host + "/get.php?username=" + myUsername + "&password=" + myPassword + "&type=m3u_plus&output=ts";
+
+            // العد التنازلي للدخول (1.5 ثانية فقط)
+            setTimeout(function() {
+                status.innerText = "✅ تم التحقق! جاري فتح القنوات...";
+                status.style.color = "#00ffcc";
+                
+                // تفعيل زر الطوارئ احتياطاً
+                btn.href = targetUrl;
+                btn.style.display = "block";
+                btn.innerText = "اضغط هنا للدخول ▶";
+                btn.focus(); // وضع التركيز عليه للريموت
+                
+                // الدخول التلقائي
+                window.location.href = targetUrl;
+            }, 1500);
+        };
     </script>
 
 </body>
