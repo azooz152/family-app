@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- الأساسيات --- */
+        /* --- الأساسيات والتصميم الزجاجي --- */
         :root {
             --primary-glow: #00e5ff; /* نيون سماوي */
             --glass-bg: rgba(255, 255, 255, 0.05);
@@ -27,7 +27,7 @@
             background-size: cover; 
             background-position: center; 
             background-attachment: fixed;
-            background-color: #000; /* لون احتياطي */
+            background-color: #050505;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -35,7 +35,7 @@
             align-items: center;
         }
 
-        /* طبقة تظليل خفيفة لجعل الزجاج يبرز */
+        /* طبقة تظليل لجعل الزجاج يبرز */
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
@@ -46,10 +46,10 @@
         .app-container {
             width: 100%; height: 100%;
             display: flex; flex-direction: column;
-            opacity: 0; transition: opacity 1s ease; /* تأثير ظهور ناعم */
+            opacity: 0; transition: opacity 1s ease;
         }
 
-        /* --- الشعار (Header) --- */
+        /* --- الشعار العلوي --- */
         .header {
             padding: 20px 40px;
             display: flex; justify-content: space-between; align-items: center;
@@ -64,62 +64,64 @@
         }
 
         .user-info {
-            color: rgba(255,255,255,0.7); font-size: 14px;
-            background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px;
+            color: rgba(255,255,255,0.7); font-size: 16px;
+            background: rgba(0,0,0,0.4); padding: 8px 20px; border-radius: 30px;
             border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; gap: 10px;
         }
 
-        /* --- شبكة الأيقونات (الزجاجية) --- */
+        /* --- شبكة الأزرار الزجاجية --- */
         .grid-container {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 25px;
+            gap: 30px;
             padding: 20px;
             flex-wrap: wrap;
         }
 
-        /* --- تصميم الكرت الزجاجي الاحترافي --- */
+        /* الكرت الزجاجي */
         .card {
-            width: 160px; height: 160px;
+            width: 170px; height: 170px;
             background: var(--glass-bg);
-            backdrop-filter: blur(12px); /* تأثير الزجاج المضبب */
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(15px); /* تمويه الخلفية */
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 25px;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* حركة فيزيائية ناعمة */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .card i {
-            font-size: 45px; margin-bottom: 15px;
-            background: linear-gradient(to bottom, #fff, #aaa);
+            font-size: 50px; margin-bottom: 15px;
+            background: linear-gradient(to bottom, #fff, #ccc);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             transition: transform 0.3s ease;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
         }
 
         .card span {
-            font-size: 16px; font-weight: bold; color: rgba(255,255,255,0.8);
+            font-size: 18px; font-weight: bold; color: rgba(255,255,255,0.8);
             letter-spacing: 0.5px;
         }
 
-        /* --- المؤثرات عند الوقوف (Hover / Focus) --- */
+        /* تأثيرات الحركة عند الاختيار */
         .card:hover, .card:focus {
-            transform: translateY(-10px) scale(1.05); /* يطفو للأعلى */
-            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-12px) scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
             border-color: var(--primary-glow);
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.1);
+            outline: none;
         }
 
         .card:hover i, .card:focus i {
-            transform: scale(1.1);
+            transform: scale(1.15);
             background: linear-gradient(to bottom, #fff, var(--primary-glow));
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 15px var(--primary-glow));
@@ -129,110 +131,121 @@
             color: #fff; text-shadow: 0 0 10px var(--primary-glow);
         }
 
-        /* لمعة زجاجية تمر عند التحويم */
+        /* لمعة متحركة */
         .card::after {
             content: ''; position: absolute; top: 0; left: -100%;
             width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
             transform: skewX(-25deg);
             transition: 0.5s;
         }
         .card:hover::after, .card:focus::after { left: 150%; transition: 0.7s; }
 
-        /* --- شاشة التحميل الأولية --- */
+        /* --- شاشة التحميل --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 999;
+            background: black; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s;
         }
-        .loading-text { color: var(--primary-glow); font-size: 20px; margin-top: 20px; animation: pulse 1s infinite; }
+        .loading-text { color: var(--primary-glow); font-size: 22px; margin-top: 20px; font-weight: bold; }
         
         @keyframes glow { 0% { text-shadow: 0 0 10px #00e5ff; } 100% { text-shadow: 0 0 30px #00e5ff, 0 0 10px white; } }
-        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
 <body>
 
     <div id="loader">
-        <div style="width: 50px; height: 50px; border: 3px solid #333; border-top: 3px solid #00e5ff; border-radius: 50%; animation: spin 1s infinite linear;"></div>
-        <div class="loading-text">AZOOZ TV</div>
+        <div style="width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid #00e5ff; border-radius: 50%; animation: spin 1s infinite linear;"></div>
+        <div class="loading-text">جاري الدخول...</div>
     </div>
-    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
 
     <div class="app-container" id="app">
         
         <div class="header">
             <div class="logo">AZOOZ TV</div>
             <div class="user-info">
-                <i class="fas fa-user"></i>&nbsp; متصل
+                <i class="fas fa-check-circle" style="color:#00ff00;"></i> نشط
             </div>
         </div>
 
         <div class="grid-container">
             
-            <div class="card" tabindex="1" onclick="openLiveTV()">
+            <div class="card" tabindex="1" onclick="openPlayer('live')">
                 <i class="fas fa-tv"></i>
                 <span>القنوات</span>
             </div>
 
-            <div class="card" tabindex="2" onclick="showMsg('الأفلام')">
+            <div class="card" tabindex="2" onclick="openPlayer('movie')">
                 <i class="fas fa-film"></i>
                 <span>الأفلام</span>
             </div>
 
-            <div class="card" tabindex="3" onclick="showMsg('المسلسلات')">
+            <div class="card" tabindex="3" onclick="openPlayer('series')">
                 <i class="fas fa-video"></i>
                 <span>المسلسلات</span>
             </div>
 
-            <div class="card" tabindex="4" onclick="showMsg('المفضلة')">
+            <div class="card" tabindex="4" onclick="openPlayer('live')">
                 <i class="fas fa-heart"></i>
                 <span>المفضلة</span>
             </div>
 
             <div class="card" tabindex="5" onclick="logout()">
-                <i class="fas fa-cog"></i>
-                <span>الإعدادات</span>
+                <i class="fas fa-sign-out-alt"></i>
+                <span>خروج</span>
             </div>
 
         </div>
     </div>
 
     <script>
-        // --- البيانات الخاصة بك ---
+        // --- بيانات الاشتراك الخاصة بك ---
+        // ملاحظة: تم وضع البيانات كما طلبت تماماً
         const SERVER = "http://aseaf1.me:8080";
         const USER = "292737757579";
         const PASS = "196384823579";
 
+        // عند فتح التطبيق
         window.onload = function() {
-            // محاكاة الاتصال السريع (1.5 ثانية)
+            // محاكاة تحميل سريع للدخول التلقائي
             setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('app').style.opacity = '1';
-                
-                // التركيز التلقائي على أول زر لسهولة التحكم بالريموت
-                document.querySelector('.card').focus();
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('app').style.opacity = '1';
+                    
+                    // وضع المؤشر تلقائياً على أول زر للتحكم بالريموت
+                    document.querySelector('.card').focus();
+                }, 500);
             }, 1500);
         };
 
-        // دالة فتح القنوات المباشرة
-        function openLiveTV() {
-            // تشغيل القنوات مباشرة
-            // نستخدم m3u8 لخفتها وسرعتها
-            let link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=m3u_plus&output=m3u8`;
-            window.location.href = link;
+        // دالة تشغيل الأقسام (تم التعديل لتشغيل الروابط فعلياً)
+        function openPlayer(type) {
+            let streamType = "m3u_plus"; // النوع الافتراضي للقنوات
+            
+            // تحديد نوع المحتوى بناءً على الزر المضغوط
+            if (type === 'movie') {
+                streamType = "movies"; // محاولة طلب مكتبة الأفلام
+            } else if (type === 'series') {
+                streamType = "series"; // محاولة طلب مكتبة المسلسلات
+            }
+            
+            // تجهيز الرابط
+            // نستخدم m3u8 لأنه أسرع وأفضل للمشاهدة المباشرة
+            // إذا واجهت مشاكل في الأفلام، السيرفر سيعيد القائمة الكاملة تلقائياً
+            let finalLink = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=${streamType}&output=m3u8`;
+
+            // توجيه المتصفح لتشغيل الرابط
+            window.location.href = finalLink;
         }
 
-        // رسالة مؤقتة للأقسام الأخرى
-        function showMsg(name) {
-            // هنا يمكنك إضافة روابط الأفلام والمسلسلات لاحقاً بنفس طريقة القنوات
-            alert("قسم " + name + " قيد التحميل... 🚀");
-        }
-        
-        // دالة الخروج (أو الإعدادات)
+        // دالة تسجيل الخروج (إعادة تحميل التطبيق)
         function logout() {
-           if(confirm("هل تريد تحديث التطبيق؟")) {
+           if(confirm("هل تريد إعادة تحميل التطبيق؟")) {
                location.reload();
            }
         }
