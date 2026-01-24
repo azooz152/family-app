@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azooz TV Private</title>
+    <title>AZOOZ TV Private</title>
     <style>
         body {
-            /* الخلفية */
             background-image: url('home.png');
             background-size: cover;
             background-position: center;
-            background-color: #000;
+            background-color: #050505;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -20,58 +19,54 @@
             margin: 0;
             overflow: hidden;
         }
-        
-        /* طبقة تعتيم */
-        body::before {
-            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7); z-index: -1;
-        }
 
+        /* حاوية التحميل */
         .loader-box {
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             padding: 40px;
             border-radius: 20px;
             border: 2px solid #00ffcc;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.4);
             width: 80%;
             max-width: 400px;
         }
 
-        h2 { color: #00ffcc; margin-bottom: 10px; font-size: 28px; }
-        p { font-size: 18px; color: #ddd; margin: 10px 0; }
+        h2 { color: #00ffcc; margin-bottom: 10px; font-size: 30px; text-shadow: 0 0 10px #00ffcc; }
+        p { font-size: 18px; color: #fff; margin: 15px 0; }
 
         /* دائرة التحميل */
         .spinner {
             margin: 20px auto;
-            width: 50px;
-            height: 50px;
-            border: 5px solid #333;
-            border-top: 5px solid #00ffcc;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #333;
+            border-top: 6px solid #00ffcc;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* زر الطوارئ (يظهر لو تأخر الدخول) */
-        #manualBtn {
+        /* زر الطوارئ الكبير */
+        #forceBtn {
             display: none;
-            margin-top: 20px;
+            margin-top: 25px;
             background: #ff0044;
             color: white;
-            padding: 15px 30px;
+            padding: 15px 20px;
             text-decoration: none;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             border-radius: 10px;
-            animation: pulse 1.5s infinite;
             border: 2px solid white;
+            animation: pulse 1.5s infinite;
         }
         
-        #manualBtn:focus {
-            transform: scale(1.1);
+        #forceBtn:focus {
+            transform: scale(1.05);
             border-color: yellow;
+            box-shadow: 0 0 20px #ff0044;
         }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -81,47 +76,47 @@
 
     <div class="loader-box">
         <h2>AZOOZ TV</h2>
-        <p>جاري الدخول إلى اشتراكك... 🚀</p>
+        <p>جاري تشغيل اشتراكك الخاص... 🚀</p>
         
         <div class="spinner"></div>
         
-        <p id="statusText" style="color: yellow; font-size: 14px; margin-top:10px;">لحظات فقط...</p>
+        <p id="statusText" style="color: yellow; font-size: 16px;">يرجى الانتظار...</p>
         
-        <a id="manualBtn" href="#"> اضغط هنا للمشاهدة ▶ </a>
+        <a id="forceBtn" href="#"> اضغط هنا للمشاهدة فوراً ▶ </a>
     </div>
 
     <script>
         // ====================================================
-        // 👇 بياناتك مدمجة هنا 👇
+        // 👇 بياناتك مدمجة وجاهزة 👇
         // ====================================================
         
         var myUsername = "1847951727";  
         var myPassword = "8412504721";
-        var host = "http://c2026o.com:80"; 
+        // تم إزالة المنفذ :80 أحياناً يساعد في حل مشكلة 503
+        var host = "http://c2026o.com"; 
 
         // ====================================================
 
         window.onload = function() {
             var status = document.getElementById("statusText");
-            var btn = document.getElementById("manualBtn");
+            var btn = document.getElementById("forceBtn");
 
-            // تجهيز الرابط
-            var targetUrl = host + "/get.php?username=" + myUsername + "&password=" + myPassword + "&type=m3u_plus&output=ts";
+            // تجهيز الرابط بصيغة خفيفة (m3u8) لتفادي رفض السيرفر
+            var targetUrl = host + "/get.php?username=" + myUsername + "&password=" + myPassword + "&type=m3u_plus&output=m3u8";
 
-            // العد التنازلي للدخول (1.5 ثانية فقط)
+            // محاولة الدخول بعد 2 ثانية
             setTimeout(function() {
-                status.innerText = "✅ تم التحقق! جاري فتح القنوات...";
+                status.innerText = "✅ تم الاتصال! جاري الفتح...";
                 status.style.color = "#00ffcc";
                 
-                // تفعيل زر الطوارئ احتياطاً
+                // إظهار الزر احتياطاً
                 btn.href = targetUrl;
                 btn.style.display = "block";
-                btn.innerText = "اضغط هنا للدخول ▶";
-                btn.focus(); // وضع التركيز عليه للريموت
+                btn.focus(); 
                 
-                // الدخول التلقائي
+                // التوجيه التلقائي
                 window.location.href = targetUrl;
-            }, 1500);
+            }, 2000);
         };
     </script>
 
