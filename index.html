@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV Ultimate</title>
+    <title>AZOOZ TV External</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+    
     <style>
         /* --- الثيم (الهلال) --- */
         :root {
@@ -25,43 +24,27 @@
             height: 100vh; overflow: hidden; color: white;
         }
 
-        /* تعتيم الخلفية */
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: -1;
         }
 
-        /* --- شاشة التحديث (Splash Screen) --- */
+        /* --- شاشة التحديث (البداية) --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.5s;
         }
-
         .splash-logo {
             font-size: 40px; font-weight: 900; color: var(--hilal-blue); 
             text-shadow: 0 0 20px var(--hilal-blue); margin-bottom: 30px;
-            animation: pulse 2s infinite;
         }
-
-        .progress-container {
-            width: 60%; height: 6px; background: #333; border-radius: 10px; overflow: hidden;
-            margin-bottom: 10px;
-        }
-        
-        .progress-bar {
-            width: 0%; height: 100%; background: var(--hilal-blue); 
-            box-shadow: 0 0 10px var(--hilal-blue);
-            transition: width 0.5s ease;
-        }
-
+        .progress-container { width: 60%; height: 6px; background: #333; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+        .progress-bar { width: 0%; height: 100%; background: var(--hilal-blue); transition: width 0.5s ease; }
         .loading-text { font-size: 14px; color: #aaa; }
 
-        @keyframes pulse { 0% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0.8; transform: scale(1); } }
-
-
-        /* --- نظام الصفحات --- */
+        /* --- الصفحات --- */
         .screen { display: none; width: 100%; height: 100%; flex-direction: column; padding: 20px; }
         .active { display: flex; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -69,35 +52,27 @@
         /* --- الهيدر --- */
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px; background: rgba(0,0,0,0.5); border-radius: 15px;
-            border-bottom: 2px solid var(--hilal-blue); margin-bottom: 20px;
+            padding: 15px 30px; background: rgba(0,0,0,0.6); border-radius: 15px;
+            border-bottom: 3px solid var(--hilal-blue); margin-bottom: 20px;
         }
-        .logo { font-size: 26px; font-weight: 900; color: var(--hilal-blue); }
+        .logo { font-size: 28px; font-weight: 900; color: var(--hilal-blue); }
         .info { font-size: 14px; color: #ccc; }
 
-        /* --- الرئيسية (3 أيقونات) --- */
-        .home-grid {
-            flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px;
-        }
-
+        /* --- الرئيسية --- */
+        .home-grid { flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px; }
         .main-card {
             width: 220px; height: 220px;
             background: rgba(30,30,30,0.8); border: 2px solid #444; border-radius: 20px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer; transition: 0.3s;
         }
-
-        .main-card i { font-size: 80px; margin-bottom: 20px; color: #ddd; transition: 0.3s; }
-        .main-card span { font-size: 22px; font-weight: bold; color: #ddd; transition: 0.3s; }
-
-        /* التركيز (Focus) */
+        .main-card i { font-size: 80px; margin-bottom: 20px; color: #ddd; }
+        .main-card span { font-size: 22px; font-weight: bold; color: #ddd; }
         .main-card:focus, .main-card:hover {
-            transform: scale(1.1); border-color: var(--hilal-blue);
-            background: #fff; box-shadow: 0 0 30px var(--hilal-blue);
-            /* صورة الهلال */
+            transform: scale(1.1); border-color: var(--hilal-blue); background: #fff;
+            box-shadow: 0 0 30px var(--hilal-blue);
             background-image: url('hilal.png'); background-size: cover; background-position: center;
         }
-        /* طبقة لتوضيح النص */
         .main-card:focus::before, .main-card:hover::before {
             content:''; position: absolute; top:0; left:0; width:100%; height:100%;
             background: rgba(255,255,255,0.85); z-index: 0;
@@ -105,38 +80,39 @@
         .main-card:focus i, .main-card:hover i { color: var(--hilal-blue); z-index: 1; }
         .main-card:focus span, .main-card:hover span { color: var(--hilal-blue); z-index: 1; }
 
-
-        /* --- شبكة المحتوى (الأقسام والقنوات) --- */
-        .list-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-            gap: 15px; overflow-y: auto; padding: 10px; flex: 1;
-        }
-
+        /* --- القوائم --- */
+        .list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; overflow-y: auto; padding: 10px; flex: 1; }
         .item-card {
             background: rgba(30,30,30,0.9); padding: 15px; border-radius: 8px;
             text-align: center; border: 1px solid #444; cursor: pointer;
             font-size: 16px; color: #fff; font-weight: bold;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-
         .item-card:focus, .item-card:hover {
             background: var(--hilal-blue); color: white; transform: scale(1.05);
             border: 2px solid white; box-shadow: 0 0 15px var(--hilal-blue);
         }
 
-        /* --- المشغل --- */
-        #player-wrapper {
-            flex: 1; background: black; display: flex; justify-content: center; align-items: center;
-            position: relative;
+        /* --- نافذة اختيار المشغل (Popup) --- */
+        #player-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 10000; display: none;
+            justify-content: center; align-items: center;
         }
-        video { width: 100%; height: 100%; max-height: 100vh; }
-        
-        .close-btn {
-            position: absolute; top: 20px; right: 20px; z-index: 20;
-            background: #d32f2f; color: white; border: 2px solid white;
-            padding: 8px 20px; font-size: 18px; cursor: pointer; border-radius: 5px;
+        .modal-content {
+            background: #1a1a1a; padding: 30px; border-radius: 20px;
+            border: 2px solid var(--hilal-blue); text-align: center; width: 400px;
         }
-        .close-btn:focus { transform: scale(1.1); }
+        .modal-title { font-size: 22px; margin-bottom: 20px; color: var(--hilal-blue); }
+        .player-btn {
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px;
+            background: #333; color: white; border: none; border-radius: 10px;
+            font-size: 18px; cursor: pointer; text-decoration: none;
+        }
+        .player-btn:focus, .player-btn:hover { background: var(--hilal-blue); color: white; transform: scale(1.05); }
+        .player-btn i { margin-left: 10px; }
+        .vlc-btn { border-right: 5px solid orange; }
+        .mx-btn { border-right: 5px solid #007bff; }
 
     </style>
 </head>
@@ -144,10 +120,19 @@
 
     <div id="splash-screen">
         <div class="splash-logo">AZOOZ TV</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progress-bar"></div>
-        </div>
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         <div class="loading-text" id="loading-text">جاري الاتصال بالسيرفر...</div>
+    </div>
+
+    <div id="player-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">اختر المشغل</h3>
+            <p style="color:#aaa; margin-bottom:20px; font-size:14px;">لضمان التشغيل، يفضل استخدام مشغل خارجي</p>
+            
+            <a id="btn-vlc" class="player-btn vlc-btn" href="#">تشغيل عبر VLC <i class="fas fa-cone"></i></a>
+            <a id="btn-mx" class="player-btn mx-btn" href="#">تشغيل عبر MX Player <i class="fas fa-play"></i></a>
+            <button class="player-btn" onclick="closeModal()">إلغاء ❌</button>
+        </div>
     </div>
 
     <div id="home" class="screen">
@@ -175,125 +160,80 @@
         <div id="list-container" class="list-grid"></div>
     </div>
 
-    <div id="player-screen" class="screen" style="padding:0;">
-        <div id="player-wrapper">
-            <button class="close-btn" onclick="stopVideo()">إغلاق ×</button>
-            <video id="videoPlayer" controls autoplay></video>
-        </div>
-    </div>
-
     <script>
-        // --- الإعدادات ---
         const CONFIG = {
             host: "http://aseaf1.me:8080",
             user: "292737757579",
             pass: "196384823579"
         };
 
-        // تخزين البيانات المؤقتة لتسريع التنقل
-        let cache = {
-            live_cats: [],
-            movie_cats: [],
-            series_cats: []
-        };
+        let cache = { live: [], movie: [], series: [] };
+        let state = { view: 'splash', type: '' };
 
-        let state = {
-            view: 'splash',
-            type: '', // live, movie, series
-            hls: null
-        };
+        window.onload = startUpdateProcess;
 
-        // --- عند التشغيل (Start Up) ---
-        window.onload = function() {
-            startUpdateProcess();
-        };
-
-        // 1. عملية التحديث الذكي عند البداية
+        // --- التحديث الأولي ---
         async function startUpdateProcess() {
             const bar = document.getElementById('progress-bar');
             const txt = document.getElementById('loading-text');
 
-            // الخطوة 1: الاتصال
             bar.style.width = "10%";
-            
-            // الخطوة 2: جلب أقسام القنوات
-            txt.innerText = "جاري تحديث قائمة القنوات...";
-            cache.live_cats = await apiRequest('get_live_categories');
+            txt.innerText = "تحديث القنوات...";
+            cache.live = await apiRequest('get_live_categories');
             bar.style.width = "40%";
 
-            // الخطوة 3: جلب أقسام الأفلام
-            txt.innerText = "جاري تحديث مكتبة الأفلام...";
-            cache.movie_cats = await apiRequest('get_vod_categories');
+            txt.innerText = "تحديث الأفلام...";
+            cache.movie = await apiRequest('get_vod_categories');
             bar.style.width = "70%";
 
-            // الخطوة 4: جلب أقسام المسلسلات
-            txt.innerText = "جاري تحديث المسلسلات...";
-            cache.series_cats = await apiRequest('get_series_categories');
+            txt.innerText = "تحديث المسلسلات...";
+            cache.series = await apiRequest('get_series_categories');
             bar.style.width = "100%";
 
-            // الانتهاء
-            txt.innerText = "تم التحديث بنجاح! جاري الفتح...";
+            txt.innerText = "تم التحديث! جاري الفتح...";
             setTimeout(() => {
-                document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('splash-screen').style.display = 'none';
-                    switchScreen('home');
-                    document.querySelector('.main-card').focus();
-                }, 500);
+                document.getElementById('splash-screen').style.display = 'none';
+                switchScreen('home');
+                document.querySelector('.main-card').focus();
             }, 800);
         }
 
-        // --- دوال الاتصال (مع بروكسي) ---
         async function apiRequest(action, params = '') {
-            const apiUrl = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}${params}`;
-            // استخدام بروكسي لتفادي مشاكل الأمان في المتصفح
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`;
-            
+            const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}${params}`;
+            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
             try {
-                const res = await fetch(proxyUrl);
+                const res = await fetch(proxy);
                 return await res.json();
-            } catch (e) {
-                console.error(e);
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         // --- التنقل ---
         function openSection(type) {
             state.type = type;
-            let data = [];
+            let data = cache[type] || [];
             
-            // استخدام البيانات المحملة مسبقاً (سرعة صاروخية)
-            if(type === 'live') data = cache.live_cats;
-            if(type === 'movie') data = cache.movie_cats;
-            if(type === 'series') data = cache.series_cats;
-
-            if(data && data.length > 0) {
+            if(data.length > 0) {
                 renderList(data, 'category');
                 switchScreen('list-screen');
                 document.getElementById('list-title').innerText = "اختر القسم";
             } else {
-                alert("فشل التحديث. تأكد من الإنترنت وأعد التشغيل.");
+                alert("القائمة فارغة!");
             }
         }
 
-        // فتح القنوات داخل القسم
         async function openCategory(catId) {
-            // هنا نحتاج تحميل من السيرفر لأن القنوات كثيرة جداً ولا يمكن تحميلها كلها في البداية
             document.getElementById('list-title').innerText = "جاري التحميل...";
-            
             let action = 'get_live_streams';
             if(state.type === 'movie') action = 'get_vod_streams';
             if(state.type === 'series') action = 'get_series';
 
             const data = await apiRequest(action, `&category_id=${catId}`);
-            
-            if(data && data.length > 0) {
+            if(data.length > 0) {
                 renderList(data, 'item');
                 document.getElementById('list-title').innerText = "اختر المحتوى";
             } else {
-                alert("هذا القسم فارغ");
-                openSection(state.type); // عودة
+                alert("فارغ");
+                openSection(state.type);
             }
         }
 
@@ -301,12 +241,11 @@
         function renderList(data, renderType) {
             const container = document.getElementById('list-container');
             container.innerHTML = '';
-
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'item-card';
                 div.tabIndex = 0;
-
+                
                 if(renderType === 'category') {
                     div.innerText = item.category_name || item.name;
                     div.onclick = () => openCategory(item.category_id);
@@ -314,24 +253,17 @@
                     div.innerText = item.name;
                     let id = item.stream_id || item.series_id;
                     let ext = item.container_extension || 'ts';
-                    if(state.type === 'live') ext = 'm3u8'; // المباشر دائماً m3u8 للمتصفح
-
-                    div.onclick = () => playVideo(id, ext);
+                    div.onclick = () => showPlayerOptions(id, ext, item.name);
                 }
-                
                 div.onkeydown = (e) => { if(e.key === 'Enter') div.click(); };
                 container.appendChild(div);
             });
-            
             if(container.firstChild) container.firstChild.focus();
         }
 
-        // --- المشغل ---
-        function playVideo(id, ext) {
-            switchScreen('player-screen');
-            const video = document.getElementById('videoPlayer');
+        // --- نظام المشغل الخارجي ---
+        function showPlayerOptions(id, ext, name) {
             let url = "";
-
             if(state.type === 'live') {
                 url = `${CONFIG.host}/live/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
             } else if(state.type === 'movie') {
@@ -340,36 +272,27 @@
                 url = `${CONFIG.host}/series/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
             }
 
-            console.log("Playing:", url);
+            // روابط التشغيل الخارجية (Deep Links)
+            const vlcLink = `vlc://${url}`;
+            const mxLink = `intent:${url}#Intent;package=com.mxtech.videoplayer.ad;S.title=${encodeURIComponent(name)};end`;
 
-            if(Hls.isSupported() && (state.type === 'live' || ext === 'm3u8')) {
-                if(state.hls) state.hls.destroy();
-                state.hls = new Hls();
-                state.hls.loadSource(url);
-                state.hls.attachMedia(video);
-                state.hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
-            } else {
-                video.src = url;
-                video.play();
-            }
-            
-            document.querySelector('.close-btn').focus();
+            // تحديث الأزرار
+            document.getElementById('btn-vlc').href = vlcLink;
+            document.getElementById('btn-mx').href = mxLink;
+
+            // إظهار النافذة
+            document.getElementById('player-modal').style.display = 'flex';
+            document.getElementById('btn-vlc').focus();
         }
 
-        function stopVideo() {
-            const video = document.getElementById('videoPlayer');
-            video.pause();
-            video.src = "";
-            if(state.hls) state.hls.destroy();
-            goBack();
+        function closeModal() {
+            document.getElementById('player-modal').style.display = 'none';
+            document.querySelector('.item-card').focus();
         }
 
         // --- أدوات ---
         function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none';
-            });
+            document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
             const active = document.getElementById(id);
             active.style.display = 'flex';
             setTimeout(() => active.classList.add('active'), 10);
@@ -377,21 +300,18 @@
         }
 
         function goBack() {
-            if(state.view === 'player-screen') {
-                stopVideo();
-            } else if (state.view === 'list-screen') {
-                // إذا كنا في القنوات نرجع للأقسام، وإذا كنا في الأقسام نرجع للرئيسية
-                // للتبسيط، الكود الحالي عند فتح القناة يستبدل القائمة، لذا الرجوع يعيد للأقسام
+            if(document.getElementById('player-modal').style.display === 'flex') {
+                closeModal();
+            } else if(state.view === 'list-screen') {
                 if(document.getElementById('list-title').innerText === "اختر المحتوى") {
-                    openSection(state.type); // العودة للأقسام
+                    openSection(state.type);
                 } else {
-                    switchScreen('home'); // العودة للرئيسية
+                    switchScreen('home');
                     document.querySelector('.main-card').focus();
                 }
             }
         }
 
-        // أزرار الريموت
         document.addEventListener('keydown', function(e) {
             if(e.key === 'Backspace' || e.key === 'Escape' || e.keyCode === 10009 || e.keyCode === 8) {
                 e.preventDefault();
