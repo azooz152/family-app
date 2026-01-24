@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azooz TV Player</title>
+    <title>Azooz TV</title>
     <style>
         body {
-            /* هنا تم استرجاع صورة الخلفية home.png */
-            background-image: url('home.png');
-            background-size: cover; /* تجعل الصورة تغطي كامل الشاشة */
+            background-image: url('home.png'); /* تأكد أن الصورة موجودة */
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
@@ -22,96 +20,100 @@
             margin: 0;
             overflow: hidden;
         }
-
-        /* طبقة تعتيم خفيفة عشان الكلام يوضح فوق الصورة */
         body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5); /* تعتيم بنسبة 50% */
-            z-index: -1;
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6); z-index: -1;
         }
-
         .login-box {
-            background: rgba(0, 0, 0, 0.7); /* خلفية الصندوق شفافة قليلاً */
-            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
             border-radius: 15px;
-            /* تأثيرات النيون والتوهج */
-            box-shadow: 0 0 20px #00ffcc, 0 0 40px rgba(0, 255, 204, 0.2); 
-            text-align: center;
-            width: 80%;
-            max-width: 400px;
             border: 2px solid #00ffcc;
-            backdrop-filter: blur(5px); /* تأثير ضبابي جميل خلف الصندوق */
-        }
-
-        h2 { margin-bottom: 20px; color: #00ffcc; text-shadow: 0 0 10px #00ffcc; }
-        
-        input {
-            width: 90%;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: none;
-            font-size: 18px;
             text-align: center;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
         }
-
+        h2 { color: #00ffcc; margin-bottom: 20px; text-shadow: 0 0 10px #00ffcc; }
+        input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            border-radius: 5px; border: none; text-align: center;
+            font-size: 16px; box-sizing: border-box;
+        }
         button {
-            width: 100%;
-            padding: 15px;
-            background-color: #00ffcc;
-            color: #000;
-            border: none;
-            border-radius: 5px;
+            width: 100%; padding: 12px; margin-top: 15px;
+            background-color: #00ffcc; color: #000;
+            border: none; border-radius: 5px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+        }
+        button:hover { background-color: #00cca3; }
+        .hidden { display: none; }
+        
+        /* زر التشغيل الكبير */
+        #playBtn {
+            display: none; /* مخفي في البداية */
+            background-color: #ff0055;
+            color: white;
+            text-decoration: none;
+            padding: 20px;
+            border-radius: 10px;
             font-size: 20px;
             font-weight: bold;
-            cursor: pointer;
             margin-top: 20px;
-            box-shadow: 0 0 15px #00ffcc; /* توهج للزر */
-            transition: 0.3s;
+            box-shadow: 0 0 20px #ff0055;
+            animation: pulse 1.5s infinite;
         }
-
-        button:hover { 
-            background-color: #00cca3; 
-            transform: scale(1.05); /* تكبير بسيط عند الضغط */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-
-        .hidden { display: none; } /* إخفاء السيرفر */
     </style>
 </head>
 <body>
 
-    <div class="login-box">
+    <div class="login-box" id="box">
         <h2>AZOOZ TV</h2>
         
         <input type="text" id="host" value="http://aseaf1.me:8080" class="hidden">
         
-        <input type="text" id="username" placeholder="اسم المستخدم">
-        <input type="text" id="password" placeholder="كلمة المرور">
+        <div id="inputs">
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="text" id="password" placeholder="كلمة المرور">
+            <button onclick="prepareLink()">تسجيل دخول 📺</button>
+        </div>
+
+        <p id="status" style="color: yellow; margin-top: 10px;"></p>
         
-        <button onclick="connect()">دخول 📺</button>
-        <p id="status" style="color: #ffcc00; margin-top: 10px; font-weight:bold;"></p>
+        <a id="playBtn" href="#" target="_blank"> اضغط هنا لتشغيل القنوات ▶ </a>
     </div>
 
     <script>
-        function connect() {
+        function prepareLink() {
             var host = document.getElementById("host").value;
             var user = document.getElementById("username").value;
             var pass = document.getElementById("password").value;
             var status = document.getElementById("status");
+            var inputs = document.getElementById("inputs");
+            var playBtn = document.getElementById("playBtn");
 
             if(user === "" || pass === "") {
-                status.innerText = "⚠️ اكتب اليوزر والباسورد يا غالي";
+                status.innerText = "⚠️ يرجى تعبئة البيانات";
                 return;
             }
 
-            status.innerText = "⏳ جاري الاتصال...";
-
-            // رابط التحميل المباشر
+            status.innerText = "✅ تم الاتصال! اضغط الزر الأحمر بالأسفل";
+            
+            // تجهيز الرابط بصيغة M3U لفتحه في المشغل الخارجي
             var targetUrl = host + "/get.php?username=" + user + "&password=" + pass + "&type=m3u_plus&output=ts";
             
-            window.location.href = targetUrl;
+            // إخفاء حقول الإدخال وإظهار زر التشغيل الكبير
+            inputs.style.display = "none";
+            playBtn.href = targetUrl;
+            playBtn.style.display = "block";
+            
+            // محاولة الفتح التلقائي أيضاً
+            window.open(targetUrl, "_blank");
         }
     </script>
 
