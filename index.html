@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV Lite</title>
+    <title>AZOOZ TV Blue</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- إعدادات الأداء العالي (بدون تعقيدات) --- */
+        /* --- إعدادات التصميم الهلالي --- */
+        :root {
+            --hilal-blue: #0057b7; /* أزرق الهلال الرسمي */
+            --hilal-border: #003d80;
+        }
+
         * {
             margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -27,10 +32,10 @@
             align-items: center;
         }
 
-        /* طبقة سوداء خفيفة لتحسين قراءة النصوص */
+        /* طبقة تظليل */
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* مجرد لون بدون تأثيرات ثقيلة */
+            background: rgba(0, 0, 0, 0.6);
             z-index: -1;
         }
 
@@ -46,14 +51,15 @@
         }
         
         .logo {
-            font-size: 40px; font-weight: bold; color: #00ffcc;
-            text-shadow: 2px 2px 0px #000; /* ظل بسيط جداً */
+            font-size: 40px; font-weight: 900; color: var(--hilal-blue);
+            text-shadow: 2px 2px 0px #fff; 
+            letter-spacing: 2px;
         }
 
         .user-info {
-            color: #ccc; font-size: 16px;
-            background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 5px;
-            border: 1px solid #555;
+            color: #fff; font-size: 16px; font-weight: bold;
+            background: var(--hilal-blue); padding: 8px 20px; border-radius: 20px;
+            border: 2px solid white; box-shadow: 0 0 10px var(--hilal-blue);
         }
 
         /* --- الشبكة --- */
@@ -62,43 +68,65 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px; /* مسافة أقل لتقليل حركة العين */
+            gap: 30px;
             padding: 20px;
             flex-wrap: wrap;
         }
 
-        /* --- الكرت السريع (بدون Blur) --- */
+        /* --- الكرت --- */
         .card {
-            width: 160px; height: 160px;
-            background-color: rgba(20, 20, 20, 0.85); /* لون ثابت نصف شفاف */
-            border: 2px solid #444; /* حدود رمادية */
-            border-radius: 15px;
+            width: 170px; height: 170px;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 2px solid #555;
+            border-radius: 20px;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer;
-            /* نستخدم transform فقط للحركة لأنها الأسرع للمعالج */
-            transition: transform 0.2s ease, border-color 0.2s; 
+            transition: transform 0.2s ease, border-color 0.2s;
+            position: relative;
+            overflow: hidden; /* مهم لقص الصورة داخل الحدود */
         }
 
         .card i {
-            font-size: 50px; margin-bottom: 10px; color: #fff;
+            font-size: 50px; margin-bottom: 15px; color: #fff; z-index: 2;
         }
 
         .card span {
-            font-size: 18px; font-weight: bold; color: #ccc;
+            font-size: 20px; font-weight: bold; color: #ccc; z-index: 2;
         }
 
-        /* --- الحركة عند التركيز (Focus) - أهم جزء للتلفزيون --- */
+        /* --- الحركة عند التركيز (Focus) - ستايل الهلال --- */
         .card:focus, .card:hover {
-            transform: scale(1.1); /* تكبير بسيط وسريع */
-            border-color: #ffff00; /* إطار أصفر فاقع */
-            background-color: #000; /* خلفية سوداء بالكامل للتباين */
-            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5); /* توهج بسيط */
+            transform: scale(1.15);
+            border-color: var(--hilal-blue); /* إطار أزرق */
+            border-width: 4px;
+            background-color: #fff; /* خلفية بيضاء لتوضيح الشعار */
+            box-shadow: 0 0 25px var(--hilal-blue);
             z-index: 10;
+            
+            /* صورة خلفية الهلال */
+            background-image: url('hilal.png');
+            background-size: cover; /* جعل الشعار يغطي الكرت */
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        /* طبقة تعتيم خفيفة فوق شعار الهلال عشان النص يبان */
+        .card:focus::before, .card:hover::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85); /* طبقة بيضاء شفافة */
+            z-index: 1;
         }
 
-        .card:focus i, .card:hover i { color: #ffff00; } /* تلوين الأيقونة */
-        .card:focus span, .card:hover span { color: #fff; }
+        .card:focus i, .card:hover i { 
+            color: var(--hilal-blue); /* الأيقونة تصير زرقاء */
+            transform: scale(1.1);
+        } 
+        
+        .card:focus span, .card:hover span { 
+            color: var(--hilal-blue); /* النص يصير أزرق */
+            text-shadow: 0px 0px 1px #000;
+        }
 
         /* --- شاشة التحميل --- */
         #loader {
@@ -107,8 +135,8 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .spinner {
-            width: 50px; height: 50px; border: 5px solid #333; 
-            border-top: 5px solid #00ffcc; border-radius: 50%; 
+            width: 60px; height: 60px; border: 6px solid #fff; 
+            border-top: 6px solid var(--hilal-blue); border-radius: 50%; 
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -119,13 +147,15 @@
 
     <div id="loader">
         <div class="spinner"></div>
-        <h3 style="color:white; margin-top:20px;">جاري الفتح...</h3>
+        <h3 style="color:var(--hilal-blue); margin-top:20px; font-weight:bold;">AZOOZ TV</h3>
     </div>
 
     <div class="app-container" id="app" style="display:none;">
         <div class="header">
             <div class="logo">AZOOZ TV</div>
-            <div class="user-info">اشتراك VIP</div>
+            <div class="user-info">
+                <i class="fas fa-check-circle"></i> متصل
+            </div>
         </div>
 
         <div class="grid-container">
@@ -149,7 +179,7 @@
                 <span>المفضلة</span>
             </div>
             
-             <div class="card" tabindex="5" onclick="location.reload()">
+             <div class="card" tabindex="5" onclick="reloadApp()">
                 <i class="fas fa-sync-alt"></i>
                 <span>تحديث</span>
             </div>
@@ -163,23 +193,45 @@
         const PASS = "196384823579";
 
         window.onload = function() {
-            // إخفاء التحميل وإظهار التطبيق بسرعة
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                // التركيز على القنوات فوراً
+                // التركيز التلقائي
                 document.querySelector('.card').focus();
             }, 1000);
         };
 
         function openPlayer(type) {
-            let streamType = "m3u_plus";
-            if (type === 'movie') streamType = "movies";
-            if (type === 'series') streamType = "series";
+            // إظهار اللودر مرة أخرى ليعرف المستخدم أن الضغطة تمت
+            document.getElementById('loader').style.display = 'flex';
             
-            // الرابط المباشر السريع
-            let link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=${streamType}&output=m3u8`;
+            let streamType = "m3u_plus"; // الافتراضي للقنوات
+            
+            // تعديل نوع الرابط بناءً على الاختيار
+            // ملاحظة: نستخدم m3u8 للكل لضمان العمل على المشغلات
+            if (type === 'movie') {
+                // محاولة فتح قائمة الأفلام
+                streamType = "movie"; 
+            } else if (type === 'series') {
+                // محاولة فتح قائمة المسلسلات
+                streamType = "series";
+            }
+            
+            // الرابط النهائي
+            // استخدام get.php هو الطريقة القياسية
+            let link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=${streamType}&output=ts`; 
+            
+            // إذا كان الاختيار قنوات مباشرة نستخدم m3u8 لأنه أسرع
+            if(type === 'live') {
+                link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=m3u_plus&output=m3u8`;
+            }
+
+            // الانتقال للرابط
             window.location.href = link;
+        }
+
+        function reloadApp() {
+            location.reload();
         }
     </script>
 
