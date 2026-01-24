@@ -3,472 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZOOZ TV - PRO MAX</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Azooz TV Player</title>
     <style>
-        :root {
-            --primary: #00f2ff;
-            --secondary: #e056fd;
-            --danger: #ff4757;
-            --glass: rgba(255, 255, 255, 0.05);
-        }
-
         body {
-            background: url('home.png') no-repeat center center/cover;
-            background-color: #000;
+            background-color: #1a1a1a;
             color: white;
-            font-family: 'Cairo', sans-serif;
-            margin: 0;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-        }
-
-        /* === شاشة التحميل === */
-        #loaderOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 9999;
-            display: none; flex-direction: column;
-            align-items: center; justify-content: center;
-        }
-        .loader-logo { font-family: 'Orbitron'; font-size: 60px; margin-bottom: 20px; animation: pulse 2s infinite; }
-        .loader-logo span { color: var(--primary); }
-        .progress-container { width: 60%; height: 8px; background: #333; border-radius: 10px; overflow: hidden; margin-top: 20px; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.3s; }
-        .status-text { margin-top: 15px; color: #aaa; font-size: 14px; }
-        @keyframes pulse { 50% { opacity: 0.6; transform: scale(0.98); } }
-
-        /* === شاشة الدخول === */
-        #loginScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex; align-items: center; justify-content: center; z-index: 2000;
+            margin: 0;
+            overflow: hidden; /* لمنع التمرير في التلفزيون */
         }
         .login-box {
-            background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(20px);
-            padding: 40px; border-radius: 25px; width: 380px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #333;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+            border: 2px solid #00ffcc; /* لون نيون متناسق مع الأيقونة */
         }
-        
-        .input-group { margin-bottom: 15px; position: relative; }
-        .input-group i { position: absolute; top: 18px; right: 15px; color: var(--primary); }
-        .login-input {
-            width: 100%; padding: 15px 45px 15px 15px; 
-            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 12px; color: white; font-size: 16px; outline: none; box-sizing: border-box;
-            transition: 0.3s;
+        h2 { margin-bottom: 20px; color: #00ffcc; }
+        input {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
         }
-        .login-input:focus { border-color: var(--primary); background: rgba(255,255,255,0.15); }
-
-        /* === القائمة الجانبية === */
-        .app-container { display: flex; height: 100vh; width: 100%; }
-
-        .sidebar {
-            width: 270px; background: rgba(0,0,0,0.9);
-            border-left: 1px solid rgba(255,255,255,0.1);
-            display: flex; flex-direction: column; padding-top: 20px;
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #00ffcc;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
         }
-        
-        /* منطقة الملف الشخصي الجديدة */
-        .user-profile {
-            text-align: center; padding-bottom: 20px; margin-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .brand { font-family: 'Orbitron'; font-size: 24px; margin-bottom: 10px; }
-        .brand span { color: var(--primary); }
-        
-        .subscription-info {
-            background: rgba(255,255,255,0.05);
-            margin: 0 15px; padding: 10px; border-radius: 10px;
-        }
-        .user-name { font-size: 14px; font-weight: bold; color: #fff; display: block; margin-bottom: 5px; }
-        .expiry-date { font-size: 12px; color: #aaa; display: block; }
-        .expiry-date span { color: var(--primary); }
-
-        .menu-item {
-            padding: 15px 20px; cursor: pointer; color: #ccc;
-            border-right: 4px solid transparent; transition: 0.2s;
-            display: flex; align-items: center; font-size: 16px; margin-bottom: 5px;
-        }
-        .menu-item i { margin-left: 15px; width: 25px; text-align: center; }
-        .menu-item.active, .menu-item.focused {
-            background: linear-gradient(90deg, rgba(0,242,255,0.15), transparent);
-            border-right-color: var(--primary); color: white;
-        }
-
-        /* الأزرار السفلية */
-        .sidebar-footer { margin-top: auto; padding: 20px; }
-        
-        .action-btn {
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            border-radius: 10px; text-align: center; font-weight: bold; font-size: 14px;
-            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .update-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); }
-        .logout-btn { background: rgba(255, 71, 87, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-        
-        .action-btn:hover, .action-btn.focused { transform: scale(1.05); filter: brightness(1.2); }
-
-        /* المحتوى */
-        .main-content { flex: 1; padding: 20px; overflow: hidden; }
-        .header-title { font-size: 24px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 15px; height: 90%; overflow-y: auto; padding-bottom: 50px;
-        }
-        
-        .card {
-            background: rgba(255,255,255,0.05); border-radius: 12px;
-            padding: 10px; text-align: center; transition: 0.2s;
-            border: 2px solid transparent;
-        }
-        .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; background: #000; }
-        .card-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card.focused { border-color: var(--primary); transform: scale(1.08); background: #222; z-index: 10; }
-
-        /* المشغل */
-        #playerOverlay {
-            position: fixed; top:0; left:0; width:100%; height:100%; background:black;
-            z-index: 5000; display: none; flex-direction: column;
-        }
-        video { width: 100%; height: 100%; }
-        .back-ctrl {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 30px;
-            cursor: pointer; z-index: 5001; font-weight: bold; border: 1px solid #555;
-        }
+        button:hover { background-color: #00cca3; }
+        .hidden { display: none; } /* لإخفاء خانة السيرفر */
     </style>
 </head>
 <body>
 
-    <div id="loginScreen">
-        <div class="login-box">
-            <div class="brand">AZOOZ <span>TV</span></div>
-            <p style="color:#aaa; font-size:14px; margin-bottom:20px;">تسجيل الدخول للنظام</p>
-            
-            <div class="input-group">
-                <i class="fas fa-server"></i>
-                <input type="text" id="host" class="login-input focusable" placeholder="الرابط (http://...)">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" id="username" class="login-input focusable" placeholder="اسم المستخدم">
-            </div>
-            <div class="input-group">
-                <i class="fas fa-key"></i>
-                <input type="password" id="password" class="login-input focusable" placeholder="كلمة المرور">
-            </div>
-            
-            <div class="action-btn update-btn focusable" style="background: var(--primary); color:black; border:none;" onclick="saveAndLogin()">
-                دخول وحفظ البيانات
-            </div>
-        </div>
-    </div>
-
-    <div id="loaderOverlay">
-        <div class="loader-logo">AZOOZ <span>TV</span></div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <div class="status-text" id="statusText">جاري الاتصال...</div>
-    </div>
-
-    <div class="app-container" id="mainApp" style="display: none;">
-        <div class="sidebar">
-            
-            <div class="user-profile">
-                <div class="brand">AZOOZ <span>TV</span></div>
-                <div class="subscription-info">
-                    <span class="user-name" id="displayUser">المستخدم</span>
-                    <span class="expiry-date">ينتهي في: <span id="displayExpiry">--/--/----</span></span>
-                </div>
-            </div>
-            
-            <div class="menu-item active focusable" onclick="showSection('live')">
-                <i class="fas fa-tv"></i> القنوات
-            </div>
-            <div class="menu-item focusable" onclick="showSection('movies')">
-                <i class="fas fa-film"></i> الأفلام
-            </div>
-            <div class="menu-item focusable" onclick="showSection('series')">
-                <i class="fas fa-layer-group"></i> المسلسلات
-            </div>
-            
-            <div class="sidebar-footer">
-                <div class="action-btn update-btn focusable" onclick="updateAllContent()">
-                    <i class="fas fa-sync-alt"></i> تحديث القائمة
-                </div>
-                <div class="action-btn logout-btn focusable" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> تسجيل خروج
-                </div>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <h2 class="header-title" id="pageTitle">القنوات المباشرة</h2>
-            <div class="grid" id="contentGrid"></div>
-        </div>
-    </div>
-
-    <div id="playerOverlay">
-        <div class="back-ctrl focusable" onclick="closePlayer()"> <i class="fas fa-arrow-right"></i> خروج</div>
-        <video id="player" controls></video>
+    <div class="login-box">
+        <h2>AZOOZ TV</h2>
+        <input type="text" id="host" value="http://aseaf1.me:8080" class="hidden">
+        
+        <input type="text" id="username" placeholder="اسم المستخدم (Username)">
+        <input type="text" id="password" placeholder="كلمة المرور (Password)">
+        
+        <button onclick="connect()">دخول ومشاهدة 📺</button>
+        <p id="status" style="color: yellow; margin-top: 10px;"></p>
     </div>
 
     <script>
-        // المتغيرات العامة
-        let SERVER_HOST = "";
-        let USERNAME = "";
-        let PASSWORD = "";
-        let DATA = { live: [], movies: [], series: [] };
+        function connect() {
+            var host = document.getElementById("host").value;
+            var user = document.getElementById("username").value;
+            var pass = document.getElementById("password").value;
+            var status = document.getElementById("status");
 
-        // === 1. التشغيل التلقائي عند فتح التطبيق ===
-        window.onload = function() {
-            checkSavedSession();
-            setupFocus();
-        };
-
-        function checkSavedSession() {
-            // هل توجد بيانات محفوظة؟
-            const savedHost = localStorage.getItem("azooz_host");
-            const savedUser = localStorage.getItem("azooz_user");
-            const savedPass = localStorage.getItem("azooz_pass");
-
-            if(savedHost && savedUser && savedPass) {
-                // إذا وجد بيانات، عبئ المتغيرات وابدأ التحديث فوراً
-                SERVER_HOST = savedHost;
-                USERNAME = savedUser;
-                PASSWORD = savedPass;
-                document.getElementById('loginScreen').style.display = 'none';
-                updateAllContent();
-            } else {
-                // إذا لا، اظهر شاشة الدخول
-                document.getElementById('loginScreen').style.display = 'flex';
-            }
-        }
-
-        // === 2. الدخول والحفظ ===
-        function saveAndLogin() {
-            let hostInput = document.getElementById('host').value.trim();
-            let userInput = document.getElementById('username').value.trim();
-            let passInput = document.getElementById('password').value.trim();
-
-            if(!hostInput || !userInput || !passInput) {
-                alert("الرجاء تعبئة جميع الحقول!");
+            if(user === "" || pass === "") {
+                status.innerText = "⚠️ الرجاء كتابة اليوزر والباسورد";
                 return;
             }
 
-            // معالجة الرابط
-            if(hostInput.endsWith('/')) hostInput = hostInput.slice(0, -1);
-            if(!hostInput.startsWith('http')) hostInput = 'http://' + hostInput;
-            
-            // حفظ في المتغيرات
-            SERVER_HOST = hostInput;
-            USERNAME = userInput;
-            PASSWORD = passInput;
+            status.innerText = "⏳ جاري الاتصال...";
 
-            // حفظ في الذاكرة الدائمة (Storage)
-            localStorage.setItem("azooz_host", SERVER_HOST);
-            localStorage.setItem("azooz_user", USERNAME);
-            localStorage.setItem("azooz_pass", PASSWORD);
+            // هنا يتم توجيه اللاعب لرابط التحميل المباشر (M3U)
+            // هذا أبسط نوع تشغيل ويتوافق مع أغلب المشغلات
+            var targetUrl = host + "/get.php?username=" + user + "&password=" + pass + "&type=m3u_plus&output=ts";
 
-            document.getElementById('loginScreen').style.display = 'none';
-            updateAllContent();
+            // فتح القائمة
+            window.location.href = targetUrl;
         }
-
-        // === 3. تسجيل الخروج ===
-        function logout() {
-            if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
-                localStorage.clear(); // حذف كل شيء
-                location.reload(); // إعادة تحميل الصفحة لفتح شاشة الدخول
-            }
-        }
-
-        // === 4. المحرك وجلب الاشتراك ===
-        async function updateAllContent() {
-            const loader = document.getElementById('loaderOverlay');
-            const app = document.getElementById('mainApp');
-            
-            loader.style.display = 'flex';
-            app.style.display = 'none';
-            
-            try {
-                // خطوة 0: التحقق من الحساب وجلب تاريخ الانتهاء
-                updateProgress(10, "التحقق من الاشتراك...");
-                const authUrl = `${SERVER_HOST}/player_api.php?username=${USERNAME}&password=${PASSWORD}`;
-                const authRes = await fetch(authUrl);
-                const authData = await authRes.json();
-
-                if(authData.user_info.auth === 0) {
-                    alert("فشل الدخول! تأكد من البيانات.");
-                    logout(); // إعادة للدخول
-                    return;
-                }
-
-                // عرض البيانات في البروفايل
-                document.getElementById('displayUser').innerText = USERNAME;
-                
-                // تحويل تاريخ الانتهاء (Unix Timestamp) إلى تاريخ مقروء
-                const expTimestamp = authData.user_info.exp_date;
-                if(expTimestamp) {
-                    const date = new Date(expTimestamp * 1000);
-                    const dateString = date.toLocaleDateString('en-GB'); // تنسيق يوم/شهر/سنة
-                    document.getElementById('displayExpiry').innerText = dateString;
-                } else {
-                    document.getElementById('displayExpiry').innerText = "غير محدود";
-                }
-
-                // خطوة 1: القنوات
-                updateProgress(30, "تحميل القنوات...");
-                const liveUrl = `${SERVER_HOST}/player_api.php?username=${USERNAME}&password=${PASSWORD}&action=get_live_streams`;
-                const liveRes = await fetch(liveUrl);
-                DATA.live = await liveRes.json();
-
-                // خطوة 2: الأفلام
-                updateProgress(60, "تحميل الأفلام...");
-                const vodUrl = `${SERVER_HOST}/player_api.php?username=${USERNAME}&password=${PASSWORD}&action=get_vod_streams`;
-                const vodRes = await fetch(vodUrl);
-                DATA.movies = await vodRes.json();
-
-                // خطوة 3: المسلسلات
-                updateProgress(90, "تحميل المسلسلات...");
-                const seriesUrl = `${SERVER_HOST}/player_api.php?username=${USERNAME}&password=${PASSWORD}&action=get_series`;
-                const seriesRes = await fetch(seriesUrl);
-                DATA.series = await seriesRes.json();
-
-                // تم
-                updateProgress(100, "أهلاً بك في AZOOZ TV");
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    app.style.display = 'flex';
-                    showSection('live');
-                    setupFocus();
-                }, 800);
-
-            } catch (error) {
-                console.error(error);
-                alert("خطأ في الاتصال! تأكد من الرابط أو حول التطبيق لـ APK.");
-                loader.style.display = 'none';
-                document.getElementById('loginScreen').style.display = 'flex';
-            }
-        }
-
-        function updateProgress(percent, text) {
-            document.getElementById('progressBar').style.width = percent + "%";
-            document.getElementById('statusText').innerText = text;
-        }
-
-        // === 5. العرض والتشغيل ===
-        function showSection(type) {
-            document.getElementById('pageTitle').innerText = 
-                type === 'live' ? `القنوات (${DATA.live.length})` :
-                type === 'movies' ? `الأفلام (${DATA.movies.length})` : `المسلسلات (${DATA.series.length})`;
-            
-            const grid = document.getElementById('contentGrid');
-            grid.innerHTML = "";
-
-            const items = DATA[type];
-            const limit = items.length > 200 ? 200 : items.length; // عرض 200 عنصر للأداء
-
-            if(limit === 0) {
-                grid.innerHTML = "<p style='padding:20px; color:#aaa;'>القائمة فارغة</p>";
-                return;
-            }
-
-            for(let i=0; i<limit; i++) {
-                const item = items[i];
-                const card = document.createElement('div');
-                card.className = 'card focusable';
-                
-                let name = item.name;
-                let img = item.stream_icon;
-                let id = item.stream_id || item.series_id;
-                
-                if(!img || !img.startsWith('http')) img = "home.png"; 
-
-                card.innerHTML = `
-                    <img src="${img}" onerror="this.src='https://via.placeholder.com/150?text=AZOOZ'">
-                    <div class="card-title">${name}</div>
-                `;
-                
-                card.onclick = () => {
-                    if(type === 'live' || type === 'movies') {
-                        let ext = type === 'live' ? '' : '.' + item.container_extension;
-                        let finalUrl = type === 'live' ? 
-                            `${SERVER_HOST}/${USERNAME}/${PASSWORD}/${id}` : 
-                            `${SERVER_HOST}/movie/${USERNAME}/${PASSWORD}/${id}${ext}`;
-                        openPlayer(finalUrl);
-                    } else {
-                        alert("قريباً: مشغل المسلسلات");
-                    }
-                };
-                grid.appendChild(card);
-            }
-            setTimeout(setupFocus, 100);
-        }
-
-        function openPlayer(url) {
-            const overlay = document.getElementById('playerOverlay');
-            const vid = document.getElementById('player');
-            overlay.style.display = 'flex';
-            
-            if (Hls.isSupported() && url.includes('.m3u8')) {
-                const hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(vid);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => vid.play());
-            } else {
-                vid.src = url;
-                vid.play();
-            }
-        }
-        
-        function closePlayer() {
-            document.getElementById('player').pause();
-            document.getElementById('playerOverlay').style.display = 'none';
-        }
-
-        // === 6. نظام الريموت ===
-        let focusItems = [];
-        let currentFocus = 0;
-
-        function setupFocus() {
-            // نحدد العناصر الظاهرة فقط
-            const visible = document.getElementById('loginScreen').style.display !== 'none' 
-                            ? document.getElementById('loginScreen') 
-                            : document.getElementById('mainApp');
-            focusItems = Array.from(visible.querySelectorAll('.focusable'));
-            currentFocus = 0;
-            if(focusItems.length > 0) setFocus(0);
-        }
-
-        function setFocus(index) {
-            focusItems.forEach(el => el.classList.remove('focused'));
-            if(focusItems[index]) {
-                focusItems[index].classList.add('focused');
-                focusItems[index].focus();
-                focusItems[index].scrollIntoView({behavior: "smooth", block: "center"});
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (focusItems.length === 0) return;
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                currentFocus = (currentFocus + 1) % focusItems.length;
-                setFocus(currentFocus);
-            } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                currentFocus = (currentFocus - 1 + focusItems.length) % focusItems.length;
-                setFocus(currentFocus);
-            } else if (e.key === 'Enter') {
-                focusItems[currentFocus].click();
-            } else if (e.key === 'Backspace' || e.key === 'Escape') {
-                closePlayer();
-            }
-        });
     </script>
+
 </body>
 </html>
