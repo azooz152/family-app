@@ -9,19 +9,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* === 1. إعدادات العالم السينمائي === */
+        /* === 1. إعدادات الألوان والمؤثرات === */
         :root {
             --primary: #00f2ff; /* أزرق نيون */
             --secondary: #bd00ff; /* بنفسجي نيون */
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-glow: 0 0 10px rgba(0, 242, 255, 0.7);
+            --glass-bg: rgba(0, 0, 0, 0.4); /* لون الزجاج (أسود شفاف) */
+            --glass-border: rgba(255, 255, 255, 0.15); /* حدود الزجاج */
         }
 
         body {
             background-color: #000;
             color: #fff;
-            font-family: 'Cairo', sans-serif; /* خط عربي فخم */
+            font-family: 'Cairo', sans-serif;
             margin: 0;
             overflow: hidden;
             height: 100vh;
@@ -30,78 +29,86 @@
             align-items: center;
         }
 
-        /* الخلفية الاحترافية (تتحرك ببطء) */
+        /* === 2. الخلفية الخاصة بك (home.png) === */
         .background-fx {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* هنا رابط صورة احترافية من النت بدقة عالية */
-            background: url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=3869&auto=format&fit=crop') no-repeat center center/cover;
+            
+            /* تم التعديل لربط الصورة بملف home.png */
+            background: url('home.png') no-repeat center center/cover;
+            
             z-index: -2;
-            filter: brightness(0.4); /* تغميق الخلفية للتركيز على المحتوى */
+            /* تغميق بسيط لتظهر النصوص بوضوح */
+            filter: brightness(0.6); 
+            /* الحركة السينمائية */
             animation: panImage 40s infinite alternate linear;
         }
 
         @keyframes panImage {
             0% { transform: scale(1); }
-            100% { transform: scale(1.15); }
+            100% { transform: scale(1.1); }
         }
 
-        /* تأثيرات الإضاءة الخلفية */
+        /* تأثير التوهج الخلفي */
         .glow-spot {
             position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 242, 255, 0.15) 0%, rgba(0,0,0,0) 70%);
-            top: 50%;
-            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, rgba(0,0,0,0) 70%);
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            animation: pulseGlow 5s infinite alternate;
+            pointer-events: none;
         }
 
-        /* === 2. اللوجو الاحترافي (azooz TV) === */
+        /* === 3. اللوجو النيون (AZOOZ TV) === */
         .brand-logo {
             font-family: 'Orbitron', sans-serif;
             font-size: 70px;
             text-transform: uppercase;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             letter-spacing: 5px;
             color: #fff;
             text-shadow: 
                 0 0 10px var(--primary),
                 0 0 20px var(--primary),
                 0 0 40px var(--secondary);
-            animation: flicker 3s infinite;
+            animation: flicker 4s infinite;
         }
-
         .brand-logo span { color: var(--primary); }
 
         @keyframes flicker {
-            0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 40px var(--secondary); }
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
             20%, 24%, 55% { opacity: 0.5; text-shadow: none; }
         }
 
-        /* === 3. الزجاج (Glassmorphism) === */
+        /* === 4. الزجاج الشفاف الاحترافي (Glassmorphism) === */
         .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(20px); /* سر الزجاج المغبش */
+            /* الخلفية شفافة جداً لترى home.png خلفها */
+            background: rgba(255, 255, 255, 0.03); 
+            /* التمويه القوي هو سر الاحترافية */
+            backdrop-filter: blur(20px); 
             -webkit-backdrop-filter: blur(20px);
+            
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-top: 1px solid rgba(255,255,255,0.3); /* إضاءة علوية */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            
+            border-radius: 30px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            padding: 50px;
+            padding: 40px 50px;
             text-align: center;
             width: 450px;
-            transform: translateY(20px);
             animation: floatUp 0.8s ease-out forwards;
         }
 
         @keyframes floatUp {
+            from { transform: translateY(30px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
 
-        /* === 4. العناصر والمدخلات === */
+        /* === 5. المدخلات والأزرار === */
         .input-group {
             position: relative;
             margin-bottom: 20px;
@@ -110,17 +117,17 @@
         
         .input-icon {
             position: absolute;
-            right: 15px;
-            top: 18px;
+            right: 20px; top: 18px;
             color: var(--primary);
+            font-size: 18px;
         }
 
         input {
             width: 100%;
-            padding: 15px 50px 15px 15px; /* مساحة للأيقونة */
-            background: rgba(0, 0, 0, 0.4);
-            border: 2px solid transparent;
-            border-radius: 12px;
+            padding: 16px 55px 16px 15px;
+            background: rgba(0, 0, 0, 0.3); /* خلفية الحقل غامقة قليلاً للقراءة */
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
             color: white;
             font-family: 'Cairo', sans-serif;
             font-size: 16px;
@@ -129,61 +136,53 @@
             transition: 0.3s;
         }
 
-        /* تأثير التركيز (Focus) عند استخدام الريموت */
+        /* تأثير التركيز (عند التحرك بالريموت) */
         .focused {
             border-color: var(--primary) !important;
-            background: rgba(0, 242, 255, 0.1) !important;
-            box-shadow: 0 0 25px rgba(0, 242, 255, 0.3);
-            transform: scale(1.03);
+            background: rgba(0, 242, 255, 0.15) !important;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.25);
+            transform: scale(1.02);
         }
 
         .btn-enter {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
             color: white;
             border: none;
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 15px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
         }
 
         /* القائمة الرئيسية */
         .dashboard-grid {
-            display: flex;
-            gap: 25px;
-            margin-top: 20px;
+            display: flex; gap: 30px; margin-top: 30px;
         }
-
         .menu-card {
             background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.1);
-            width: 220px;
-            height: 300px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            width: 200px; height: 280px;
+            border-radius: 24px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
             transition: 0.3s;
-            position: relative;
-            overflow: hidden;
         }
+        .menu-card i { font-size: 50px; margin-bottom: 20px; color: var(--primary); }
 
-        .menu-card i { font-size: 50px; margin-bottom: 20px; background: -webkit-linear-gradient(var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .menu-card h3 { margin: 0; font-size: 24px; }
-        
-        /* صفحات */
+        /* الصفحات */
         .page { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
         .active-page { display: flex; }
-
+        
         /* المشغل */
-        video { width: 100%; height: 100%; max-height: 90vh; border-radius: 10px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-
+        video { width: 100%; height: 100%; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -196,11 +195,11 @@
         <div class="brand-logo">AZOOZ <span>TV</span></div>
 
         <div class="glass-panel">
-            <h2 style="margin: 0 0 30px 0; opacity: 0.8;">تسجيل الدخول الآمن</h2>
+            <h2 style="margin: 0 0 25px 0; font-weight: 400; opacity: 0.9;">أهلاً بك في عالمك</h2>
             
             <div class="input-group">
-                <i class="fas fa-link input-icon"></i>
-                <input type="text" id="host" class="focusable" placeholder="رابط السيرفر (Host URL)">
+                <i class="fas fa-server input-icon"></i>
+                <input type="text" id="host" class="focusable" placeholder="رابط السيرفر (Host)">
             </div>
             
             <div class="input-group">
@@ -209,17 +208,16 @@
             </div>
 
             <div class="input-group">
-                <i class="fas fa-lock input-icon"></i>
+                <i class="fas fa-key input-icon"></i>
                 <input type="password" id="pass" class="focusable" placeholder="كلمة المرور">
             </div>
             
-            <button class="btn-enter focusable" onclick="login()">دخول للنظام</button>
+            <button class="btn-enter focusable" onclick="login()">دخول</button>
         </div>
     </div>
 
     <div id="dashboardPage" class="page">
-        <div class="brand-logo" style="font-size: 40px;">AZOOZ <span>TV</span></div>
-        <p style="opacity: 0.7;">اختر القسم للمشاهدة</p>
+        <div class="brand-logo" style="font-size: 50px;">AZOOZ <span>TV</span></div>
         
         <div class="dashboard-grid">
             <div class="menu-card focusable" onclick="openSection('live')">
@@ -229,27 +227,27 @@
             
             <div class="menu-card focusable" onclick="openSection('movies')">
                 <i class="fas fa-film"></i>
-                <h3>أفلام 4K</h3>
+                <h3>أفلام</h3>
             </div>
 
             <div class="menu-card focusable" onclick="openSection('series')">
-                <i class="fas fa-tv"></i>
+                <i class="fas fa-layer-group"></i>
                 <h3>مسلسلات</h3>
             </div>
         </div>
     </div>
 
     <div id="playerPage" class="page">
-        <div class="focusable" onclick="goHome()" style="position: absolute; top: 20px; right: 20px; background:rgba(0,0,0,0.5); padding:10px 20px; border-radius:30px; z-index:100; cursor:pointer;">
-             رجوع <i class="fas fa-undo"></i>
+        <div class="focusable" onclick="goHome()" style="position: absolute; top: 30px; right: 30px; background:rgba(0,0,0,0.6); color:white; padding:10px 25px; border-radius:50px; z-index:100; cursor:pointer; font-weight:bold; border:1px solid #555;">
+             <i class="fas fa-arrow-right"></i> خروج
         </div>
-        <div style="width: 90%; height: 80%;">
+        <div style="width: 90%; height: 80%; box-shadow: 0 0 100px rgba(0,0,0,0.9);">
             <video id="videoPlayer" controls></video>
         </div>
     </div>
 
     <script>
-        // === نفس منطق الريموت الذكي السابق مع تحسينات ===
+        // === نفس الكود البرمجي الذكي للريموت ===
         let currentFocusIndex = 0;
         let focusableElements = [];
 
@@ -270,7 +268,6 @@
 
         document.addEventListener('keydown', function(e) {
             if(focusableElements.length === 0) return;
-            // دعم جميع الاتجاهات
             if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
                 currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
                 setFocus(currentFocusIndex);
@@ -291,13 +288,12 @@
         }
 
         function login() {
-            // انتقال وهمي سريع للتجربة
+            // محاكاة دخول
             showPage('dashboardPage');
         }
 
         function openSection(type) {
             showPage('playerPage');
-            // رابط تجريبي لقناة الجزيرة
             playChannel("https://live-hls-web-aja.getaj.net/AJA/03.m3u8");
         }
 
@@ -321,7 +317,6 @@
 
         window.onload = function() {
             updateFocusList();
-            // تشغيل صوت خفيف عند البدء (اختياري)
         };
     </script>
 </body>
