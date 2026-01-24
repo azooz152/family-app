@@ -3,127 +3,300 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دليلي الذكي</title>
+    <title>X-TREAM TV PLAYER</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* تصميم شكل التطبيق */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f2f2f7;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .header {
-            background-color: #007AFF; /* لون أزرق آيفون */
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .header h1 { margin: 0; font-size: 24px; }
-        .header p { margin: 5px 0 0; opacity: 0.9; }
-        
-        /* شريط البحث */
-        .search-container {
-            padding: 20px;
-        }
-        input[type="text"] {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            box-sizing: border-box; /* لضمان عدم خروج الحواف */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        /* === 1. إعدادات التصميم والتلفزيون === */
+        :root {
+            --primary: #E50914; /* أحمر نيتفليكس */
+            --focus: #ffffff;
+            --bg-overlay: rgba(0, 0, 0, 0.75);
         }
 
-        /* قائمة الأرقام */
-        .contact-list {
-            padding: 0 20px 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden; /* لمنع التمرير، نحن نستخدم نظام ريموت */
+            height: 100vh;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .info h3 { margin: 0 0 5px; font-size: 18px; }
-        .info span { color: #888; font-size: 14px; }
+
+        /* الخلفية المتحركة */
+        .background-fx {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('home.png') no-repeat center center/cover;
+            z-index: -1;
+            animation: zoomEffect 20s infinite alternate;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        @keyframes zoomEffect {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* === 2. نظام التركيز (Remote Control Focus) === */
+        /* هذا الكلاس يضاف تلقائياً للعنصر المحدد بالريموت */
+        .focusable {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
         
-        /* زر الاتصال */
-        .call-btn {
-            background-color: #34C759; /* لون أخضر آيفون */
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
+        .focused {
+            transform: scale(1.05);
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white !important;
+        }
+
+        /* === 3. الشاشات (Pages) === */
+        .page {
+            display: none; /* إخفاء الكل افتراضياً */
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .active-page { display: flex; }
+
+        /* شاشة تسجيل الدخول */
+        .login-box {
+            background: rgba(0,0,0,0.8);
+            padding: 40px;
             border-radius: 20px;
+            text-align: center;
+            width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .login-input {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            background: #333;
+            border: 2px solid #444;
+            color: white;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 15px 40px;
+            font-size: 20px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 20px;
             font-weight: bold;
         }
+
+        /* القائمة الرئيسية */
+        .dashboard-grid {
+            display: flex;
+            gap: 30px;
+        }
+        .menu-card {
+            width: 250px;
+            height: 350px;
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .menu-card i { font-size: 60px; margin-bottom: 20px; color: #888; }
+        .menu-card h2 { margin: 0; font-size: 28px; }
+
+        /* مشغل الفيديو */
+        .player-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 30px;
+        }
+
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>دليلي الذكي</h1>
-        <p>أهم الأرقام والخدمات</p>
+    <div class="background-fx"></div>
+    <div class="overlay"></div>
+
+    <div id="loginPage" class="page active-page">
+        <div class="login-box">
+            <h1 style="color: var(--primary); font-size: 40px; margin-bottom: 30px;">XTREAM LOGIN</h1>
+            
+            <input type="text" id="host" class="login-input focusable" placeholder="الرابط (Host URL)">
+            <input type="text" id="user" class="login-input focusable" placeholder="اسم المستخدم">
+            <input type="password" id="pass" class="login-input focusable" placeholder="كلمة المرور">
+            
+            <button class="btn focusable" onclick="login()">دخول</button>
+        </div>
     </div>
 
-    <div class="search-container">
-        <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="ابحث عن اسم الخدمة...">
-    </div>
-
-    <div class="contact-list" id="contacts">
-        <div class="card">
-            <div class="info">
-                <h3>خدمة العملاء</h3>
-                <span>شركة الكهرباء</span>
-            </div>
-            <a href="tel:933" class="call-btn">اتصال</a>
-        </div>
-
-        <div class="card">
-            <div class="info">
-                <h3>طوارئ المياه</h3>
-                <span>شركة المياه الوطنية</span>
-            </div>
-            <a href="tel:931" class="call-btn">اتصال</a>
-        </div>
-
-        <div class="card">
-            <div class="info">
-                <h3>الإسعاف</h3>
-                <span>الطوارئ الطبية</span>
-            </div>
-            <a href="tel:997" class="call-btn">اتصال</a>
-        </div>
+    <div id="dashboardPage" class="page">
+        <h1 style="position: absolute; top: 40px; font-size: 30px;">القائمة الرئيسية</h1>
         
+        <div class="dashboard-grid">
+            <div class="menu-card focusable" onclick="openSection('live')">
+                <i class="fas fa-tv"></i>
+                <h2>بث مباشر</h2>
+                <p>قنوات التلفزيون</p>
+            </div>
+            
+            <div class="menu-card focusable" onclick="openSection('movies')">
+                <i class="fas fa-film"></i>
+                <h2>أفلام</h2>
+                <p>مكتبة الأفلام</p>
+            </div>
+
+            <div class="menu-card focusable" onclick="openSection('series')">
+                <i class="fas fa-layer-group"></i>
+                <h2>مسلسلات</h2>
+                <p>الحلقات والمواسم</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="playerPage" class="page">
+        <div class="back-btn focusable" onclick="goHome()">عودة للقائمة ↩</div>
+        <div class="player-container">
+            <video id="videoPlayer" controls></video>
+        </div>
         </div>
 
     <script>
-        // دالة البحث لتصفية الأسماء
-        function filterNames() {
-            var input = document.getElementById('searchInput');
-            var filter = input.value.toUpperCase();
-            var list = document.getElementById("contacts");
-            var cards = list.getElementsByClassName('card');
+        // === 1. منطق الريموت كونترول (الذكاء البسيط) ===
+        let currentFocusIndex = 0;
+        let focusableElements = [];
 
-            for (var i = 0; i < cards.length; i++) {
-                var h3 = cards[i].getElementsByTagName("h3")[0];
-                var txtValue = h3.textContent || h3.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    cards[i].style.display = "";
-                } else {
-                    cards[i].style.display = "none";
-                }
+        function updateFocusList() {
+            // جلب العناصر القابلة للتركيز في الصفحة الحالية فقط
+            const activePage = document.querySelector('.active-page');
+            focusableElements = Array.from(activePage.querySelectorAll('.focusable'));
+            currentFocusIndex = 0;
+            if(focusableElements.length > 0) setFocus(0);
+        }
+
+        function setFocus(index) {
+            // إزالة التركيز من الجميع
+            focusableElements.forEach(el => el.classList.remove('focused'));
+            // وضع التركيز على العنصر الجديد
+            if (focusableElements[index]) {
+                focusableElements[index].classList.add('focused');
+                focusableElements[index].focus();
             }
         }
-    </script>
 
+        // الاستماع لأزرار الكيبورد والريموت
+        document.addEventListener('keydown', function(e) {
+            if(focusableElements.length === 0) return;
+
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                currentFocusIndex++;
+                if (currentFocusIndex >= focusableElements.length) currentFocusIndex = 0;
+                setFocus(currentFocusIndex);
+            } 
+            else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                currentFocusIndex--;
+                if (currentFocusIndex < 0) currentFocusIndex = focusableElements.length - 1;
+                setFocus(currentFocusIndex);
+            } 
+            else if (e.key === 'Enter') {
+                focusableElements[currentFocusIndex].click();
+            }
+        });
+
+        // === 2. وظائف النظام ===
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.getElementById(pageId).classList.add('active-page');
+            setTimeout(updateFocusList, 100); // تحديث قائمة الريموت
+        }
+
+        function login() {
+            const host = document.getElementById('host').value;
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
+
+            if(!host || !user || !pass) {
+                alert("الرجاء تعبئة جميع البيانات");
+                return;
+            }
+
+            // حفظ البيانات (محاكاة)
+            localStorage.setItem('xtream_host', host);
+            localStorage.setItem('xtream_user', user);
+            localStorage.setItem('xtream_pass', pass);
+
+            // الانتقال للداشبورد
+            showPage('dashboardPage');
+        }
+
+        function openSection(type) {
+            // هنا المفروض يتم جلب القائمة من API
+            // للتبسيط، سنقوم بتشغيل قناة تجريبية مباشرة
+            alert("سيتم فتح قسم: " + type + "\n(جاري تشغيل قناة تجريبية الآن)");
+            
+            showPage('playerPage');
+            playChannel("https://live-hls-web-aja.getaj.net/AJA/03.m3u8"); // قناة الجزيرة كمثال
+        }
+
+        function playChannel(url) {
+            var video = document.getElementById('videoPlayer');
+            if (Hls.isSupported()) {
+                var hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+                video.play();
+            }
+        }
+
+        function goHome() {
+            document.getElementById('videoPlayer').pause();
+            showPage('dashboardPage');
+        }
+
+        // تشغيل أولي
+        window.onload = function() {
+            updateFocusList();
+        };
+
+    </script>
 </body>
 </html>
