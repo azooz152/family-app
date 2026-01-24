@@ -3,18 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV Premium</title>
+    <title>AZOOZ TV Lite</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- الأساسيات والتصميم الزجاجي --- */
-        :root {
-            --primary-glow: #00e5ff; /* نيون سماوي */
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-color: #ffffff;
-        }
-
+        /* --- إعدادات الأداء العالي (بدون تعقيدات) --- */
         * {
             margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,12 +15,11 @@
         }
 
         body {
-            /* الخلفية الخاصة بك */
             background-image: url('home.png'); 
             background-size: cover; 
             background-position: center; 
             background-attachment: fixed;
-            background-color: #050505;
+            background-color: #000;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -35,122 +27,90 @@
             align-items: center;
         }
 
-        /* طبقة تظليل لجعل الزجاج يبرز */
+        /* طبقة سوداء خفيفة لتحسين قراءة النصوص */
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+            background: rgba(0, 0, 0, 0.7); /* مجرد لون بدون تأثيرات ثقيلة */
             z-index: -1;
         }
 
-        /* --- حاوية التطبيق --- */
         .app-container {
             width: 100%; height: 100%;
             display: flex; flex-direction: column;
-            opacity: 0; transition: opacity 1s ease;
         }
 
-        /* --- الشعار العلوي --- */
+        /* --- الشعار --- */
         .header {
             padding: 20px 40px;
             display: flex; justify-content: space-between; align-items: center;
         }
         
         .logo {
-            font-size: 35px; font-weight: 900; letter-spacing: 2px;
-            background: linear-gradient(to right, #fff, #00e5ff);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
-            animation: glow 3s infinite alternate;
+            font-size: 40px; font-weight: bold; color: #00ffcc;
+            text-shadow: 2px 2px 0px #000; /* ظل بسيط جداً */
         }
 
         .user-info {
-            color: rgba(255,255,255,0.7); font-size: 16px;
-            background: rgba(0,0,0,0.4); padding: 8px 20px; border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; gap: 10px;
+            color: #ccc; font-size: 16px;
+            background: rgba(0,0,0,0.6); padding: 8px 15px; border-radius: 5px;
+            border: 1px solid #555;
         }
 
-        /* --- شبكة الأزرار الزجاجية --- */
+        /* --- الشبكة --- */
         .grid-container {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 30px;
+            gap: 20px; /* مسافة أقل لتقليل حركة العين */
             padding: 20px;
             flex-wrap: wrap;
         }
 
-        /* الكرت الزجاجي */
+        /* --- الكرت السريع (بدون Blur) --- */
         .card {
-            width: 170px; height: 170px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px); /* تمويه الخلفية */
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 25px;
+            width: 160px; height: 160px;
+            background-color: rgba(20, 20, 20, 0.85); /* لون ثابت نصف شفاف */
+            border: 2px solid #444; /* حدود رمادية */
+            border-radius: 15px;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            /* نستخدم transform فقط للحركة لأنها الأسرع للمعالج */
+            transition: transform 0.2s ease, border-color 0.2s; 
         }
 
         .card i {
-            font-size: 50px; margin-bottom: 15px;
-            background: linear-gradient(to bottom, #fff, #ccc);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            transition: transform 0.3s ease;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+            font-size: 50px; margin-bottom: 10px; color: #fff;
         }
 
         .card span {
-            font-size: 18px; font-weight: bold; color: rgba(255,255,255,0.8);
-            letter-spacing: 0.5px;
+            font-size: 18px; font-weight: bold; color: #ccc;
         }
 
-        /* تأثيرات الحركة عند الاختيار */
-        .card:hover, .card:focus {
-            transform: translateY(-12px) scale(1.05);
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.1);
-            outline: none;
+        /* --- الحركة عند التركيز (Focus) - أهم جزء للتلفزيون --- */
+        .card:focus, .card:hover {
+            transform: scale(1.1); /* تكبير بسيط وسريع */
+            border-color: #ffff00; /* إطار أصفر فاقع */
+            background-color: #000; /* خلفية سوداء بالكامل للتباين */
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5); /* توهج بسيط */
+            z-index: 10;
         }
 
-        .card:hover i, .card:focus i {
-            transform: scale(1.15);
-            background: linear-gradient(to bottom, #fff, var(--primary-glow));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px var(--primary-glow));
-        }
-
-        .card:hover span, .card:focus span {
-            color: #fff; text-shadow: 0 0 10px var(--primary-glow);
-        }
-
-        /* لمعة متحركة */
-        .card::after {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
-            transform: skewX(-25deg);
-            transition: 0.5s;
-        }
-        .card:hover::after, .card:focus::after { left: 150%; transition: 0.7s; }
+        .card:focus i, .card:hover i { color: #ffff00; } /* تلوين الأيقونة */
+        .card:focus span, .card:hover span { color: #fff; }
 
         /* --- شاشة التحميل --- */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: black; z-index: 9999;
+            background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s;
         }
-        .loading-text { color: var(--primary-glow); font-size: 22px; margin-top: 20px; font-weight: bold; }
-        
-        @keyframes glow { 0% { text-shadow: 0 0 10px #00e5ff; } 100% { text-shadow: 0 0 30px #00e5ff, 0 0 10px white; } }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #333; 
+            border-top: 5px solid #00ffcc; border-radius: 50%; 
+            animation: spin 0.8s linear infinite;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
@@ -158,21 +118,17 @@
 <body>
 
     <div id="loader">
-        <div style="width: 60px; height: 60px; border: 4px solid #333; border-top: 4px solid #00e5ff; border-radius: 50%; animation: spin 1s infinite linear;"></div>
-        <div class="loading-text">جاري الدخول...</div>
+        <div class="spinner"></div>
+        <h3 style="color:white; margin-top:20px;">جاري الفتح...</h3>
     </div>
 
-    <div class="app-container" id="app">
-        
+    <div class="app-container" id="app" style="display:none;">
         <div class="header">
             <div class="logo">AZOOZ TV</div>
-            <div class="user-info">
-                <i class="fas fa-check-circle" style="color:#00ff00;"></i> نشط
-            </div>
+            <div class="user-info">اشتراك VIP</div>
         </div>
 
         <div class="grid-container">
-            
             <div class="card" tabindex="1" onclick="openPlayer('live')">
                 <i class="fas fa-tv"></i>
                 <span>القنوات</span>
@@ -192,62 +148,38 @@
                 <i class="fas fa-heart"></i>
                 <span>المفضلة</span>
             </div>
-
-            <div class="card" tabindex="5" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>خروج</span>
+            
+             <div class="card" tabindex="5" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i>
+                <span>تحديث</span>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- بيانات الاشتراك الخاصة بك ---
-        // ملاحظة: تم وضع البيانات كما طلبت تماماً
+        // بياناتك
         const SERVER = "http://aseaf1.me:8080";
         const USER = "292737757579";
         const PASS = "196384823579";
 
-        // عند فتح التطبيق
         window.onload = function() {
-            // محاكاة تحميل سريع للدخول التلقائي
+            // إخفاء التحميل وإظهار التطبيق بسرعة
             setTimeout(() => {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loader').style.display = 'none';
-                    document.getElementById('app').style.opacity = '1';
-                    
-                    // وضع المؤشر تلقائياً على أول زر للتحكم بالريموت
-                    document.querySelector('.card').focus();
-                }, 500);
-            }, 1500);
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('app').style.display = 'flex';
+                // التركيز على القنوات فوراً
+                document.querySelector('.card').focus();
+            }, 1000);
         };
 
-        // دالة تشغيل الأقسام (تم التعديل لتشغيل الروابط فعلياً)
         function openPlayer(type) {
-            let streamType = "m3u_plus"; // النوع الافتراضي للقنوات
+            let streamType = "m3u_plus";
+            if (type === 'movie') streamType = "movies";
+            if (type === 'series') streamType = "series";
             
-            // تحديد نوع المحتوى بناءً على الزر المضغوط
-            if (type === 'movie') {
-                streamType = "movies"; // محاولة طلب مكتبة الأفلام
-            } else if (type === 'series') {
-                streamType = "series"; // محاولة طلب مكتبة المسلسلات
-            }
-            
-            // تجهيز الرابط
-            // نستخدم m3u8 لأنه أسرع وأفضل للمشاهدة المباشرة
-            // إذا واجهت مشاكل في الأفلام، السيرفر سيعيد القائمة الكاملة تلقائياً
-            let finalLink = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=${streamType}&output=m3u8`;
-
-            // توجيه المتصفح لتشغيل الرابط
-            window.location.href = finalLink;
-        }
-
-        // دالة تسجيل الخروج (إعادة تحميل التطبيق)
-        function logout() {
-           if(confirm("هل تريد إعادة تحميل التطبيق؟")) {
-               location.reload();
-           }
+            // الرابط المباشر السريع
+            let link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=${streamType}&output=m3u8`;
+            window.location.href = link;
         }
     </script>
 
