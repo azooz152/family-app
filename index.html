@@ -2,184 +2,128 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مكالمة واتساب - دينا</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليلي الذكي</title>
     <style>
-        * { box-sizing: border-box; }
+        /* تصميم شكل التطبيق */
         body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f2f2f7;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #000;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
+            color: #333;
         }
-
-        /* --- إعدادات الخلفية (الصورة) --- */
-        .background-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* استبدل الرابط أدناه برابط صورتك أو اسم الملف المحلي */
-            background-image: url('ضع_اسم_صورتك_هنا.jpg'); 
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: 1; /* الطبقة الأولى */
-        }
-
-        /* --- تظليل خفيف لكي تظهر الكتابة بوضوح --- */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.3); /* تظليل خفيف جداً */
-            z-index: 2;
-        }
-
-        /* --- الشريط العلوي --- */
         .header {
-            position: absolute;
-            top: 40px; /* مسافة للكاميرا الأمامية */
-            width: 100%;
+            background-color: #007AFF; /* لون أزرق آيفون */
+            color: white;
+            padding: 20px;
             text-align: center;
-            color: #fff;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        .header h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .header p {
-            margin: 5px 0 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .encrypted-msg {
-            font-size: 11px;
-            margin-top: 20px;
-            opacity: 0.7;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* --- الشريط السفلي (الأزرار) --- */
-        .footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: rgba(17, 27, 33, 0.85); /* خلفية داكنة شفافة مثل واتساب */
-            padding: 20px 20px 40px;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            z-index: 3;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #fff;
-        }
-
-        .icon-circle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 5px;
-            font-size: 20px;
-        }
-
-        /* أيقونة الكاميرا والميكروفون */
-        .icon-circle svg {
-            width: 24px;
-            height: 24px;
-            fill: white;
-        }
-
-        /* زر إنهاء المكالمة الأحمر */
-        .end-call {
-            width: 65px;
-            height: 65px;
-            background-color: #ea0038;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0; opacity: 0.9; }
         
-        .end-call svg {
-            width: 30px;
-            height: 30px;
-            fill: white;
+        /* شريط البحث */
+        .search-container {
+            padding: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box; /* لضمان عدم خروج الحواف */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
+        /* قائمة الأرقام */
+        .contact-list {
+            padding: 0 20px 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .info h3 { margin: 0 0 5px; font-size: 18px; }
+        .info span { color: #888; font-size: 14px; }
+        
+        /* زر الاتصال */
+        .call-btn {
+            background-color: #34C759; /* لون أخضر آيفون */
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <div class="background-image"></div>
-    
-    <div class="overlay"></div>
-
     <div class="header">
-        <div style="font-size: 20px; margin-bottom: 10px;">⌄</div>
-        <div class="encrypted-msg">🔒 مشفرة تماماً بين الطرفين</div>
-        <h2>دينا 💖</h2>
-        <p>جاري الاتصال...</p>
+        <h1>دليلي الذكي</h1>
+        <p>أهم الأرقام والخدمات</p>
     </div>
 
-    <div class="footer">
+    <div class="search-container">
+        <input type="text" id="searchInput" onkeyup="filterNames()" placeholder="ابحث عن اسم الخدمة...">
+    </div>
+
+    <div class="contact-list" id="contacts">
+        <div class="card">
+            <div class="info">
+                <h3>خدمة العملاء</h3>
+                <span>شركة الكهرباء</span>
+            </div>
+            <a href="tel:933" class="call-btn">اتصال</a>
+        </div>
+
+        <div class="card">
+            <div class="info">
+                <h3>طوارئ المياه</h3>
+                <span>شركة المياه الوطنية</span>
+            </div>
+            <a href="tel:931" class="call-btn">اتصال</a>
+        </div>
+
+        <div class="card">
+            <div class="info">
+                <h3>الإسعاف</h3>
+                <span>الطوارئ الطبية</span>
+            </div>
+            <a href="tel:997" class="call-btn">اتصال</a>
+        </div>
         
-        <button class="btn">
-            <div class="icon-circle">•••</div>
-        </button>
+        </div>
 
-        <button class="btn">
-            <div class="icon-circle">
-                <svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path></svg>
-            </div>
-        </button>
+    <script>
+        // دالة البحث لتصفية الأسماء
+        function filterNames() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var list = document.getElementById("contacts");
+            var cards = list.getElementsByClassName('card');
 
-        <button class="btn">
-            <div class="icon-circle">
-                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.66 9 5v6c0 1.66 1.34 3 3 3z"></path><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg>
-            </div>
-        </button>
-
-        <button class="btn">
-            <div class="end-call">
-                <svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.36 7.46 6 12 6s8.66 2.36 11.71 5.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"></path></svg>
-            </div>
-        </button>
-
-    </div>
+            for (var i = 0; i < cards.length; i++) {
+                var h3 = cards[i].getElementsByTagName("h3")[0];
+                var txtValue = h3.textContent || h3.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 
 </body>
 </html>
