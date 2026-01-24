@@ -3,321 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AZOOZ TV - PRO</title>
+    <title>AZOOZ PRO PLAYER</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Rajdhani:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* === 1. إعدادات الألوان والمؤثرات === */
         :root {
-            --primary: #00f2ff; /* أزرق نيون */
-            --secondary: #bd00ff; /* بنفسجي نيون */
-            --glass-bg: rgba(0, 0, 0, 0.4); /* لون الزجاج (أسود شفاف) */
-            --glass-border: rgba(255, 255, 255, 0.15); /* حدود الزجاج */
+            --primary: #0984e3; /* أزرق Smarters */
+            --secondary: #2d3436;
+            --accent: #00cec9;
+            --bg: #000000;
+            --glass: rgba(16, 20, 30, 0.95);
         }
 
         body {
-            background-color: #000;
-            color: #fff;
+            background: url('home.png') no-repeat center center/cover;
+            background-color: var(--bg);
+            color: white;
             font-family: 'Cairo', sans-serif;
             margin: 0;
             overflow: hidden;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* === 2. الخلفية الخاصة بك (home.png) === */
-        .background-fx {
+        /* تخطيط الصفحة (Layout) مثل التطبيقات */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* القائمة الجانبية */
+        .sidebar {
+            width: 250px;
+            background: rgba(0,0,0,0.9);
+            border-left: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            z-index: 100;
+        }
+
+        .user-info {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        .user-info h3 { margin: 0; color: var(--accent); font-family: 'Rajdhani'; }
+        .expiry { font-size: 12px; color: #aaa; margin-top: 5px; }
+
+        .menu-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            border-right: 4px solid transparent;
+        }
+        .menu-item i { margin-left: 15px; width: 20px; }
+        .menu-item:hover, .menu-item.active {
+            background: rgba(9, 132, 227, 0.2);
+            border-right-color: var(--primary);
+            color: var(--accent);
+        }
+
+        /* منطقة المحتوى الرئيسية */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* شبكة القنوات والأفلام */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            padding-bottom: 50px;
+        }
+
+        .card {
+            background: #1e272e;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            transition: 0.3s;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        /* التركيز (Focus) للريموت */
+        .card.focused, .card:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 206, 201, 0.4);
+            z-index: 10;
+        }
+
+        .card img {
+            width: 100%;
+            height: 240px; /* بوستر طولي */
+            object-fit: cover;
+        }
+        .channel-card img { height: 120px; object-fit: contain; padding: 10px; background: #000; }
+
+        .card-info {
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        .card-title {
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* شريط التقدم (Resume Watching) */
+        .progress-bar {
+            height: 4px;
+            background: #333;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+        }
+
+        /* أيقونة المفضلة */
+        .fav-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+            z-index: 5;
+            text-shadow: 0 0 5px black;
+        }
+        .fav-active { color: #ff4757; }
+
+        /* المشغل */
+        .player-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            
-            /* تم التعديل لربط الصورة بملف home.png */
-            background: url('home.png') no-repeat center center/cover;
-            
-            z-index: -2;
-            /* تغميق بسيط لتظهر النصوص بوضوح */
-            filter: brightness(0.6); 
-            /* الحركة السينمائية */
-            animation: panImage 40s infinite alternate linear;
+            background: black;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
         }
-
-        @keyframes panImage {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+        .player-header {
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            position: absolute; top: 0; width: 100%;
+            z-index: 2001;
+            display: flex; justify-content: space-between;
         }
+        video { width: 100%; height: 100%; }
 
-        /* تأثير التوهج الخلفي */
-        .glow-spot {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(0, 242, 255, 0.1) 0%, rgba(0,0,0,0) 70%);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* === 3. اللوجو النيون (AZOOZ TV) === */
-        .brand-logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 70px;
-            text-transform: uppercase;
-            text-align: center;
+        /* الأقسام (Tabs) داخل المحتوى */
+        .sub-tabs {
+            display: flex;
+            gap: 15px;
             margin-bottom: 20px;
-            letter-spacing: 5px;
-            color: #fff;
-            text-shadow: 
-                0 0 10px var(--primary),
-                0 0 20px var(--primary),
-                0 0 40px var(--secondary);
-            animation: flicker 4s infinite;
+            overflow-x: auto;
         }
-        .brand-logo span { color: var(--primary); }
-
-        @keyframes flicker {
-            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
-            20%, 24%, 55% { opacity: 0.5; text-shadow: none; }
-        }
-
-        /* === 4. الزجاج الشفاف الاحترافي (Glassmorphism) === */
-        .glass-panel {
-            /* الخلفية شفافة جداً لترى home.png خلفها */
-            background: rgba(255, 255, 255, 0.03); 
-            /* التمويه القوي هو سر الاحترافية */
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255,255,255,0.3); /* إضاءة علوية */
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            padding: 40px 50px;
-            text-align: center;
-            width: 450px;
-            animation: floatUp 0.8s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* === 5. المدخلات والأزرار === */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: right;
-        }
-        
-        .input-icon {
-            position: absolute;
-            right: 20px; top: 18px;
-            color: var(--primary);
-            font-size: 18px;
-        }
-
-        input {
-            width: 100%;
-            padding: 16px 55px 16px 15px;
-            background: rgba(0, 0, 0, 0.3); /* خلفية الحقل غامقة قليلاً للقراءة */
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 15px;
-            color: white;
-            font-family: 'Cairo', sans-serif;
-            font-size: 16px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        /* تأثير التركيز (عند التحرك بالريموت) */
-        .focused {
-            border-color: var(--primary) !important;
-            background: rgba(0, 242, 255, 0.15) !important;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.25);
-            transform: scale(1.02);
-        }
-
-        .btn-enter {
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 16px;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: bold;
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            white-space: nowrap;
             cursor: pointer;
-            margin-top: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: 0.3s;
         }
+        .tab-btn.active { background: var(--primary); }
 
-        /* القائمة الرئيسية */
-        .dashboard-grid {
-            display: flex; gap: 30px; margin-top: 30px;
-        }
-        .menu-card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            width: 200px; height: 280px;
-            border-radius: 24px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            transition: 0.3s;
-        }
-        .menu-card i { font-size: 50px; margin-bottom: 20px; color: var(--primary); }
-
-        /* الصفحات */
-        .page { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; }
-        .active-page { display: flex; }
-        
-        /* المشغل */
-        video { width: 100%; height: 100%; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="background-fx"></div>
-    <div class="glow-spot"></div>
-
-    <div id="loginPage" class="page active-page">
-        
-        <div class="brand-logo">AZOOZ <span>TV</span></div>
-
-        <div class="glass-panel">
-            <h2 style="margin: 0 0 25px 0; font-weight: 400; opacity: 0.9;">أهلاً بك في عالمك</h2>
-            
-            <div class="input-group">
-                <i class="fas fa-server input-icon"></i>
-                <input type="text" id="host" class="focusable" placeholder="رابط السيرفر (Host)">
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="user-info">
+                <h3>AZOOZ TV</h3>
+                <div class="expiry">ينتهي: 2026-05-20</div>
             </div>
             
-            <div class="input-group">
-                <i class="fas fa-user input-icon"></i>
-                <input type="text" id="user" class="focusable" placeholder="اسم المستخدم">
+            <div class="menu-item active focusable" onclick="loadCategory('live')">
+                <i class="fas fa-tv"></i> القنوات المباشرة
+            </div>
+            <div class="menu-item focusable" onclick="loadCategory('movies')">
+                <i class="fas fa-film"></i> الأفلام
+            </div>
+            <div class="menu-item focusable" onclick="loadCategory('series')">
+                <i class="fas fa-layer-group"></i> المسلسلات
+            </div>
+            <div class="menu-item focusable" onclick="loadCategory('favorites')">
+                <i class="fas fa-heart"></i> المفضلة
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContainer">
+            <h2 id="sectionTitle" style="margin-top:0;">القنوات المباشرة</h2>
+            
+            <div class="sub-tabs" id="subTabs">
+                <div class="tab-btn active focusable">الكل</div>
+                <div class="tab-btn focusable">أخبار</div>
+                <div class="tab-btn focusable">رياضة</div>
+                <div class="tab-btn focusable">أطفال</div>
             </div>
 
-            <div class="input-group">
-                <i class="fas fa-key input-icon"></i>
-                <input type="password" id="pass" class="focusable" placeholder="كلمة المرور">
-            </div>
-            
-            <button class="btn-enter focusable" onclick="login()">دخول</button>
+            <div class="grid-container" id="contentGrid">
+                </div>
         </div>
     </div>
 
-    <div id="dashboardPage" class="page">
-        <div class="brand-logo" style="font-size: 50px;">AZOOZ <span>TV</span></div>
-        
-        <div class="dashboard-grid">
-            <div class="menu-card focusable" onclick="openSection('live')">
-                <i class="fas fa-satellite-dish"></i>
-                <h3>بث مباشر</h3>
+    <div class="player-overlay" id="playerScreen">
+        <div class="player-header">
+            <div class="focusable" onclick="closePlayer()" style="cursor: pointer; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 5px;">
+                <i class="fas fa-arrow-right"></i> عودة
             </div>
-            
-            <div class="menu-card focusable" onclick="openSection('movies')">
-                <i class="fas fa-film"></i>
-                <h3>أفلام</h3>
-            </div>
-
-            <div class="menu-card focusable" onclick="openSection('series')">
-                <i class="fas fa-layer-group"></i>
-                <h3>مسلسلات</h3>
-            </div>
+            <div id="playerTitle">اسم القناة</div>
         </div>
-    </div>
-
-    <div id="playerPage" class="page">
-        <div class="focusable" onclick="goHome()" style="position: absolute; top: 30px; right: 30px; background:rgba(0,0,0,0.6); color:white; padding:10px 25px; border-radius:50px; z-index:100; cursor:pointer; font-weight:bold; border:1px solid #555;">
-             <i class="fas fa-arrow-right"></i> خروج
-        </div>
-        <div style="width: 90%; height: 80%; box-shadow: 0 0 100px rgba(0,0,0,0.9);">
-            <video id="videoPlayer" controls></video>
-        </div>
+        <video id="videoPlayer" controls></video>
     </div>
 
     <script>
-        // === نفس الكود البرمجي الذكي للريموت ===
-        let currentFocusIndex = 0;
-        let focusableElements = [];
+        // ==========================================
+        // 1. إعدادات المستخدم والنظام
+        // ==========================================
+        const USER_CONFIG = {
+            host: "http://aseaf1.me:8080", // الرابط الخاص بك
+            user: "292737757579",          // اليوزر
+            pass: "196384823579"           // الباسورد
+        };
 
-        function updateFocusList() {
-            const activePage = document.querySelector('.active-page');
-            focusableElements = Array.from(activePage.querySelectorAll('.focusable'));
-            currentFocusIndex = 0;
-            if(focusableElements.length > 0) setFocus(0);
-        }
+        // قاعدة بيانات وهمية (للعرض لأن الاتصال المباشر يحتاج بروكسي)
+        const MOCK_DATA = {
+            live: [
+                { id: 1, name: "beIN Sports 1 HD", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Bein_Sports_logo.png/800px-Bein_Sports_logo.png", stream: "https://live-hls-web-aja.getaj.net/AJA/03.m3u8" },
+                { id: 2, name: "MBC 1", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/MBC_1_Logo.png/640px-MBC_1_Logo.png", stream: "" },
+                { id: 3, name: "Al Arabiya", logo: "https://upload.wikimedia.org/wikipedia/ar/thumb/0/05/Al_Arabiya_logo.svg/1200px-Al_Arabiya_logo.svg.png", stream: "" }
+            ],
+            movies: [
+                { id: 101, name: "John Wick 4", poster: "https://image.tmdb.org/t/p/w500/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg", stream: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+                { id: 102, name: "Avatar 2", poster: "https://image.tmdb.org/t/p/w500/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg", stream: "" }
+            ],
+            series: [
+                { id: 201, name: "Breaking Bad S1", poster: "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg", stream: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" }
+            ]
+        };
 
-        function setFocus(index) {
-            focusableElements.forEach(el => el.classList.remove('focused'));
-            if (focusableElements[index]) {
-                focusableElements[index].classList.add('focused');
-                focusableElements[index].focus();
+        // ==========================================
+        // 2. المحرك (Engine)
+        // ==========================================
+        let currentCategory = 'live';
+        let favorites = JSON.parse(localStorage.getItem('myFavs')) || [];
+        
+        function loadCategory(type) {
+            currentCategory = type;
+            document.getElementById('sectionTitle').innerText = 
+                type === 'live' ? 'القنوات المباشرة' : 
+                type === 'movies' ? 'مكتبة الأفلام' : 
+                type === 'favorites' ? 'المفضلة' : 'المسلسلات';
+
+            const grid = document.getElementById('contentGrid');
+            grid.innerHTML = '';
+
+            let dataToShow = [];
+            
+            if (type === 'favorites') {
+                // جلب البيانات من المفضلة
+                dataToShow = getFavoritesData();
+            } else {
+                dataToShow = MOCK_DATA[type] || [];
             }
-        }
 
-        document.addEventListener('keydown', function(e) {
-            if(focusableElements.length === 0) return;
-            if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-                currentFocusIndex = (currentFocusIndex + 1) % focusableElements.length;
-                setFocus(currentFocusIndex);
-            } 
-            else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                currentFocusIndex = (currentFocusIndex - 1 + focusableElements.length) % focusableElements.length;
-                setFocus(currentFocusIndex);
-            } 
-            else if (e.key === 'Enter') {
-                focusableElements[currentFocusIndex].click();
+            if(dataToShow.length === 0) {
+                grid.innerHTML = '<p style="padding:20px">لا توجد محتويات هنا</p>';
+                return;
             }
-        });
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.getElementById(pageId).classList.add('active-page');
-            setTimeout(updateFocusList, 100);
+            dataToShow.forEach(item => {
+                const isFav = favorites.includes(item.id);
+                // جلب نسبة المشاهدة المحفوظة
+                const progress = getSavedProgress(item.id);
+
+                const card = document.createElement('div');
+                card.className = `card ${type === 'live' ? 'channel-card' : ''} focusable`;
+                card.onclick = (e) => {
+                    if(!e.target.classList.contains('fav-icon')) {
+                        playContent(item.stream, item.name, item.id);
+                    }
+                };
+
+                card.innerHTML = `
+                    <i class="fas fa-heart fav-icon ${isFav ? 'fav-active' : ''}" onclick="toggleFav(${item.id}, this)"></i>
+                    <img src="${type === 'live' ? item.logo : item.poster}" alt="${item.name}">
+                    ${progress > 0 && type !== 'live' ? `<div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>` : ''}
+                    <div class="card-info">
+                        <div class="card-title">${item.name}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            // تحديث نظام الريموت
+            updateFocusSystem();
         }
 
-        function login() {
-            // محاكاة دخول
-            showPage('dashboardPage');
-        }
+        // ==========================================
+        // 3. نظام المشغل الذكي (Resume & Save)
+        // ==========================================
+        let currentPlayingId = null;
 
-        function openSection(type) {
-            showPage('playerPage');
-            playChannel("https://live-hls-web-aja.getaj.net/AJA/03.m3u8");
-        }
-
-        function playChannel(url) {
-            var video = document.getElementById('videoPlayer');
-            if (Hls.isSupported()) {
-                var hls = new Hls();
+        function playContent(url, title, id) {
+            if(!url) { alert("الرابط غير متوفر في النسخة التجريبية"); return; }
+            
+            currentPlayingId = id;
+            document.getElementById('playerScreen').style.display = 'flex';
+            document.getElementById('playerTitle').innerText = title;
+            
+            const video = document.getElementById('videoPlayer');
+            
+            // استئناف المشاهدة
+            const savedTime = localStorage.getItem(`resume_${id}`);
+            
+            if (Hls.isSupported() && url.endsWith('.m3u8')) {
+                const hls = new Hls();
                 hls.loadSource(url);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    if(savedTime) video.currentTime = parseFloat(savedTime);
+                    video.play();
+                });
+            } else {
                 video.src = url;
-                video.play();
+                video.addEventListener('loadedmetadata', () => {
+                    if(savedTime) video.currentTime = parseFloat(savedTime);
+                    video.play();
+                });
             }
+
+            // حفظ مكان الوصول كل 5 ثواني
+            video.ontimeupdate = () => {
+                if(video.currentTime > 5) {
+                    localStorage.setItem(`resume_${id}`, video.currentTime);
+                    // حفظ النسبة المئوية للمكتبة
+                    const percent = (video.currentTime / video.duration) * 100;
+                    localStorage.setItem(`progress_${id}`, percent);
+                }
+            };
         }
 
-        function goHome() {
-            document.getElementById('videoPlayer').pause();
-            showPage('dashboardPage');
+        function closePlayer() {
+            const video = document.getElementById('videoPlayer');
+            video.pause();
+            document.getElementById('playerScreen').style.display = 'none';
+            // إعادة تحميل القائمة لتحديث شريط التقدم
+            loadCategory(currentCategory);
         }
 
-        window.onload = function() {
-            updateFocusList();
-        };
+        function getSavedProgress(id) {
+            return parseFloat(localStorage.getItem(`progress_${id}`)) || 0;
+        }
+
+        // ==========================================
+        // 4. نظام المفضلة
+        // ==========================================
+        function toggleFav(id, iconElement) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                iconElement.classList.remove('fav-active');
+            } else {
+                favorites.push(id);
+                iconElement.classList.add('fav-active');
+            }
+            localStorage.setItem('myFavs', JSON.stringify(favorites));
+        }
+
+        function getFavoritesData() {
+            // دمج كل البيانات للبحث فيها
+            const allContent = [...MOCK_DATA.live, ...MOCK_DATA.movies, ...MOCK_DATA.series];
+            return allContent.filter(item => favorites.includes(item.id));
+        }
+
+        // ==========================================
+        // 5. نظام الريموت (HarmonyOS Compatible)
+        // ==========================================
+        let focusIndex = 0;
+        let focusItems = [];
+
+        function updateFocusSystem() {
+            focusItems = document.querySelectorAll('.focusable');
+            focusIndex = 0;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if(focusItems.length === 0) return;
+
+            // إزالة التركيز القديم
+            focusItems[focusIndex]?.classList.remove('focused');
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                focusIndex = (focusIndex + 1) % focusItems.length;
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                focusIndex = (focusIndex - 1 + focusItems.length) % focusItems.length;
+            } else if (e.key === 'Enter') {
+                focusItems[focusIndex].click();
+            }
+
+            // إضافة التركيز الجديد
+            focusItems[focusIndex]?.classList.add('focused');
+            focusItems[focusIndex]?.scrollIntoView({behavior: "smooth", block: "center"});
+        });
+
+        // التشغيل الأولي
+        window.onload = () => loadCategory('live');
+
     </script>
 </body>
 </html>
