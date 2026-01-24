@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV External</title>
+    <title>AZOOZ TV Player</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- الثيم (الهلال) --- */
+        /* --- الثيم (الهلال الأزرق) --- */
         :root {
             --hilal-blue: #0057b7;
             --hilal-dark: #003d80;
@@ -29,7 +29,7 @@
             background: rgba(0, 0, 0, 0.85); z-index: -1;
         }
 
-        /* --- شاشة التحديث (البداية) --- */
+        /* --- شاشة التحديث (Splash) --- */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
@@ -101,18 +101,21 @@
         }
         .modal-content {
             background: #1a1a1a; padding: 30px; border-radius: 20px;
-            border: 2px solid var(--hilal-blue); text-align: center; width: 400px;
+            border: 2px solid var(--hilal-blue); text-align: center; width: 450px;
         }
-        .modal-title { font-size: 22px; margin-bottom: 20px; color: var(--hilal-blue); }
+        .modal-title { font-size: 20px; margin-bottom: 20px; color: var(--hilal-blue); font-weight: bold; }
+        
         .player-btn {
-            display: block; width: 100%; padding: 15px; margin-bottom: 10px;
+            display: block; width: 100%; padding: 15px; margin-bottom: 12px;
             background: #333; color: white; border: none; border-radius: 10px;
             font-size: 18px; cursor: pointer; text-decoration: none;
+            border-left: 5px solid transparent; transition: 0.2s;
         }
-        .player-btn:focus, .player-btn:hover { background: var(--hilal-blue); color: white; transform: scale(1.05); }
-        .player-btn i { margin-left: 10px; }
-        .vlc-btn { border-right: 5px solid orange; }
-        .mx-btn { border-right: 5px solid #007bff; }
+        .player-btn:focus, .player-btn:hover { background: white; color: black; transform: scale(1.03); }
+        
+        .vlc-btn { border-left-color: orange; }
+        .mx-btn { border-left-color: #007bff; }
+        .direct-btn { border-left-color: #28a745; }
 
     </style>
 </head>
@@ -126,12 +129,21 @@
 
     <div id="player-modal">
         <div class="modal-content">
-            <h3 class="modal-title">اختر المشغل</h3>
-            <p style="color:#aaa; margin-bottom:20px; font-size:14px;">لضمان التشغيل، يفضل استخدام مشغل خارجي</p>
+            <h3 class="modal-title">اختر طريقة التشغيل</h3>
             
-            <a id="btn-vlc" class="player-btn vlc-btn" href="#">تشغيل عبر VLC <i class="fas fa-cone"></i></a>
-            <a id="btn-mx" class="player-btn mx-btn" href="#">تشغيل عبر MX Player <i class="fas fa-play"></i></a>
-            <button class="player-btn" onclick="closeModal()">إلغاء ❌</button>
+            <a id="btn-vlc" class="player-btn vlc-btn" href="#">
+                <i class="fas fa-cone" style="color:orange;"></i> تشغيل عبر VLC
+            </a>
+            
+            <a id="btn-mx" class="player-btn mx-btn" href="#">
+                <i class="fas fa-play" style="color:#007bff;"></i> تشغيل عبر MX Player
+            </a>
+
+            <a id="btn-direct" class="player-btn direct-btn" href="#" target="_blank">
+                <i class="fas fa-external-link-alt" style="color:green;"></i> فتح الرابط مباشرة
+            </a>
+
+            <button class="player-btn" onclick="closeModal()" style="background:#d32f2f; margin-top:10px;">إلغاء ❌</button>
         </div>
     </div>
 
@@ -211,7 +223,6 @@
         function openSection(type) {
             state.type = type;
             let data = cache[type] || [];
-            
             if(data.length > 0) {
                 renderList(data, 'category');
                 switchScreen('list-screen');
@@ -261,9 +272,11 @@
             if(container.firstChild) container.firstChild.focus();
         }
 
-        // --- نظام المشغل الخارجي ---
+        // --- نظام الروابط الذكي (الحل الجذري) ---
         function showPlayerOptions(id, ext, name) {
             let url = "";
+            let scheme = "http"; // السيرفر يستخدم http
+
             if(state.type === 'live') {
                 url = `${CONFIG.host}/live/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
             } else if(state.type === 'movie') {
@@ -272,13 +285,22 @@
                 url = `${CONFIG.host}/series/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
             }
 
-            // روابط التشغيل الخارجية (Deep Links)
-            const vlcLink = `vlc://${url}`;
-            const mxLink = `intent:${url}#Intent;package=com.mxtech.videoplayer.ad;S.title=${encodeURIComponent(name)};end`;
+            // إزالة http:// من الرابط لاستخدامه في Intent
+            let cleanUrl = url.replace('http://', '');
+
+            // 1. رابط VLC عبر Android Intent (الصيغة الصحيحة للتلفزيونات)
+            const vlcIntent = `intent://${cleanUrl}#Intent;scheme=http;type=video/*;package=org.videolan.vlc;end`;
+            
+            // 2. رابط MX Player عبر Android Intent
+            const mxIntent = `intent://${cleanUrl}#Intent;scheme=http;type=video/*;package=com.mxtech.videoplayer.ad;S.title=${encodeURIComponent(name)};end`;
+
+            // 3. الرابط المباشر (للمتصفح)
+            const directLink = url;
 
             // تحديث الأزرار
-            document.getElementById('btn-vlc').href = vlcLink;
-            document.getElementById('btn-mx').href = mxLink;
+            document.getElementById('btn-vlc').href = vlcIntent;
+            document.getElementById('btn-mx').href = mxIntent;
+            document.getElementById('btn-direct').href = directLink;
 
             // إظهار النافذة
             document.getElementById('player-modal').style.display = 'flex';
