@@ -3,232 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV</title>
+    <title>AZOOZ TV Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* --- إعدادات عامة --- */
+        /* --- الأساسيات --- */
         :root {
-            --primary-color: #00c8ff; /* لون IPTV Smarters الأزرق الفاتح */
-            --secondary-color: #007bff; /* لون أزرق داكن قليلاً */
-            --bg-dark: rgba(0, 0, 0, 0.85); /* خلفية داكنة شفافة */
+            --primary-glow: #00e5ff; /* نيون سماوي */
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
-            --bg-image: url('home.png'); /* خلفيتك المخصصة */
         }
 
         * {
-            margin: 0; padding: 0; box-sizing: border-box; user-select: none;
+            margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; outline: none;
         }
 
         body {
-            background-image: var(--bg-image); background-size: cover; background-position: center; background-attachment: fixed;
-            color: var(--text-color); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            /* الخلفية الخاصة بك */
+            background-image: url('home.png'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
+            background-color: #000; /* لون احتياطي */
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* --- شاشة الدخول / البداية (Login Screen) --- */
-        .login-container {
-            background: var(--bg-dark); padding: 40px; border-radius: 15px; text-align: center;
-            width: 90%; max-width: 450px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
+        /* طبقة تظليل خفيفة لجعل الزجاج يبرز */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
         }
 
-        /* --- شعار AZOOZ TV المتحرك الاحترافي --- */
-        .logo-box {
-            margin-bottom: 30px; position: relative;
-        }
-        .logo-text {
-            font-size: 48px; font-weight: 900; color: transparent;
-            background: linear-gradient(45deg, #00c8ff, #007bff, #00ffff, #00c8ff);
-            background-size: 300% 300%; -webkit-background-clip: text; background-clip: text;
-            animation: gradientShift 5s ease infinite, pulse 2s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(0, 200, 255, 0.5); letter-spacing: 2px;
-        }
-        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-
-        .login-status {
-            font-size: 18px; color: #ccc; margin-top: 20px; display: flex; align-items: center; justify-content: center;
-        }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid var(--primary-color);
-            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin-left: 10px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-
-        /* --- الواجهة الرئيسية (Main App Interface - Smarters Style) --- */
-        .main-app-container {
-            display: none; /* مخفية في البداية */
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-dark); flex-direction: column;
+        /* --- حاوية التطبيق --- */
+        .app-container {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            opacity: 0; transition: opacity 1s ease; /* تأثير ظهور ناعم */
         }
 
-        /* الشريط العلوي (Header) */
-        .app-header {
+        /* --- الشعار (Header) --- */
+        .header {
+            padding: 20px 40px;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 20px; background: rgba(0, 0, 0, 0.5); border-bottom: 1px solid #333;
         }
-        .header-logo { font-size: 24px; font-weight: bold; color: var(--primary-color); }
-        .header-icons i { font-size: 20px; margin-left: 20px; cursor: pointer; color: #ccc; transition: color 0.3s; }
-        .header-icons i:hover { color: var(--primary-color); }
-
-        /* منطقة المحتوى الرئيسية (Dashboard) */
-        .app-content {
-            flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        /* شبكة الأزرار الرئيسية (Dashboard Grid) */
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; width: 100%; max-width: 800px;
+        
+        .logo {
+            font-size: 35px; font-weight: 900; letter-spacing: 2px;
+            background: linear-gradient(to right, #fff, #00e5ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+            animation: glow 3s infinite alternate;
         }
 
-        /* كرت الزر (Dashboard Card) */
-        .dashboard-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            border-radius: 15px; padding: 30px 20px; text-align: center; cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center;
+        .user-info {
+            color: rgba(255,255,255,0.7); font-size: 14px;
+            background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .dashboard-card:hover, .dashboard-card:focus {
-            transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 200, 255, 0.3);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); border-color: transparent;
-        }
-        .card-icon { font-size: 50px; margin-bottom: 15px; color: var(--primary-color); }
-        .dashboard-card:hover .card-icon { color: white; }
-        .card-title { font-size: 18px; font-weight: 600; }
 
-        /* الشريط السفلي (Footer Info) */
-        .app-footer {
-            padding: 10px 20px; text-align: center; font-size: 14px; color: #777; background: rgba(0, 0, 0, 0.5); border-top: 1px solid #333;
+        /* --- شبكة الأيقونات (الزجاجية) --- */
+        .grid-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            padding: 20px;
+            flex-wrap: wrap;
         }
+
+        /* --- تصميم الكرت الزجاجي الاحترافي --- */
+        .card {
+            width: 160px; height: 160px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px); /* تأثير الزجاج المضبب */
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* حركة فيزيائية ناعمة */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .card i {
+            font-size: 45px; margin-bottom: 15px;
+            background: linear-gradient(to bottom, #fff, #aaa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
+
+        .card span {
+            font-size: 16px; font-weight: bold; color: rgba(255,255,255,0.8);
+            letter-spacing: 0.5px;
+        }
+
+        /* --- المؤثرات عند الوقوف (Hover / Focus) --- */
+        .card:hover, .card:focus {
+            transform: translateY(-10px) scale(1.05); /* يطفو للأعلى */
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.1);
+        }
+
+        .card:hover i, .card:focus i {
+            transform: scale(1.1);
+            background: linear-gradient(to bottom, #fff, var(--primary-glow));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--primary-glow));
+        }
+
+        .card:hover span, .card:focus span {
+            color: #fff; text-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* لمعة زجاجية تمر عند التحويم */
+        .card::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+            transform: skewX(-25deg);
+            transition: 0.5s;
+        }
+        .card:hover::after, .card:focus::after { left: 150%; transition: 0.7s; }
+
+        /* --- شاشة التحميل الأولية --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loading-text { color: var(--primary-glow); font-size: 20px; margin-top: 20px; animation: pulse 1s infinite; }
+        
+        @keyframes glow { 0% { text-shadow: 0 0 10px #00e5ff; } 100% { text-shadow: 0 0 30px #00e5ff, 0 0 10px white; } }
+        @keyframes pulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
 
     </style>
 </head>
 <body>
 
-    <div class="login-container" id="loginScreen">
-        <div class="logo-box">
-            <div class="logo-text">AZOOZ TV</div>
-        </div>
-        <div class="login-status" id="loginStatus">
-            <div class="spinner"></div> جاري تسجيل الدخول تلقائياً...
-        </div>
+    <div id="loader">
+        <div style="width: 50px; height: 50px; border: 3px solid #333; border-top: 3px solid #00e5ff; border-radius: 50%; animation: spin 1s infinite linear;"></div>
+        <div class="loading-text">AZOOZ TV</div>
     </div>
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
 
-    <div class="main-app-container" id="mainApp">
-        <div class="app-header">
-            <div class="header-logo">AZOOZ TV</div>
-            <div class="header-icons">
-                <i class="fas fa-search" title="بحث"></i>
-                <i class="fas fa-sync-alt" title="تحديث"></i>
-                <i class="fas fa-cog" title="الإعدادات"></i>
-                <i class="fas fa-sign-out-alt" title="تسجيل خروج" onclick="logout()"></i>
+    <div class="app-container" id="app">
+        
+        <div class="header">
+            <div class="logo">AZOOZ TV</div>
+            <div class="user-info">
+                <i class="fas fa-user"></i>&nbsp; متصل
             </div>
         </div>
 
-        <div class="app-content">
-            <div class="dashboard-grid">
-                <div class="dashboard-card" onclick="openSection('live')">
-                    <i class="fas fa-tv card-icon"></i>
-                    <div class="card-title">قنوات مباشرة</div>
-                </div>
-                <div class="dashboard-card" onclick="openSection('movies')">
-                    <i class="fas fa-film card-icon"></i>
-                    <div class="card-title">أفلام</div>
-                </div>
-                <div class="dashboard-card" onclick="openSection('series')">
-                    <i class="fas fa-video card-icon"></i>
-                    <div class="card-title">مسلسلات</div>
-                </div>
-                 <div class="dashboard-card" onclick="openSection('catchup')">
-                    <i class="fas fa-history card-icon"></i>
-                    <div class="card-title">إعادة المشاهدة</div>
-                </div>
-                 <div class="dashboard-card" onclick="openSection('favorites')">
-                    <i class="fas fa-heart card-icon"></i>
-                    <div class="card-title">المفضلة</div>
-                </div>
-                 <div class="dashboard-card" onclick="openSection('account')">
-                    <i class="fas fa-user-circle card-icon"></i>
-                    <div class="card-title">حسابي</div>
-                </div>
+        <div class="grid-container">
+            
+            <div class="card" tabindex="1" onclick="openLiveTV()">
+                <i class="fas fa-tv"></i>
+                <span>القنوات</span>
             </div>
-        </div>
 
-        <div class="app-footer">
-            تطبيق AZOOZ TV - جميع الحقوق محفوظة &copy; 2024
+            <div class="card" tabindex="2" onclick="showMsg('الأفلام')">
+                <i class="fas fa-film"></i>
+                <span>الأفلام</span>
+            </div>
+
+            <div class="card" tabindex="3" onclick="showMsg('المسلسلات')">
+                <i class="fas fa-video"></i>
+                <span>المسلسلات</span>
+            </div>
+
+            <div class="card" tabindex="4" onclick="showMsg('المفضلة')">
+                <i class="fas fa-heart"></i>
+                <span>المفضلة</span>
+            </div>
+
+            <div class="card" tabindex="5" onclick="logout()">
+                <i class="fas fa-cog"></i>
+                <span>الإعدادات</span>
+            </div>
+
         </div>
     </div>
-
 
     <script>
-        // --- بيانات السيرفر والدخول ---
-        const SERVER_URL = "http://aseaf1.me:8080";
-        const USERNAME = "292737757579";
-        const PASSWORD = "196384823579";
+        // --- البيانات الخاصة بك ---
+        const SERVER = "http://aseaf1.me:8080";
+        const USER = "292737757579";
+        const PASS = "196384823579";
 
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        const loginStatus = document.getElementById('loginStatus');
-
-        // --- دالة التحقق من حالة الدخول عند بدء التشغيل ---
-        function checkLoginStatus() {
-            const isLoggedIn = localStorage.getItem('azooz_isLoggedIn');
-            if (isLoggedIn === 'true') {
-                // إذا كان مسجلاً للدخول سابقاً، انتقل للواجهة الرئيسية مباشرة
-                showMainApp();
-            } else {
-                // إذا لم يكن مسجلاً، ابدأ عملية الدخول التلقائي
-                performAutoLogin();
-            }
-        }
-
-        // --- دالة تنفيذ تسجيل الدخول التلقائي (محاكاة) ---
-        function performAutoLogin() {
-            // هنا يمكن إضافة طلب فعلي للسيرفر للتحقق من البيانات إذا لزم الأمر
-            // في هذا المثال، نفترض صحة البيانات ونحاكي نجاح الدخول بعد تأخير قصير
+        window.onload = function() {
+            // محاكاة الاتصال السريع (1.5 ثانية)
             setTimeout(() => {
-                // حفظ حالة الدخول في LocalStorage
-                localStorage.setItem('azooz_isLoggedIn', 'true');
-                localStorage.setItem('azooz_username', USERNAME);
-                // الانتقال للواجهة الرئيسية
-                showMainApp();
-            }, 2500); // تأخير 2.5 ثانية لرؤية شاشة البداية والشعار
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('app').style.opacity = '1';
+                
+                // التركيز التلقائي على أول زر لسهولة التحكم بالريموت
+                document.querySelector('.card').focus();
+            }, 1500);
+        };
+
+        // دالة فتح القنوات المباشرة
+        function openLiveTV() {
+            // تشغيل القنوات مباشرة
+            // نستخدم m3u8 لخفتها وسرعتها
+            let link = `${SERVER}/get.php?username=${USER}&password=${PASS}&type=m3u_plus&output=m3u8`;
+            window.location.href = link;
         }
 
-        // --- دالة إظهار الواجهة الرئيسية وإخفاء شاشة الدخول ---
-        function showMainApp() {
-            loginScreen.style.opacity = '0';
-            setTimeout(() => {
-                loginScreen.style.display = 'none';
-                mainApp.style.display = 'flex';
-            }, 500);
+        // رسالة مؤقتة للأقسام الأخرى
+        function showMsg(name) {
+            // هنا يمكنك إضافة روابط الأفلام والمسلسلات لاحقاً بنفس طريقة القنوات
+            alert("قسم " + name + " قيد التحميل... 🚀");
         }
-
-        // --- دالة تسجيل الخروج ---
+        
+        // دالة الخروج (أو الإعدادات)
         function logout() {
-            // مسح بيانات الدخول من LocalStorage
-            localStorage.removeItem('azooz_isLoggedIn');
-            localStorage.removeItem('azooz_username');
-            // إعادة تحميل الصفحة للعودة لشاشة البداية
-            location.reload();
+           if(confirm("هل تريد تحديث التطبيق؟")) {
+               location.reload();
+           }
         }
-
-        // --- دالة فتح الأقسام (يمكنك ربطها بروابط فعلية لاحقاً) ---
-        function openSection(sectionName) {
-            console.log("فتح قسم: " + sectionName);
-            // هنا يمكنك إضافة المنطق الخاص بكل قسم، مثلاً فتح رابط القنوات:
-            // if (sectionName === 'live') {
-            //      const m3uLink = `${SERVER_URL}/get.php?username=${USERNAME}&password=${PASSWORD}&type=m3u_plus&output=ts`;
-            //      window.location.href = m3uLink;
-            // }
-            alert("سيتم فتح قسم: " + sectionName + " قريباً!");
-        }
-
-        // --- بدء التحقق عند تحميل الصفحة ---
-        window.onload = checkLoginStatus;
-
     </script>
 
 </body>
