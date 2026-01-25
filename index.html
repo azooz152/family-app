@@ -2,106 +2,49 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { --blue: #0057b7; --glass: rgba(0,0,0,0.85); }
+        :root { --blue: #0057b7; }
         body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: -1; }
-
-        /* شاشة المزامنة والخط الزمني */
-        #sync-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .sync-box { width: 80%; max-width: 500px; text-align: center; }
-        .progress-container { width: 100%; height: 20px; background: #222; border-radius: 10px; margin: 20px 0; overflow: hidden; border: 1px solid #444; }
-        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--blue), #00a2ff); transition: width 0.4s ease; box-shadow: 0 0 15px var(--blue); }
-        #sync-status { font-size: 20px; font-weight: bold; color: var(--blue); text-shadow: 0 0 10px rgba(0,162,255,0.5); }
-        #percent-text { font-size: 16px; color: #aaa; margin-top: 10px; }
-
-        /* واجهة الأقسام الثلاثة */
-        .container { display: none; gap: 30px; }
-        .smart-card { width: 260px; height: 320px; background: var(--glass); border: 2px solid #333; border-radius: 30px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
-        .smart-card:focus { transform: scale(1.1); background: var(--blue); border-color: white; outline: none; box-shadow: 0 0 40px var(--blue); }
-        .smart-card h2 { font-size: 30px; }
+        #sync-box { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .bar-bg { width: 80%; height: 15px; background: #222; border-radius: 10px; margin: 20px; overflow: hidden; border: 1px solid #444; }
+        #bar { width: 0%; height: 100%; background: var(--blue); transition: 0.5s; box-shadow: 0 0 15px var(--blue); }
+        .menu { display: none; gap: 25px; }
+        .card { width: 250px; height: 300px; background: rgba(0,0,0,0.85); border: 2px solid #333; border-radius: 25px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; }
+        .card:focus { background: var(--blue); transform: scale(1.1); outline: none; border-color: #fff; }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-
-    <div id="sync-overlay">
-        <div class="sync-box">
-            <h2 id="sync-status">جاري الاتصال بالسيرفر...</h2>
-            <div class="progress-container">
-                <div id="progress-bar"></div>
-            </div>
-            <div id="percent-text">0% مكتمل</div>
-        </div>
+    <div id="sync-box">
+        <h2 id="status">جاري الاتصال بالسيرفر...</h2>
+        <div class="bar-bg"><div id="bar"></div></div>
+        <p id="txt">0%</p>
     </div>
 
-    <div id="main-ui" class="container">
-        <div class="smart-card" tabindex="1" onclick="location.href='live.html'"><h2>LIVE TV<br>القنوات</h2></div>
-        <div class="smart-card" tabindex="2" onclick="location.href='vod.html'"><h2>MOVIES<br>الأفلام</h2></div>
-        <div class="smart-card" tabindex="3" onclick="location.href='series.html'"><h2>SERIES<br>المسلسلات</h2></div>
+    <div id="ui" class="menu">
+        <div class="card" tabindex="1" onclick="location.href='live.html'"><h2>القنوات</h2></div>
+        <div class="card" tabindex="2" onclick="location.href='vod.html'"><h2>الأفلام</h2></div>
+        <div class="card" tabindex="3" onclick="location.href='series.html'"><h2>المسلسلات</h2></div>
     </div>
 
 <script>
-    const cfg = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
-    
-    async function startSync() {
-        const bar = document.getElementById('progress-bar');
-        const status = document.getElementById('sync-status');
-        const percent = document.getElementById('percent-text');
-
+    const cfg = { h: "http://aseaf1.me:8080", u: "292737757579", p: "196384823579" };
+    async function sync() {
+        const steps = ['get_live_categories', 'get_vod_categories', 'get_series_categories'];
+        const keys = ['live_cats', 'vod_cats', 'series_cats'];
         try {
-            // المرحلة 1: القنوات
-            status.innerText = "جاري مزامنة القنوات المباشرة...";
-            await syncData('get_live_categories', 'live_cats_cache');
-            updateProgress(33, "33% مكتمل");
-
-            // المرحلة 2: الأفلام
-            status.innerText = "جاري مزامنة مكتبة الأفلام...";
-            await syncData('get_vod_categories', 'vod_cats_cache');
-            updateProgress(66, "66% مكتمل");
-
-            // المرحلة 3: المسلسلات
-            status.innerText = "جاري مزامنة مكتبة المسلسلات...";
-            await syncData('get_series_categories', 'series_cats_cache');
-            updateProgress(100, "100% - اكتملت المزامنة بنجاح");
-
-            // دخول التطبيق
-            setTimeout(() => {
-                document.getElementById('sync-overlay').style.fadeOut = "slow";
-                document.getElementById('sync-overlay').style.display = 'none';
-                document.getElementById('main-ui').style.display = 'flex';
-                document.querySelector('.smart-card').focus();
-            }, 800);
-
-        } catch (e) {
-            status.innerText = "خطأ في الاتصال! تأكد من اشتراكك";
-            status.style.color = "red";
-        }
+            for(let i=0; i<3; i++) {
+                document.getElementById('status').innerText = `جاري مزامنة ${i===0?'القنوات':i===1?'الأفلام':'المسلسلات'}...`;
+                const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=${steps[i]}`)}`);
+                localStorage.setItem(keys[i], JSON.stringify(await r.json()));
+                let p = ((i+1)*33); document.getElementById('bar').style.width = p+'%'; document.getElementById('txt').innerText = p+'%';
+            }
+            document.getElementById('sync-box').style.display = 'none';
+            document.getElementById('ui').style.display = 'flex';
+            document.querySelector('.card').focus();
+        } catch(e) { document.getElementById('status').innerText = "خطأ في الشبكة!"; }
     }
-
-    async function syncData(action, cacheKey) {
-        const url = `${cfg.host}/player_api.php?username=${cfg.user}&password=${cfg.pass}&action=${action}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-    }
-
-    function updateProgress(val, txt) {
-        document.getElementById('progress-bar').style.width = val + '%';
-        document.getElementById('percent-text').innerText = txt;
-    }
-
-    // إدارة زر الخروج (لـ App Inventor)
-    window.onkeydown = (e) => {
-        if(e.key === 'Backspace' || e.keyCode === 8) {
-            e.preventDefault();
-            let exit = confirm("هل تريد الخروج من تطبيق الزعيم؟");
-            if(exit && window.AppInventor) window.AppInventor.setWebViewString("EXIT_NOW");
-        }
-    }
-
-    startSync();
+    sync();
 </script>
 </body>
 </html>
