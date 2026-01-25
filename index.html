@@ -3,141 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
     <style>
-        :root { --blue: #0057b7; --white: #ffffff; }
+        :root { --blue: #0057b7; }
         body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; overflow: hidden; font-family: sans-serif; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: -1; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: -1; }
         
-        /* أزرار الرجوع المدمجة في الاندكس */
-        .back-nav { position: fixed; top: 20px; right: 20px; background: var(--blue); padding: 10px 20px; border-radius: 10px; cursor: pointer; z-index: 4000; display: none; font-weight: bold; border: 2px solid white; }
-
-        /* شاشة المزامنة المتسلسلة */
-        #sync-screen { display: flex; position: fixed; inset: 0; background: #000; z-index: 5000; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 6px solid #222; border-top: 6px solid var(--blue); border-radius: 50%; width: 80px; height: 80px; animation: spin 1s linear infinite; }
+        /* شاشة التحميل */
+        #loading { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .loader { border: 6px solid #222; border-top: 6px solid var(--blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #sync-text { margin-top: 30px; font-size: 24px; color: var(--blue); font-weight: bold; }
 
-        /* الشاشة الرئيسية */
-        .home { display: none; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
-        .m-btn { width: 220px; height: 260px; background: rgba(0,0,0,0.9); border: 2px solid #333; border-radius: 40px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
-        .m-btn:focus { background: var(--blue); transform: scale(1.1); outline: none; box-shadow: 0 0 40px var(--blue); border-color: white; }
+        /* القائمة الرئيسية */
+        .home-ui { display: none; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
+        .box { width: 220px; height: 260px; background: rgba(0,0,0,0.9); border: 2px solid #333; border-radius: 30px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
+        .box:focus { background: var(--blue); transform: scale(1.1); border-color: white; outline: none; box-shadow: 0 0 30px var(--blue); }
 
         /* واجهة الهولك */
-        .hulk-ui { display: none; height: 100vh; }
-        .sidebar { width: 320px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
-        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 25px; overflow-y: auto; }
+        .app-ui { display: none; height: 100vh; }
+        .sidebar { width: 300px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 20px; overflow-y: auto; }
         
-        .cat-item { padding: 22px; margin: 10px; background: #111; border-radius: 15px; cursor: pointer; font-weight: bold; border-bottom: 2px solid #222; }
-        .cat-item:focus { background: var(--blue); outline: none; border-right: 10px solid white; transform: translateX(-5px); }
+        .cat-btn { padding: 18px; margin: 8px; background: #111; border-radius: 12px; cursor: pointer; font-weight: bold; border-bottom: 1px solid #222; }
+        .cat-btn:focus { background: var(--blue); outline: none; border-right: 8px solid white; }
 
-        .card { background: #000; border-radius: 15px; border: 1px solid #333; text-align: center; cursor: pointer; overflow: hidden; position: relative; }
-        .card img { width: 100%; height: 220px; object-fit: cover; background: url('home.png') no-repeat center; background-size: contain; }
-        .card p { padding: 10px; margin: 0; font-size: 14px; background: rgba(0,0,0,0.85); }
-        .card:focus { transform: scale(1.05); border-color: var(--blue); outline: none; z-index: 10; border-width: 3px; }
+        .item-card { background: #000; border-radius: 15px; border: 1px solid #333; text-align: center; cursor: pointer; overflow: hidden; }
+        .item-card img { width: 100%; height: 210px; object-fit: cover; background: url('home.png') no-repeat center; background-size: contain; }
+        .item-card:focus { border-color: var(--blue); transform: scale(1.05); outline: none; }
 
-        /* المشغل */
-        #player-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 3000; }
-        video { width: 100%; height: 100%; }
+        /* شاشة المشغل (بدون أي أزرار رجوع بصرية) */
+        #player-wrap { display: none; position: fixed; inset: 0; background: #000; z-index: 5000; }
+        .video-js { width: 100% !important; height: 100% !important; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
 
-    <div id="btn-back" class="back-nav" onclick="goBack()">🔙 رجوع</div>
+    <div id="loading"><div class="loader"></div><h3 id="load-text">جاري المزامنة...</h3></div>
 
-    <div id="sync-screen">
-        <div class="spinner"></div>
-        <div id="sync-text">جاري تحضير "Azooz TV"...</div>
+    <div id="player-wrap">
+        <video id="my-video" class="video-js vjs-big-play-centered"></video>
     </div>
 
-    <div id="player-ui"><video id="video" controls autoplay></video></div>
-
-    <div id="v-home" class="home">
-        <div class="m-btn" tabindex="1" onclick="openSection('live')"><h2>القنوات</h2></div>
-        <div class="m-btn" tabindex="2" onclick="openSection('movie')"><h2>الأفلام</h2></div>
-        <div class="m-btn" tabindex="3" onclick="openSection('series')"><h2>المسلسلات</h2></div>
+    <div id="home-ui" class="home-ui">
+        <div class="box" tabindex="1" onclick="openMode('live')"><h2>قنوات</h2></div>
+        <div class="box" tabindex="2" onclick="openMode('movie')"><h2>أفلام</h2></div>
+        <div class="box" tabindex="3" onclick="openMode('series')"><h2>مسلسلات</h2></div>
     </div>
 
-    <div id="v-main" class="hulk-ui"><div id="side" class="sidebar"></div><div id="grid" class="grid"></div></div>
+    <div id="app-ui" class="app-ui">
+        <div id="sidebar" class="sidebar"></div>
+        <div id="grid" class="grid"></div>
+    </div>
 
 <script>
-    const CFG = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
-    let cache = { live: [], movie: [], series: [] }; let curMode = '';
+    const Srv = { h: "http://aseaf1.me:8080", u: "292737757579", p: "196384823579" };
+    let cache = {}; let curM = '';
+    let player = videojs('my-video');
 
-    // وظيفة المزامنة الكاملة قبل الدخول
-    async function init() {
-        const txt = document.getElementById('sync-text');
+    async function start() {
         try {
-            txt.innerText = "جاري مزامنة القنوات...";
-            cache.live = await fetchAPI('get_live_categories');
-            txt.innerText = "جاري مزامنة الأفلام...";
-            cache.movie = await fetchAPI('get_vod_categories');
-            txt.innerText = "جاري مزامنة المسلسلات...";
-            cache.series = await fetchAPI('get_series_categories');
-
-            document.getElementById('sync-screen').style.display = 'none';
-            document.getElementById('v-home').style.display = 'flex';
-            document.querySelector('.m-btn').focus();
-        } catch(e) { txt.innerText = "تأكد من الإنترنت يا أبا فهد!"; }
+            const actions = ['get_live_categories', 'get_vod_categories', 'get_series_categories'];
+            const names = ['live', 'movie', 'series'];
+            for(let i=0; i<3; i++) {
+                document.getElementById('load-text').innerText = `مزامنة ${names[i]}...`;
+                const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${Srv.h}/player_api.php?username=${Srv.u}&password=${Srv.p}&action=${actions[i]}`)}`);
+                cache[names[i]] = await r.json();
+            }
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('home-ui').style.display = 'flex';
+            document.querySelector('.box').focus();
+        } catch(e) { alert("تأكد من الاشتراك والإنترنت."); }
     }
 
-    async function fetchAPI(act) {
-        const url = `${CFG.host}/player_api.php?username=${CFG.user}&password=${CFG.pass}&action=${act}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        return await res.json();
+    function openMode(m) {
+        curM = m;
+        document.getElementById('home-ui').style.display = 'none';
+        document.getElementById('app-ui').style.display = 'flex';
+        let h = '';
+        cache[m].forEach(c => h += `<div class="cat-btn" tabindex="0" onclick="loadItems('${c.category_id}')">${c.category_name}</div>`);
+        document.getElementById('sidebar').innerHTML = h;
+        document.querySelector('.cat-btn').focus();
     }
 
-    function openSection(m) {
-        curMode = m;
-        document.getElementById('v-home').style.display = 'none';
-        document.getElementById('v-main').style.display = 'flex';
-        document.getElementById('btn-back').style.display = 'block'; // إظهار زر الرجوع
-        let h = ''; cache[m].forEach(c => h += `<div class="cat-item" tabindex="0" onclick="loadContent('${c.category_id}')">${c.category_name}</div>`);
-        document.getElementById('side').innerHTML = h; document.querySelector('.cat-item').focus();
-    }
-
-    async function loadContent(catId) {
-        let act = curMode==='live'?'get_live_streams':(curMode==='movie'?'get_vod_streams':'get_series');
-        const url = `${CFG.host}/player_api.php?username=${CFG.user}&password=${CFG.pass}&action=${act}&category_id=${catId}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        let h = ''; 
+    async function loadItems(id) {
+        let act = curM==='live'?'get_live_streams':(curM==='movie'?'get_vod_streams':'get_series');
+        const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${Srv.h}/player_api.php?username=${Srv.u}&password=${Srv.p}&action=${act}&category_id=${id}`)}`);
+        const data = await r.json();
+        let h = '';
         data.slice(0, 100).forEach(i => {
             let img = i.stream_icon || i.cover || 'home.png';
-            h += `<div class="card" tabindex="0" onclick="startPlay('${i.stream_id||i.series_id}')"><img src="${img}" loading="lazy" onerror="this.src='home.png'"><p>${i.name}</p></div>`;
+            h += `<div class="item-card" tabindex="0" onclick="playVideo('${i.stream_id||i.series_id}')"><img src="${img}" loading="lazy" onerror="this.src='home.png'"><p>${i.name}</p></div>`;
         });
         document.getElementById('grid').innerHTML = h;
     }
 
-    function startPlay(id) {
-        let url = `${CFG.host}/${curMode==='movie'?'movie':curMode}/${CFG.user}/${CFG.pass}/${id}.ts`;
-        document.getElementById('player-ui').style.display = 'block';
-        document.getElementById('btn-back').style.display = 'block';
-        const v = document.getElementById('video');
-        if (Hls.isSupported()) { var hls = new Hls(); hls.loadSource(url); hls.attachMedia(v); } else { v.src = url; }
+    function playVideo(id) {
+        let url = `${Srv.h}/${curM==='movie'?'movie':curM}/${Srv.u}/${Srv.p}/${id}.ts`;
+        document.getElementById('player-wrap').style.display = 'block';
+        player.src({ src: url, type: 'video/mp2t' });
+        player.play();
     }
 
-    // وظيفة الرجوع البرمجية (بدون بلوكات)
-    function goBack() {
-        const pUI = document.getElementById('player-ui');
-        const mUI = document.getElementById('v-main');
-        if (pUI.style.display === 'block') {
-            document.getElementById('video').pause(); pUI.style.display = 'none';
-        } else if (mUI.style.display === 'flex') {
-            mUI.style.display = 'none';
-            document.getElementById('v-home').style.display = 'flex';
-            document.getElementById('btn-back').style.display = 'none';
-            document.querySelector('.m-btn').focus();
-        }
-    }
-
-    // دعم أزرار الريموت الأساسية
+    // وظيفة التحكم الذكي بزر الرجوع (الريموت)
     window.onkeydown = function(e) {
-        if (e.key === 'Backspace') { e.preventDefault(); goBack(); }
+        if (e.key === 'Backspace' || e.keyCode === 8) {
+            e.preventDefault();
+            
+            // 1. إذا كان الفيديو شغال
+            if (document.getElementById('player-wrap').style.display === 'block') {
+                player.pause();
+                document.getElementById('player-ui').style.display = 'none';
+                document.getElementById('player-wrap').style.display = 'none';
+            } 
+            // 2. إذا كنت في قائمة القنوات (الهولك)
+            else if (document.getElementById('app-ui').style.display === 'flex') {
+                document.getElementById('app-ui').style.display = 'none';
+                document.getElementById('home-ui').style.display = 'flex';
+                document.querySelector('.box').focus();
+            } 
+            // 3. إذا كنت في الشاشة الرئيسية (تأكيد الخروج)
+            else if (document.getElementById('home-ui').style.display === 'flex') {
+                let exit = confirm("هل تريد الخروج من التطبيق يا أبا فهد؟");
+                if (exit) {
+                    // إذا كنت تستخدم App Inventor، هذا السطر سيغلق التطبيق
+                    if(window.AppInventor) window.AppInventor.setWebViewString("EXIT_NOW");
+                }
+            }
+        }
     };
 
-    init();
+    start();
 </script>
 </body>
 </html>
