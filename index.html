@@ -1,21 +1,168 @@
-// --- وظيفة إرسال الرابط إلى App Inventor ---
-function showPlayerOptions(id, ext, name) {
-    let url = "";
-    // بناء الرابط بناءً على القسم (مباشر، أفلام، مسلسلات)
-    if(state.type === 'live') {
-        url = `${CONFIG.host}/live/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-    } else if(state.type === 'movie') {
-        url = `${CONFIG.host}/movie/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-    } else {
-        url = `${CONFIG.host}/series/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-    }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AZOOZ TV - Official</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --hilal-blue: #0057b7; /* أزرق الهلال */
+            --hilal-white: #ffffff;
+            --glass-bg: rgba(0, 0, 0, 0.75);
+        }
 
-    // إرسال الرابط فوراً إلى تطبيق App Inventor
-    if (window.AppInventor) {
-        window.AppInventor.setWebViewString(url);
-    } else {
-        // إذا كنت تجربه في المتصفح العادي سيظهر الرابط في تنبيه
-        console.log("الرابط المجهز: " + url);
-        alert("اضغط على القناة من داخل التطبيق لتشغيل المشغل");
-    }
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tahoma', sans-serif; user-select: none; }
+
+        body {
+            /* سيقرأ الصورة المرفوعة بجانب الملف في GitHub */
+            background-image: url('home.png'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            background-color: #000; height: 100vh; overflow: hidden; color: white;
+        }
+
+        /* طبقة حماية لسهولة القراءة */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: -1;
+        }
+
+        /* واجهة التنقل الرئيسية */
+        .main-container {
+            display: flex; flex-direction: column; height: 100%; padding: 20px;
+        }
+
+        .header {
+            text-align: center; padding: 15px; background: var(--glass-bg);
+            border-bottom: 3px solid var(--hilal-blue); border-radius: 15px; margin-bottom: 20px;
+        }
+
+        .logo-text { font-size: 32px; font-weight: 900; color: var(--hilal-blue); text-shadow: 2px 2px #000; }
+
+        .home-grid {
+            flex: 1; display: flex; justify-content: center; align-items: center; gap: 30px;
+        }
+
+        .card {
+            width: 240px; height: 260px; background: var(--glass-bg);
+            border: 2px solid #444; border-radius: 20px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: 0.3s; cursor: pointer;
+        }
+
+        .card i { font-size: 80px; color: var(--hilal-white); margin-bottom: 15px; }
+        .card span { font-size: 24px; font-weight: bold; }
+
+        /* تأثير التركيز للريموت كنترول */
+        .card:focus, .card:hover {
+            transform: scale(1.1); border-color: var(--hilal-blue);
+            background: var(--hilal-blue); box-shadow: 0 0 30px var(--hilal-blue);
+            outline: none;
+        }
+
+        /* قائمة القنوات */
+        .list-container {
+            display: none; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px; overflow-y: auto; padding: 10px;
+        }
+
+        .item-card {
+            background: rgba(30, 30, 30, 0.9); padding: 15px; border-radius: 12px;
+            text-align: center; border: 1px solid #333; cursor: pointer;
+        }
+
+        .item-card:focus { background: var(--hilal-blue); transform: scale(1.05); outline: none; }
+
+        .active { display: grid !important; }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="header">
+            <div class="logo-text">AZOOZ TV <i class="fas fa-star"></i></div>
+        </div>
+
+        <div id="home-view" class="home-grid">
+            <div class="card" tabindex="1" onclick="loadContent('live')">
+                <i class="fas fa-tv"></i> <span>بث مباشر</span>
+            </div>
+            <div class="card" tabindex="2" onclick="loadContent('movie')">
+                <i class="fas fa-film"></i> <span>أفلام</span>
+            </div>
+            <div class="card" tabindex="3" onclick="loadContent('series')">
+                <i class="fas fa-video"></i> <span>مسلسلات</span>
+            </div>
+        </div>
+
+        <div id="list-view" class="list-container"></div>
+    </div>
+
+    <script>
+        // بيانات السيرفر
+        const CONFIG = {
+            host: "http://aseaf1.me:8080",
+            user: "292737757579",
+            pass: "196384823579"
+        };
+
+        let currentType = '';
+
+        // وظيفة جلب القنوات والارتباط مع App Inventor
+        async function loadContent(type) {
+            currentType = type;
+            const action = type === 'live' ? 'get_live_streams' : (type === 'movie' ? 'get_vod_streams' : 'get_series');
+            const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}`;
+            
+            // استخدام بروكسي لتجاوز الحظر في المتصفحات
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+
+            try {
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                renderItems(data);
+            } catch (error) {
+                alert("خطأ في الاتصال بالسيرفر");
+            }
+        }
+
+        function renderItems(items) {
+            const container = document.getElementById('list-view');
+            const home = document.getElementById('home-view');
+            home.style.display = 'none';
+            container.classList.add('active');
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.tabIndex = 0;
+                div.innerText = item.name;
+                
+                // عند الضغط، يتم إرسال الرابط للـ App Inventor
+                div.onclick = () => {
+                    const streamId = item.stream_id || item.series_id;
+                    const ext = item.container_extension || 'ts';
+                    const streamUrl = `${CONFIG.host}/${currentType === 'live' ? 'live' : 'movie'}/${CONFIG.user}/${CONFIG.pass}/${streamId}.${ext}`;
+                    
+                    // --- الجسر الذهبي مع App Inventor ---
+                    if (window.AppInventor) {
+                        window.AppInventor.setWebViewString(streamUrl);
+                    }
+                };
+                container.appendChild(div);
+            });
+            container.firstChild.focus();
+        }
+
+        // التعامل مع زر الرجوع في الريموت
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' || e.keyCode === 8) {
+                location.reload(); // العودة للرئيسية
+            }
+        });
+    </script>
+</body>
+</html>
