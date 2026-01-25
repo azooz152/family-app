@@ -5,88 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --blue: #0057b7; }
+        :root { --blue: #0057b7; --white: #ffffff; }
         body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; overflow: hidden; font-family: sans-serif; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1; }
-        #sync { display: flex; position: fixed; inset: 0; background: #000; z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 5px solid #222; border-top: 5px solid var(--blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.65); z-index: -1; }
+        
+        /* أزرار الرجوع المدمجة في الاندكس */
+        .back-nav { position: fixed; top: 20px; right: 20px; background: var(--blue); padding: 10px 20px; border-radius: 10px; cursor: pointer; z-index: 4000; display: none; font-weight: bold; border: 2px solid white; }
+
+        /* شاشة المزامنة المتسلسلة */
+        #sync-screen { display: flex; position: fixed; inset: 0; background: #000; z-index: 5000; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 6px solid #222; border-top: 6px solid var(--blue); border-radius: 50%; width: 80px; height: 80px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #sync-text { margin-top: 30px; font-size: 24px; color: var(--blue); font-weight: bold; }
+
+        /* الشاشة الرئيسية */
         .home { display: none; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
-        .btn { width: 220px; height: 260px; background: rgba(0,0,0,0.9); border: 2px solid #333; border-radius: 30px; cursor: pointer; text-align: center; display: flex; flex-direction: column; justify-content: center; }
-        .btn:focus { background: var(--blue); transform: scale(1.1); outline: none; }
-        .ui { display: none; height: 100vh; }
-        .sidebar { width: 300px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
-        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 20px; overflow-y: auto; }
-        .card:focus { border: 2px solid white; transform: scale(1.1); outline: none; }
+        .m-btn { width: 220px; height: 260px; background: rgba(0,0,0,0.9); border: 2px solid #333; border-radius: 40px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
+        .m-btn:focus { background: var(--blue); transform: scale(1.1); outline: none; box-shadow: 0 0 40px var(--blue); border-color: white; }
+
+        /* واجهة الهولك */
+        .hulk-ui { display: none; height: 100vh; }
+        .sidebar { width: 320px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 25px; overflow-y: auto; }
+        
+        .cat-item { padding: 22px; margin: 10px; background: #111; border-radius: 15px; cursor: pointer; font-weight: bold; border-bottom: 2px solid #222; }
+        .cat-item:focus { background: var(--blue); outline: none; border-right: 10px solid white; transform: translateX(-5px); }
+
+        .card { background: #000; border-radius: 15px; border: 1px solid #333; text-align: center; cursor: pointer; overflow: hidden; position: relative; }
+        .card img { width: 100%; height: 220px; object-fit: cover; background: url('home.png') no-repeat center; background-size: contain; }
+        .card p { padding: 10px; margin: 0; font-size: 14px; background: rgba(0,0,0,0.85); }
+        .card:focus { transform: scale(1.05); border-color: var(--blue); outline: none; z-index: 10; border-width: 3px; }
+
+        /* المشغل */
         #player-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 3000; }
         video { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
     <div class="overlay"></div>
-    <div id="sync"><div class="spinner"></div><h3 id="st">جاري المزامنة...</h3></div>
-    <div id="player-ui"><video id="video" controls autoplay></video></div>
-    <div id="v-home" class="home">
-        <div class="btn" tabindex="1" onclick="show('live')"><h2>قنوات</h2></div>
-        <div class="btn" tabindex="2" onclick="show('movie')"><h2>أفلام</h2></div>
-        <div class="btn" tabindex="3" onclick="show('series')"><h2>مسلسلات</h2></div>
+
+    <div id="btn-back" class="back-nav" onclick="goBack()">🔙 رجوع</div>
+
+    <div id="sync-screen">
+        <div class="spinner"></div>
+        <div id="sync-text">جاري تحضير "Azooz TV"...</div>
     </div>
-    <div id="v-main" class="ui"><div id="side" class="sidebar"></div><div id="grid" class="grid"></div></div>
+
+    <div id="player-ui"><video id="video" controls autoplay></video></div>
+
+    <div id="v-home" class="home">
+        <div class="m-btn" tabindex="1" onclick="openSection('live')"><h2>القنوات</h2></div>
+        <div class="m-btn" tabindex="2" onclick="openSection('movie')"><h2>الأفلام</h2></div>
+        <div class="m-btn" tabindex="3" onclick="openSection('series')"><h2>المسلسلات</h2></div>
+    </div>
+
+    <div id="v-main" class="hulk-ui"><div id="side" class="sidebar"></div><div id="grid" class="grid"></div></div>
 
 <script>
-    const cfg = { h: "http://aseaf1.me:8080", u: "292737757579", p: "196384823579" };
-    let cache = {}; let mode = '';
+    const CFG = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
+    let cache = { live: [], movie: [], series: [] }; let curMode = '';
 
-    async function sync() {
-        const s = document.getElementById('st');
+    // وظيفة المزامنة الكاملة قبل الدخول
+    async function init() {
+        const txt = document.getElementById('sync-text');
         try {
-            s.innerText = "مزامنة القنوات..."; cache.live = await fetchD('get_live_categories');
-            s.innerText = "مزامنة الأفلام..."; cache.movie = await fetchD('get_vod_categories');
-            s.innerText = "مزامنة المسلسلات..."; cache.series = await fetchD('get_series_categories');
-            document.getElementById('sync').style.display = 'none';
+            txt.innerText = "جاري مزامنة القنوات...";
+            cache.live = await fetchAPI('get_live_categories');
+            txt.innerText = "جاري مزامنة الأفلام...";
+            cache.movie = await fetchAPI('get_vod_categories');
+            txt.innerText = "جاري مزامنة المسلسلات...";
+            cache.series = await fetchAPI('get_series_categories');
+
+            document.getElementById('sync-screen').style.display = 'none';
             document.getElementById('v-home').style.display = 'flex';
-            document.querySelector('.btn').focus();
-        } catch(e) { s.innerText = "خطأ في السيرفر!"; }
+            document.querySelector('.m-btn').focus();
+        } catch(e) { txt.innerText = "تأكد من الإنترنت يا أبا فهد!"; }
     }
 
-    async function fetchD(a) {
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=${a}`)}`);
+    async function fetchAPI(act) {
+        const url = `${CFG.host}/player_api.php?username=${CFG.user}&password=${CFG.pass}&action=${act}`;
+        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
         return await res.json();
     }
 
-    function show(m) {
-        mode = m; document.getElementById('v-home').style.display = 'none';
+    function openSection(m) {
+        curMode = m;
+        document.getElementById('v-home').style.display = 'none';
         document.getElementById('v-main').style.display = 'flex';
-        let h = ''; cache[m].forEach(c => h += `<div class="cat" tabindex="0" onclick="loadI('${c.category_id}')" style="padding:15px; border-bottom:1px solid #222">${c.category_name}</div>`);
-        document.getElementById('side').innerHTML = h; document.querySelector('.cat').focus();
+        document.getElementById('btn-back').style.display = 'block'; // إظهار زر الرجوع
+        let h = ''; cache[m].forEach(c => h += `<div class="cat-item" tabindex="0" onclick="loadContent('${c.category_id}')">${c.category_name}</div>`);
+        document.getElementById('side').innerHTML = h; document.querySelector('.cat-item').focus();
     }
 
-    async function loadI(id) {
-        let act = mode==='live'?'get_live_streams':(mode==='movie'?'get_vod_streams':'get_series');
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=${act}&category_id=${id}`)}`);
+    async function loadContent(catId) {
+        let act = curMode==='live'?'get_live_streams':(curMode==='movie'?'get_vod_streams':'get_series');
+        const url = `${CFG.host}/player_api.php?username=${CFG.user}&password=${CFG.pass}&action=${act}&category_id=${catId}`;
+        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
         const data = await res.json();
-        let h = ''; data.slice(0, 100).forEach(i => h += `<div class="card" tabindex="0" onclick="play('${i.stream_id||i.series_id}')" style="background:#111; border-radius:10px; text-align:center;"><img src="${i.stream_icon||i.cover||'home.png'}" style="width:100%;height:180px;object-fit:cover"><p>${i.name}</p></div>`);
+        let h = ''; 
+        data.slice(0, 100).forEach(i => {
+            let img = i.stream_icon || i.cover || 'home.png';
+            h += `<div class="card" tabindex="0" onclick="startPlay('${i.stream_id||i.series_id}')"><img src="${img}" loading="lazy" onerror="this.src='home.png'"><p>${i.name}</p></div>`;
+        });
         document.getElementById('grid').innerHTML = h;
     }
 
-    function play(id) {
-        let url = `${cfg.h}/${mode==='movie'?'movie':mode}/${cfg.u}/${cfg.p}/${id}.ts`;
+    function startPlay(id) {
+        let url = `${CFG.host}/${curMode==='movie'?'movie':curMode}/${CFG.user}/${CFG.pass}/${id}.ts`;
         document.getElementById('player-ui').style.display = 'block';
+        document.getElementById('btn-back').style.display = 'block';
         const v = document.getElementById('video');
         if (Hls.isSupported()) { var hls = new Hls(); hls.loadSource(url); hls.attachMedia(v); } else { v.src = url; }
     }
 
-    window.onkeydown = function(e) {
-        if (e.key === 'Backspace' || e.keyCode === 8) {
-            e.preventDefault();
-            if (document.getElementById('player-ui').style.display === 'block') {
-                document.getElementById('video').pause(); document.getElementById('player-ui').style.display = 'none';
-            } else if (document.getElementById('v-main').style.display === 'flex') {
-                document.getElementById('v-main').style.display = 'none'; document.getElementById('v-home').style.display = 'flex';
-            } else if (window.AppInventor) { window.AppInventor.setWebViewString("EXIT"); }
+    // وظيفة الرجوع البرمجية (بدون بلوكات)
+    function goBack() {
+        const pUI = document.getElementById('player-ui');
+        const mUI = document.getElementById('v-main');
+        if (pUI.style.display === 'block') {
+            document.getElementById('video').pause(); pUI.style.display = 'none';
+        } else if (mUI.style.display === 'flex') {
+            mUI.style.display = 'none';
+            document.getElementById('v-home').style.display = 'flex';
+            document.getElementById('btn-back').style.display = 'none';
+            document.querySelector('.m-btn').focus();
         }
+    }
+
+    // دعم أزرار الريموت الأساسية
+    window.onkeydown = function(e) {
+        if (e.key === 'Backspace') { e.preventDefault(); goBack(); }
     };
-    sync();
+
+    init();
 </script>
 </body>
 </html>
