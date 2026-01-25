@@ -1,139 +1,32 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        :root { --blue: #0057b7; --glass: rgba(0, 0, 0, 0.9); }
-        body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; overflow: hidden; font-family: sans-serif; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: -1; }
-        
-        /* شاشة التحميل والمزامنة الذكية */
-        #sync-screen { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
-        .spinner { border: 4px solid #333; border-top: 4px solid var(--blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #sync-text { margin-top: 20px; font-size: 20px; font-weight: bold; }
-
-        /* الشاشة الرئيسية (3 أيقونات) */
-        .home { display: none; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
-        .m-btn { width: 220px; height: 260px; background: var(--glass); border: 2px solid #333; border-radius: 30px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; transition: 0.3s; }
-        .m-btn:focus { background: var(--blue); border-color: white; transform: scale(1.1); outline: none; box-shadow: 0 0 30px var(--blue); }
-
-        /* واجهة الهُولك */
-        .hulk-ui { display: none; height: 100vh; }
-        .sidebar { width: 300px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
-        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 20px; overflow-y: auto; }
-        
-        .cat-item { padding: 18px; margin: 5px; background: #111; border-radius: 10px; cursor: pointer; font-weight: bold; border-bottom: 1px solid #222; }
-        .cat-item:focus { background: var(--blue); outline: none; border-right: 6px solid white; }
-
-        .card { background: #000; border-radius: 12px; border: 1px solid #333; text-align: center; cursor: pointer; overflow: hidden; position: relative; }
-        .card img { width: 100%; height: 210px; object-fit: cover; background: url('home.png') no-repeat center; background-size: contain; }
-        .card:focus { transform: scale(1.1); border-color: var(--blue); box-shadow: 0 0 20px var(--blue); outline: none; z-index: 10; }
-    </style>
+    <title>TEST PLAYER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body>
-    <div class="overlay"></div>
+<body style="background:#000; color:#fff; text-align:center;">
 
-    <div id="sync-screen">
-        <div class="spinner"></div>
-        <div id="sync-text">جاري الاتصال بالسيرفر...</div>
+    <h2>اختبار تشغيل قناة (Azooz TV)</h2>
+    
+    <video id="testPlayer" controls autoplay style="width:100%; max-width:600px; border:2px solid #0057b7;">
+        <source src="http://aseaf1.me:8080/live/292737757579/196384823579/157.ts" type="video/mp2t">
+        متصفحك لا يدعم المشغل.. جرب جوجل كروم
+    </video>
+
+    <div style="margin-top:20px;">
+        <p id="status">جاري محاولة الاتصال بالبث...</p>
     </div>
 
-    <div id="v-home" class="home">
-        <div class="m-btn" tabindex="1" onclick="showSection('live')"><h2>قنوات</h2></div>
-        <div class="m-btn" tabindex="2" onclick="showSection('movie')"><h2>أفلام</h2></div>
-        <div class="m-btn" tabindex="3" onclick="showSection('series')"><h2>مسلسلات</h2></div>
-    </div>
-
-    <div id="v-main" class="hulk-ui">
-        <div id="side" class="sidebar"></div>
-        <div id="grid" class="grid"></div>
-    </div>
-
-<script>
-    const cfg = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
-    let cache = { live: [], movie: [], series: [] };
-    let curMode = '';
-
-    // وظيفة المزامنة التسلسلية التي طلبتها
-    async function startSync() {
-        const text = document.getElementById('sync-text');
-        try {
-            // 1. مزامنة القنوات
-            text.innerText = "جاري مزامنة القنوات...";
-            cache.live = await fetchData('get_live_categories');
-
-            // 2. مزامنة الأفلام
-            text.innerText = "جاري مزامنة مكتبة الأفلام...";
-            cache.movie = await fetchData('get_vod_categories');
-
-            // 3. مزامنة المسلسلات
-            text.innerText = "جاري مزامنة مكتبة المسلسلات...";
-            cache.series = await fetchData('get_series_categories');
-
-            // انتهاء المزامنة بنجاح
-            document.getElementById('sync-screen').style.display = 'none';
-            document.getElementById('v-home').style.display = 'flex';
-            document.querySelector('.m-btn').focus();
-        } catch(e) { 
-            text.innerText = "خطأ في السيرفر.. تأكد من البيانات والإنترنت";
-        }
-    }
-
-    async function fetchData(action) {
-        const url = `${cfg.host}/player_api.php?username=${cfg.user}&password=${cfg.pass}&action=${action}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        return await res.json();
-    }
-
-    function showSection(mode) {
-        curMode = mode;
-        const cats = cache[mode];
-        document.getElementById('v-home').style.display = 'none';
-        document.getElementById('v-main').style.display = 'flex';
-        let h = '';
-        cats.forEach(c => h += `<div class="cat-item" tabindex="0" onclick="loadItems('${c.category_id}')">${c.category_name}</div>`);
-        document.getElementById('side').innerHTML = h;
-        document.querySelector('.cat-item').focus();
-    }
-
-    async function loadItems(catId) {
-        let act = curMode === 'live' ? 'get_live_streams' : (curMode === 'movie' ? 'get_vod_streams' : 'get_series');
-        const url = `${cfg.host}/player_api.php?username=${cfg.user}&password=${cfg.pass}&action=${act}&category_id=${catId}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        let h = '';
-        // جلب أول 100 عنصر لضمان السرعة الفائقة
-        data.slice(0, 100).forEach(i => {
-            let img = i.stream_icon || i.cover || 'home.png';
-            h += `<div class="card" tabindex="0" onclick="play('${i.stream_id || i.series_id}')"><img src="${img}" loading="lazy" onerror="this.src='home.png'"><p>${i.name}</p></div>`;
-        });
-        document.getElementById('grid').innerHTML = h;
-    }
-
-    function play(id) {
-        const url = `${cfg.host}/${curMode==='movie'?'movie':curMode}/${cfg.user}/${cfg.pass}/${id}.ts`;
-        if(window.AppInventor) window.AppInventor.setWebViewString(url);
-    }
-
-    // إدارة زر الرجوع الاحترافي وتأكيد الخروج
-    window.onkeydown = function(e) {
-        if (e.key === 'Backspace' || e.keyCode === 8) {
-            if (document.getElementById('v-main').style.display === 'flex') {
-                e.preventDefault();
-                document.getElementById('v-main').style.display = 'none';
-                document.getElementById('v-home').style.display = 'flex';
-                document.querySelector('.m-btn').focus();
-            } else if (document.getElementById('v-home').style.display === 'flex') {
-                e.preventDefault();
-                // إرسال طلب لـ App Inventor لإظهار رسالة الخروج
-                if(window.AppInventor) window.AppInventor.setWebViewString("SHOW_EXIT_DIALOG");
-            }
-        }
-    };
-
-    startSync();
-</script>
+    <script>
+        var vid = document.getElementById("testPlayer");
+        vid.onplaying = function() {
+            document.getElementById("status").innerHTML = "✅ اشتغل! مبروك يا أبو فهد، المشغل تمام.";
+            document.getElementById("status").style.color = "lime";
+        };
+        vid.onerror = function() {
+            document.getElementById("status").innerHTML = "❌ لم يشتغل.. السيرفر يرفض العرض في المتصفح.";
+            document.getElementById("status").style.color = "red";
+        };
+    </script>
 </body>
 </html>
