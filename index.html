@@ -1,32 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-    <title>TEST PLAYER</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root { --blue: #0057b7; }
+        body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; overflow: hidden; font-family: sans-serif; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: -1; }
+        #sync { display: flex; position: fixed; inset: 0; background: #000; z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 5px solid #222; border-top: 5px solid var(--blue); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .home { display: none; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
+        .btn { width: 220px; height: 260px; background: rgba(0,0,0,0.9); border: 2px solid #333; border-radius: 30px; cursor: pointer; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .btn:focus { background: var(--blue); transform: scale(1.1); outline: none; }
+        .ui { display: none; height: 100vh; }
+        .sidebar { width: 300px; background: rgba(0,0,0,0.95); border-left: 3px solid var(--blue); overflow-y: auto; }
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 20px; overflow-y: auto; }
+        .card:focus { border: 2px solid white; transform: scale(1.1); outline: none; }
+        #player-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 3000; }
+        video { width: 100%; height: 100%; }
+    </style>
 </head>
-<body style="background:#000; color:#fff; text-align:center;">
-
-    <h2>اختبار تشغيل قناة (Azooz TV)</h2>
-    
-    <video id="testPlayer" controls autoplay style="width:100%; max-width:600px; border:2px solid #0057b7;">
-        <source src="http://aseaf1.me:8080/live/292737757579/196384823579/157.ts" type="video/mp2t">
-        متصفحك لا يدعم المشغل.. جرب جوجل كروم
-    </video>
-
-    <div style="margin-top:20px;">
-        <p id="status">جاري محاولة الاتصال بالبث...</p>
+<body>
+    <div class="overlay"></div>
+    <div id="sync"><div class="spinner"></div><h3 id="st">جاري المزامنة...</h3></div>
+    <div id="player-ui"><video id="video" controls autoplay></video></div>
+    <div id="v-home" class="home">
+        <div class="btn" tabindex="1" onclick="show('live')"><h2>قنوات</h2></div>
+        <div class="btn" tabindex="2" onclick="show('movie')"><h2>أفلام</h2></div>
+        <div class="btn" tabindex="3" onclick="show('series')"><h2>مسلسلات</h2></div>
     </div>
+    <div id="v-main" class="ui"><div id="side" class="sidebar"></div><div id="grid" class="grid"></div></div>
 
-    <script>
-        var vid = document.getElementById("testPlayer");
-        vid.onplaying = function() {
-            document.getElementById("status").innerHTML = "✅ اشتغل! مبروك يا أبو فهد، المشغل تمام.";
-            document.getElementById("status").style.color = "lime";
-        };
-        vid.onerror = function() {
-            document.getElementById("status").innerHTML = "❌ لم يشتغل.. السيرفر يرفض العرض في المتصفح.";
-            document.getElementById("status").style.color = "red";
-        };
-    </script>
+<script>
+    const cfg = { h: "http://aseaf1.me:8080", u: "292737757579", p: "196384823579" };
+    let cache = {}; let mode = '';
+
+    async function sync() {
+        const s = document.getElementById('st');
+        try {
+            s.innerText = "مزامنة القنوات..."; cache.live = await fetchD('get_live_categories');
+            s.innerText = "مزامنة الأفلام..."; cache.movie = await fetchD('get_vod_categories');
+            s.innerText = "مزامنة المسلسلات..."; cache.series = await fetchD('get_series_categories');
+            document.getElementById('sync').style.display = 'none';
+            document.getElementById('v-home').style.display = 'flex';
+            document.querySelector('.btn').focus();
+        } catch(e) { s.innerText = "خطأ في السيرفر!"; }
+    }
+
+    async function fetchD(a) {
+        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=${a}`)}`);
+        return await res.json();
+    }
+
+    function show(m) {
+        mode = m; document.getElementById('v-home').style.display = 'none';
+        document.getElementById('v-main').style.display = 'flex';
+        let h = ''; cache[m].forEach(c => h += `<div class="cat" tabindex="0" onclick="loadI('${c.category_id}')" style="padding:15px; border-bottom:1px solid #222">${c.category_name}</div>`);
+        document.getElementById('side').innerHTML = h; document.querySelector('.cat').focus();
+    }
+
+    async function loadI(id) {
+        let act = mode==='live'?'get_live_streams':(mode==='movie'?'get_vod_streams':'get_series');
+        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=${act}&category_id=${id}`)}`);
+        const data = await res.json();
+        let h = ''; data.slice(0, 100).forEach(i => h += `<div class="card" tabindex="0" onclick="play('${i.stream_id||i.series_id}')" style="background:#111; border-radius:10px; text-align:center;"><img src="${i.stream_icon||i.cover||'home.png'}" style="width:100%;height:180px;object-fit:cover"><p>${i.name}</p></div>`);
+        document.getElementById('grid').innerHTML = h;
+    }
+
+    function play(id) {
+        let url = `${cfg.h}/${mode==='movie'?'movie':mode}/${cfg.u}/${cfg.p}/${id}.ts`;
+        document.getElementById('player-ui').style.display = 'block';
+        const v = document.getElementById('video');
+        if (Hls.isSupported()) { var hls = new Hls(); hls.loadSource(url); hls.attachMedia(v); } else { v.src = url; }
+    }
+
+    window.onkeydown = function(e) {
+        if (e.key === 'Backspace' || e.keyCode === 8) {
+            e.preventDefault();
+            if (document.getElementById('player-ui').style.display === 'block') {
+                document.getElementById('video').pause(); document.getElementById('player-ui').style.display = 'none';
+            } else if (document.getElementById('v-main').style.display === 'flex') {
+                document.getElementById('v-main').style.display = 'none'; document.getElementById('v-home').style.display = 'flex';
+            } else if (window.AppInventor) { window.AppInventor.setWebViewString("EXIT"); }
+        }
+    };
+    sync();
+</script>
 </body>
 </html>
