@@ -2,76 +2,63 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --blue: #0057b7; }
-        body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; display: flex; height: 100vh; font-family: sans-serif; overflow: hidden; }
-        .sidebar { width: 300px; background: rgba(0,0,0,0.92); border-left: 3px solid var(--blue); overflow-y: auto; }
-        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; padding: 25px; overflow-y: auto; background: rgba(0,0,0,0.4); }
-        .cat-item { padding: 18px; margin: 8px; background: #111; border-radius: 12px; cursor: pointer; border-bottom: 1px solid #222; }
-        .cat-item:focus { background: var(--blue); outline: none; border-right: 8px solid white; transform: translateX(-5px); }
-        .card { background: #000; border-radius: 15px; border: 1px solid #333; text-align: center; cursor: pointer; overflow: hidden; }
-        .card img { width: 100%; height: 240px; object-fit: cover; background: url('home.png') no-repeat center; background-size: contain; }
-        .card:focus { border-color: var(--blue); transform: scale(1.05); outline: none; box-shadow: 0 0 25px var(--blue); }
-        #player-box { display: none; position: fixed; inset: 0; background: #000; z-index: 9999; }
-        .video-js { width: 100% !important; height: 100% !important; }
+        body { background: #000 url('home.png') no-repeat center fixed; background-size: cover; color: white; margin: 0; display: flex; height: 100vh; font-family: sans-serif; }
+        .side { width: 300px; background: rgba(0,0,0,0.9); border-left: 2px solid #0057b7; overflow-y: auto; }
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 20px; overflow-y: auto; }
+        .cat:focus { background: #0057b7; outline: none; }
+        .item:focus { border: 2px solid #0057b7; transform: scale(1.05); outline: none; }
+        #details { display: none; position: fixed; inset: 0; background: #000; z-index: 100; padding: 40px; text-align: center; }
+        #player-ui { display: none; position: fixed; inset: 0; background: #000; z-index: 200; }
+        .play-btn { background: #0057b7; padding: 15px 40px; border-radius: 10px; font-size: 20px; cursor: pointer; border: none; color: #fff; }
     </style>
 </head>
 <body>
-    <div id="player-box"><video id="my-video" class="video-js vjs-big-play-centered"></video></div>
-    <div id="sidebar" class="sidebar">مزامنة الأفلام...</div>
+    <div id="details">
+        <img id="d-img" style="height:350px; border-radius:15px; margin-bottom:20px;">
+        <h2 id="d-title"></h2>
+        <button class="play-btn" id="d-play">▶ تشغيل الفيلم</button>
+    </div>
+    <div id="player-ui"><video id="video" controls autoplay style="width:100%;height:100%"></video></div>
+    <div id="side" class="side"></div>
     <div id="grid" class="grid"></div>
 
 <script>
-    const cfg = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
-    let player = videojs('my-video', { controls: true, autoplay: true });
-
-    async function start() {
-        let cached = localStorage.getItem('vod_cats_cache');
-        if(cached) { render(JSON.parse(cached)); update(); } else { update(); }
+    const cfg = { h: "http://aseaf1.me:8080", u: "292737757579", p: "196384823579" };
+    function init() {
+        let cats = JSON.parse(localStorage.getItem('vod_cats'));
+        let h = ''; cats.forEach(c => h += `<div class="cat" tabindex="0" onclick="loadM('${c.category_id}')" style="padding:15px; border-bottom:1px solid #222">${c.category_name}</div>`);
+        document.getElementById('side').innerHTML = h;
     }
-
-    async function update() {
-        const url = `${cfg.host}/player_api.php?username=${cfg.user}&password=${cfg.pass}&action=get_vod_categories`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        localStorage.setItem('vod_cats_cache', JSON.stringify(data));
-        render(data);
-    }
-
-    function render(data) {
-        let h = '';
-        data.forEach(c => h += `<div class="cat-item" tabindex="0" onclick="loadM('${c.category_id}')">${c.category_name}</div>`);
-        document.getElementById('sidebar').innerHTML = h;
-        document.querySelector('.cat-item').focus();
-    }
-
     async function loadM(id) {
-        const url = `${cfg.host}/player_api.php?username=${cfg.user}&password=${cfg.pass}&action=get_vod_streams&category_id=${id}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        const data = await res.json();
-        let h = '';
-        data.slice(0, 100).forEach(i => h += `<div class="card" tabindex="0" onclick="play('${i.stream_id}')"><img src="${i.stream_icon}" loading="lazy" onerror="this.src='home.png'"><p>${i.name}</p></div>`);
+        const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`${cfg.h}/player_api.php?username=${cfg.u}&password=${cfg.p}&action=get_vod_streams&category_id=${id}`)}`);
+        const data = await r.json();
+        let h = ''; data.forEach(i => h += `<div class="item" tabindex="0" onclick="showD('${i.stream_id}','${i.name}','${i.stream_icon}')" style="background:#111; border-radius:10px; text-align:center;"><img src="${i.stream_icon}" style="width:100%;height:180px;object-fit:cover"><p>${i.name}</p></div>`);
         document.getElementById('grid').innerHTML = h;
     }
-
-    function play(id) {
-        document.getElementById('player-box').style.display = 'block';
-        player.src({ src: `${cfg.host}/movie/${cfg.user}/${cfg.pass}/${id}.ts`, type: 'video/mp2t' });
-        player.play();
+    function showD(id, title, img) {
+        document.getElementById('details').style.display = 'block';
+        document.getElementById('d-title').innerText = title;
+        document.getElementById('d-img').src = img || 'home.png';
+        document.getElementById('d-play').onclick = () => play(id);
+        document.getElementById('d-play').focus();
     }
-
+    function play(id) {
+        document.getElementById('player-ui').style.display = 'block';
+        const v = document.getElementById('video');
+        let url = `${cfg.h}/movie/${cfg.u}/${cfg.p}/${id}.ts`;
+        if (Hls.isSupported()) { const hls = new Hls(); hls.loadSource(url); hls.attachMedia(v); } else { v.src = url; }
+    }
     window.onkeydown = (e) => {
         if(e.key === 'Backspace') {
             e.preventDefault();
-            if(document.getElementById('player-box').style.display === 'block') {
-                player.pause(); document.getElementById('player-box').style.display = 'none';
-            } else { location.href = 'index.html'; }
+            if(document.getElementById('player-ui').style.display==='block') { document.getElementById('player-ui').style.display='none'; document.getElementById('video').pause(); }
+            else if(document.getElementById('details').style.display==='block') document.getElementById('details').style.display='none';
+            else location.href='index.html';
         }
     }
-    start();
+    init();
 </script>
 </body>
 </html>
