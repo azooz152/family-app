@@ -3,119 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV Player</title>
+    <title>AZOOZ TV PRO</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- الثيم (الهلال الأزرق) --- */
         :root {
             --hilal-blue: #0057b7;
             --hilal-dark: #003d80;
-            --bg-color: #050505;
+            --bg-overlay: rgba(0, 0, 0, 0.8);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Tahoma, sans-serif; user-select: none; outline: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
 
         body {
-            background-image: url('home.png'); 
+            /* تعديل رابط الخلفية ليقرأ من جيت هاب مباشرة */
+            background-image: url('https://raw.githubusercontent.com/azooz152/family-app/main/home.png'); 
             background-size: cover; background-position: center; background-attachment: fixed;
-            background-color: var(--bg-color);
-            height: 100vh; overflow: hidden; color: white;
+            background-color: #000; height: 100vh; overflow: hidden; color: white;
         }
 
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: -1;
+            background: var(--bg-overlay); z-index: -1;
         }
 
-        /* --- شاشة التحديث (Splash) --- */
+        /* شاشة التحميل الذكية */
         #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s;
         }
-        .splash-logo {
-            font-size: 40px; font-weight: 900; color: var(--hilal-blue); 
-            text-shadow: 0 0 20px var(--hilal-blue); margin-bottom: 30px;
-        }
-        .progress-container { width: 60%; height: 6px; background: #333; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-        .progress-bar { width: 0%; height: 100%; background: var(--hilal-blue); transition: width 0.5s ease; }
-        .loading-text { font-size: 14px; color: #aaa; }
+        .splash-logo { font-size: 50px; font-weight: 900; color: var(--hilal-blue); text-shadow: 0 0 20px var(--hilal-blue); }
 
-        /* --- الصفحات --- */
-        .screen { display: none; width: 100%; height: 100%; flex-direction: column; padding: 20px; }
-        .active { display: flex; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* --- الهيدر --- */
-        .header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px; background: rgba(0,0,0,0.6); border-radius: 15px;
-            border-bottom: 3px solid var(--hilal-blue); margin-bottom: 20px;
-        }
-        .logo { font-size: 28px; font-weight: 900; color: var(--hilal-blue); }
-        .info { font-size: 14px; color: #ccc; }
-
-        /* --- الرئيسية --- */
-        .home-grid { flex: 1; display: flex; justify-content: center; align-items: center; gap: 40px; }
+        /* البطاقات الرئيسية */
+        .home-grid { display: flex; justify-content: center; align-items: center; gap: 30px; height: 80vh; }
         .main-card {
-            width: 220px; height: 220px;
-            background: rgba(30,30,30,0.8); border: 2px solid #444; border-radius: 20px;
+            width: 250px; height: 300px; background: rgba(20, 20, 20, 0.7);
+            border: 3px solid #333; border-radius: 25px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            cursor: pointer; transition: 0.3s;
-        }
-        .main-card i { font-size: 80px; margin-bottom: 20px; color: #ddd; }
-        .main-card span { font-size: 22px; font-weight: bold; color: #ddd; }
-        .main-card:focus, .main-card:hover {
-            transform: scale(1.1); border-color: var(--hilal-blue); background: #fff;
-            box-shadow: 0 0 30px var(--hilal-blue);
-            background-image: url('hilal.png'); background-size: cover; background-position: center;
-        }
-        .main-card:focus::before, .main-card:hover::before {
-            content:''; position: absolute; top:0; left:0; width:100%; height:100%;
-            background: rgba(255,255,255,0.85); z-index: 0;
-        }
-        .main-card:focus i, .main-card:hover i { color: var(--hilal-blue); z-index: 1; }
-        .main-card:focus span, .main-card:hover span { color: var(--hilal-blue); z-index: 1; }
-
-        /* --- القوائم --- */
-        .list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; overflow-y: auto; padding: 10px; flex: 1; }
-        .item-card {
-            background: rgba(30,30,30,0.9); padding: 15px; border-radius: 8px;
-            text-align: center; border: 1px solid #444; cursor: pointer;
-            font-size: 16px; color: #fff; font-weight: bold;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .item-card:focus, .item-card:hover {
-            background: var(--hilal-blue); color: white; transform: scale(1.05);
-            border: 2px solid white; box-shadow: 0 0 15px var(--hilal-blue);
+            transition: 0.4s; cursor: pointer; position: relative; overflow: hidden;
         }
 
-        /* --- نافذة اختيار المشغل (Popup) --- */
-        #player-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 10000; display: none;
-            justify-content: center; align-items: center;
+        .main-card i { font-size: 90px; color: #fff; margin-bottom: 20px; z-index: 2; }
+        .main-card span { font-size: 26px; font-weight: bold; z-index: 2; }
+
+        .main-card:focus {
+            transform: scale(1.15); border-color: var(--hilal-blue);
+            box-shadow: 0 0 50px var(--hilal-blue); outline: none;
+            background: var(--hilal-blue);
         }
+
+        /* نافذة اختيار المشغل (الخمسة الكبار) */
         .modal-content {
-            background: #1a1a1a; padding: 30px; border-radius: 20px;
-            border: 2px solid var(--hilal-blue); text-align: center; width: 450px;
+            background: #111; padding: 25px; border-radius: 20px;
+            border: 2px solid var(--hilal-blue); width: 90%; max-width: 500px;
         }
-        .modal-title { font-size: 20px; margin-bottom: 20px; color: var(--hilal-blue); font-weight: bold; }
-        
+
         .player-btn {
-            display: block; width: 100%; padding: 15px; margin-bottom: 12px;
-            background: #333; color: white; border: none; border-radius: 10px;
-            font-size: 18px; cursor: pointer; text-decoration: none;
-            border-left: 5px solid transparent; transition: 0.2s;
+            display: flex; align-items: center; justify-content: flex-start;
+            width: 100%; padding: 15px; margin-bottom: 10px;
+            background: #222; color: white; border-radius: 12px;
+            font-size: 18px; text-decoration: none; border: 2px solid transparent;
         }
-        .player-btn:focus, .player-btn:hover { background: white; color: black; transform: scale(1.03); }
-        
-        .vlc-btn { border-left-color: orange; }
-        .mx-btn { border-left-color: #007bff; }
-        .direct-btn { border-left-color: #28a745; }
+        .player-btn i { width: 40px; font-size: 24px; margin-left: 15px; }
+        .player-btn:focus { background: #fff; color: #000; border-color: var(--hilal-blue); transform: scale(1.05); outline: none; }
+
+        /* القنوات */
+        .item-card {
+            background: rgba(40, 40, 40, 0.8); padding: 20px; border-radius: 12px;
+            border: 2px solid transparent; transition: 0.3s; text-align: center;
+        }
+        .item-card:focus { background: var(--hilal-blue); transform: scale(1.1); border-color: #fff; outline: none; }
 
     </style>
 </head>
@@ -123,37 +82,27 @@
 
     <div id="splash-screen">
         <div class="splash-logo">AZOOZ TV</div>
-        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
-        <div class="loading-text" id="loading-text">جاري الاتصال بالسيرفر...</div>
+        <div style="color: #aaa; margin-top: 20px;">جاري تجهيز أقوى سيرفرات الهلال...</div>
     </div>
 
-    <div id="player-modal">
+    <div id="player-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; display:none; justify-content:center; align-items:center;">
         <div class="modal-content">
-            <h3 class="modal-title">اختر طريقة التشغيل</h3>
+            <h2 style="margin-bottom:20px; color: var(--hilal-blue);">اختر مشغل الفيديو</h2>
             
-            <a id="btn-vlc" class="player-btn vlc-btn" href="#">
-                <i class="fas fa-cone" style="color:orange;"></i> تشغيل عبر VLC
-            </a>
-            
-            <a id="btn-mx" class="player-btn mx-btn" href="#">
-                <i class="fas fa-play" style="color:#007bff;"></i> تشغيل عبر MX Player
-            </a>
+            <a id="vlc-link" class="player-btn" href="#"><i class="fas fa-cone" style="color:orange;"></i> VLC Player (الموصى به)</a>
+            <a id="mx-link" class="player-btn" href="#"><i class="fas fa-play-circle" style="color:blue;"></i> MX Player</a>
+            <a id="km-link" class="player-btn" href="#"><i class="fas fa-k" style="color:purple;"></i> KMPlayer</a>
+            <a id="x-link" class="player-btn" href="#"><i class="fas fa-bolt" style="color:yellow;"></i> XPlayer</a>
+            <a id="playit-link" class="player-btn" href="#"><i class="fas fa-expand" style="color:green;"></i> Playit Player</a>
 
-            <a id="btn-direct" class="player-btn direct-btn" href="#" target="_blank">
-                <i class="fas fa-external-link-alt" style="color:green;"></i> فتح الرابط مباشرة
-            </a>
-
-            <button class="player-btn" onclick="closeModal()" style="background:#d32f2f; margin-top:10px;">إلغاء ❌</button>
+            <button onclick="closeModal()" style="width:100%; padding:15px; margin-top:10px; border-radius:12px; background:#d32f2f; color:white; border:none; cursor:pointer;">إلغاء ❌</button>
         </div>
     </div>
 
-    <div id="home" class="screen">
-        <div class="header" style="justify-content:center;">
-            <div class="logo">الرئيسية</div>
-        </div>
+    <div id="home" class="screen active" style="display: flex; flex-direction: column;">
         <div class="home-grid">
             <div class="main-card" tabindex="1" onclick="openSection('live')">
-                <i class="fas fa-tv"></i> <span>قنوات</span>
+                <i class="fas fa-tv"></i> <span>بث مباشر</span>
             </div>
             <div class="main-card" tabindex="2" onclick="openSection('movie')">
                 <i class="fas fa-film"></i> <span>أفلام</span>
@@ -164,12 +113,9 @@
         </div>
     </div>
 
-    <div id="list-screen" class="screen">
-        <div class="header">
-            <div class="logo" id="list-title">القائمة</div>
-            <div class="info">اضغط [رجوع] للعودة</div>
-        </div>
-        <div id="list-container" class="list-grid"></div>
+    <div id="list-screen" class="screen" style="display:none; padding: 40px;">
+        <h1 id="list-title" style="margin-bottom: 20px; color: var(--hilal-blue);">القائمة</h1>
+        <div id="list-container" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; overflow-y: auto;"></div>
     </div>
 
     <script>
@@ -179,168 +125,78 @@
             pass: "196384823579"
         };
 
-        let cache = { live: [], movie: [], series: [] };
-        let state = { view: 'splash', type: '' };
-
-        window.onload = startUpdateProcess;
-
-        // --- التحديث الأولي ---
-        async function startUpdateProcess() {
-            const bar = document.getElementById('progress-bar');
-            const txt = document.getElementById('loading-text');
-
-            bar.style.width = "10%";
-            txt.innerText = "تحديث القنوات...";
-            cache.live = await apiRequest('get_live_categories');
-            bar.style.width = "40%";
-
-            txt.innerText = "تحديث الأفلام...";
-            cache.movie = await apiRequest('get_vod_categories');
-            bar.style.width = "70%";
-
-            txt.innerText = "تحديث المسلسلات...";
-            cache.series = await apiRequest('get_series_categories');
-            bar.style.width = "100%";
-
-            txt.innerText = "تم التحديث! جاري الفتح...";
-            setTimeout(() => {
-                document.getElementById('splash-screen').style.display = 'none';
-                switchScreen('home');
-                document.querySelector('.main-card').focus();
-            }, 800);
-        }
-
-        async function apiRequest(action, params = '') {
+        // وظيفة جلب البيانات السريعة
+        async function fetchAPI(action, params = '') {
             const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}${params}`;
-            const proxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
             try {
-                const res = await fetch(proxy);
-                return await res.json();
+                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                return await response.json();
             } catch (e) { return []; }
         }
 
-        // --- التنقل ---
-        function openSection(type) {
-            state.type = type;
-            let data = cache[type] || [];
-            if(data.length > 0) {
-                renderList(data, 'category');
-                switchScreen('list-screen');
-                document.getElementById('list-title').innerText = "اختر القسم";
-            } else {
-                alert("القائمة فارغة!");
-            }
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.opacity = '0';
+                setTimeout(() => document.getElementById('splash-screen').style.display = 'none', 500);
+                document.querySelector('.main-card').focus();
+            }, 2000);
+        };
+
+        async function openSection(type) {
+            let action = type === 'live' ? 'get_live_categories' : (type === 'movie' ? 'get_vod_categories' : 'get_series_categories');
+            const data = await fetchAPI(action);
+            renderList(data, type);
         }
 
-        async function openCategory(catId) {
-            document.getElementById('list-title').innerText = "جاري التحميل...";
-            let action = 'get_live_streams';
-            if(state.type === 'movie') action = 'get_vod_streams';
-            if(state.type === 'series') action = 'get_series';
-
-            const data = await apiRequest(action, `&category_id=${catId}`);
-            if(data.length > 0) {
-                renderList(data, 'item');
-                document.getElementById('list-title').innerText = "اختر المحتوى";
-            } else {
-                alert("فارغ");
-                openSection(state.type);
-            }
-        }
-
-        // --- الرسم ---
-        function renderList(data, renderType) {
+        function renderList(data, type) {
             const container = document.getElementById('list-container');
             container.innerHTML = '';
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('list-screen').style.display = 'block';
+
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'item-card';
                 div.tabIndex = 0;
-                
-                if(renderType === 'category') {
-                    div.innerText = item.category_name || item.name;
-                    div.onclick = () => openCategory(item.category_id);
-                } else {
-                    div.innerText = item.name;
-                    let id = item.stream_id || item.series_id;
-                    let ext = item.container_extension || 'ts';
-                    div.onclick = () => showPlayerOptions(id, ext, item.name);
-                }
-                div.onkeydown = (e) => { if(e.key === 'Enter') div.click(); };
+                div.innerText = item.category_name;
+                div.onclick = () => loadCategoryItems(item.category_id, type);
                 container.appendChild(div);
             });
-            if(container.firstChild) container.firstChild.focus();
+            container.firstChild.focus();
         }
 
-        // --- نظام الروابط الذكي (الحل الجذري) ---
-        function showPlayerOptions(id, ext, name) {
-            let url = "";
-            let scheme = "http"; // السيرفر يستخدم http
+        async function loadCategoryItems(catId, type) {
+            let action = type === 'live' ? 'get_live_streams' : (type === 'movie' ? 'get_vod_streams' : 'get_series');
+            const items = await fetchAPI(action, `&category_id=${catId}`);
+            const container = document.getElementById('list-container');
+            container.innerHTML = '';
 
-            if(state.type === 'live') {
-                url = `${CONFIG.host}/live/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-            } else if(state.type === 'movie') {
-                url = `${CONFIG.host}/movie/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-            } else {
-                url = `${CONFIG.host}/series/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-            }
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.tabIndex = 0;
+                div.innerText = item.name;
+                div.onclick = () => setupPlayer(item.stream_id || item.series_id, type);
+                container.appendChild(div);
+            });
+            container.firstChild.focus();
+        }
 
-            // إزالة http:// من الرابط لاستخدامه في Intent
-            let cleanUrl = url.replace('http://', '');
-
-            // 1. رابط VLC عبر Android Intent (الصيغة الصحيحة للتلفزيونات)
-            const vlcIntent = `intent://${cleanUrl}#Intent;scheme=http;type=video/*;package=org.videolan.vlc;end`;
+        function setupPlayer(id, type) {
+            const baseUrl = `${CONFIG.host.replace('http://', '')}/${type === 'live' ? 'live' : 'movie'}/${CONFIG.user}/${CONFIG.pass}/${id}.ts`;
             
-            // 2. رابط MX Player عبر Android Intent
-            const mxIntent = `intent://${cleanUrl}#Intent;scheme=http;type=video/*;package=com.mxtech.videoplayer.ad;S.title=${encodeURIComponent(name)};end`;
+            // روابط الـ Intents للمشغلات الخمسة
+            document.getElementById('vlc-link').href = `intent://${baseUrl}#Intent;scheme=http;type=video/*;package=org.videolan.vlc;end`;
+            document.getElementById('mx-link').href = `intent://${baseUrl}#Intent;scheme=http;type=video/*;package=com.mxtech.videoplayer.ad;end`;
+            document.getElementById('km-link').href = `intent://${baseUrl}#Intent;scheme=http;type=video/*;package=com.kmplayer;end`;
+            document.getElementById('x-link').href = `intent://${baseUrl}#Intent;scheme=http;type=video/*;package=com.isovideo.xplayer;end`;
+            document.getElementById('playit-link').href = `intent://${baseUrl}#Intent;scheme=http;type=video/*;package=com.playit.videoplayer;end`;
 
-            // 3. الرابط المباشر (للمتصفح)
-            const directLink = url;
-
-            // تحديث الأزرار
-            document.getElementById('btn-vlc').href = vlcIntent;
-            document.getElementById('btn-mx').href = mxIntent;
-            document.getElementById('btn-direct').href = directLink;
-
-            // إظهار النافذة
             document.getElementById('player-modal').style.display = 'flex';
-            document.getElementById('btn-vlc').focus();
+            document.getElementById('vlc-link').focus();
         }
 
-        function closeModal() {
-            document.getElementById('player-modal').style.display = 'none';
-            document.querySelector('.item-card').focus();
-        }
-
-        // --- أدوات ---
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
-            const active = document.getElementById(id);
-            active.style.display = 'flex';
-            setTimeout(() => active.classList.add('active'), 10);
-            state.view = id;
-        }
-
-        function goBack() {
-            if(document.getElementById('player-modal').style.display === 'flex') {
-                closeModal();
-            } else if(state.view === 'list-screen') {
-                if(document.getElementById('list-title').innerText === "اختر المحتوى") {
-                    openSection(state.type);
-                } else {
-                    switchScreen('home');
-                    document.querySelector('.main-card').focus();
-                }
-            }
-        }
-
-        document.addEventListener('keydown', function(e) {
-            if(e.key === 'Backspace' || e.key === 'Escape' || e.keyCode === 10009 || e.keyCode === 8) {
-                e.preventDefault();
-                if(state.view !== 'home') goBack();
-            }
-        });
-
+        function closeModal() { document.getElementById('player-modal').style.display = 'none'; }
     </script>
 </body>
 </html>
