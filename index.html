@@ -3,190 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AZOOZ TV - HULK STYLE</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>AZOOZ TV - PRO</title>
     <style>
-        :root { --hilal-blue: #0057b7; --dark-bg: rgba(0, 0, 0, 0.85); }
+        :root { --blue: #0057b7; --dark: #0a0a0a; }
+        body { background: #000 url('home.png') no-repeat center center fixed; background-size: cover; color: white; font-family: sans-serif; margin: 0; overflow: hidden; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: -1; }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tahoma', sans-serif; }
+        /* تصميم الهُولك: قائمة جانبية ومحتوى */
+        .hulk-container { display: flex; height: 100vh; }
+        .sidebar { width: 280px; background: rgba(0,0,0,0.9); border-left: 2px solid var(--blue); overflow-y: auto; display: none; }
+        .content { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; display: none; }
         
-        body {
-            background-image: url('https://raw.githubusercontent.com/azooz152/family-app/main/home.png');
-            background-size: cover; background-position: center; background-attachment: fixed;
-            background-color: #000; color: white; overflow: hidden; height: 100vh;
-        }
+        .cat-item { padding: 18px; margin: 5px; background: #151515; border-radius: 8px; cursor: pointer; border-bottom: 1px solid #222; font-weight: bold; }
+        .cat-item:focus, .cat-item:hover { background: var(--blue); outline: none; border-right: 5px solid white; }
 
-        /* --- الشاشة الرئيسية (3 أيقونات) --- */
-        #home-screen {
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; gap: 40px; background: rgba(0, 0, 0, 0.4);
-        }
+        .item-card { background: #111; border-radius: 10px; overflow: hidden; border: 1px solid #333; text-align: center; cursor: pointer; transition: 0.2s; }
+        .item-card img { width: 100%; height: 210px; object-fit: cover; }
+        .item-card:focus { transform: scale(1.1); border-color: var(--blue); box-shadow: 0 0 20px var(--blue); outline: none; }
 
-        .main-btn {
-            width: 220px; height: 280px; background: var(--dark-bg);
-            border: 3px solid #333; border-radius: 25px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: 0.3s; cursor: pointer; text-decoration: none; color: white;
-        }
+        /* الشاشة الرئيسية 3 أيقونات */
+        .main-menu { display: flex; justify-content: center; align-items: center; height: 100vh; gap: 30px; }
+        .menu-btn { width: 220px; height: 250px; background: rgba(0,0,0,0.85); border: 2px solid #333; border-radius: 25px; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .menu-btn:focus { border-color: var(--blue); background: var(--blue); transform: scale(1.1); outline: none; }
+        .menu-btn h2 { margin-top: 15px; }
 
-        .main-btn i { font-size: 80px; margin-bottom: 20px; color: var(--hilal-blue); }
-        .main-btn span { font-size: 24px; font-weight: bold; }
-
-        .main-btn:focus, .main-btn:hover {
-            transform: scale(1.1); border-color: var(--hilal-blue);
-            box-shadow: 0 0 40px var(--hilal-blue); outline: none; background: #fff; color: var(--hilal-blue);
-        }
-
-        /* --- واجهة القوائم (نظام الهُولك) --- */
-        #list-screen { display: none; height: 100vh; grid-template-columns: 300px 1fr; }
-
-        .sidebar {
-            background: var(--dark-bg); border-left: 2px solid var(--hilal-blue);
-            overflow-y: auto; padding: 10px;
-        }
-
-        .category-item {
-            padding: 15px; margin-bottom: 8px; background: #111;
-            border-radius: 10px; cursor: pointer; transition: 0.2s;
-            font-size: 18px; border-right: 5px solid transparent;
-        }
-
-        .category-item:focus, .category-item:hover {
-            background: var(--hilal-blue); border-right-color: white; outline: none;
-        }
-
-        .content-area { padding: 20px; overflow-y: auto; display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-
-        /* --- بوسترات الأفلام (هولك ستايل) --- */
-        .poster-card {
-            background: #111; border-radius: 12px; overflow: hidden;
-            border: 2px solid #222; transition: 0.3s; cursor: pointer; position: relative;
-        }
-
-        .poster-card img { width: 100%; height: 230px; object-fit: cover; }
-
-        .poster-card .title {
-            padding: 8px; font-size: 13px; text-align: center;
-            background: linear-gradient(transparent, black);
-            position: absolute; bottom: 0; width: 100%;
-        }
-
-        .poster-card:focus {
-            transform: scale(1.1); border-color: var(--hilal-blue);
-            box-shadow: 0 0 20px var(--hilal-blue); outline: none; z-index: 10;
-        }
-
-        /* شاشة التحميل */
-        #loader {
-            position: fixed; top:0; left:0; width:100%; height:100%; background: #000;
-            display: none; justify-content: center; align-items: center; z-index: 100;
-        }
+        #loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; z-index: 1000; }
+        .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--blue); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+    <div class="overlay"></div>
+    <div id="loader"><div class="spinner"></div></div>
 
-    <div id="loader"><i class="fas fa-circle-notch fa-spin fa-4x" style="color:var(--hilal-blue)"></i></div>
-
-    <div id="home-screen">
-        <div class="main-btn" tabindex="1" onclick="loadCategories('live')">
-            <i class="fas fa-tv"></i> <span>قنوات مباشرة</span>
-        </div>
-        <div class="main-btn" tabindex="2" onclick="loadCategories('movie')">
-            <i class="fas fa-film"></i> <span>أفلام</span>
-        </div>
-        <div class="main-btn" tabindex="3" onclick="loadCategories('series')">
-            <i class="fas fa-video"></i> <span>مسلسلات</span>
-        </div>
+    <div id="view-home" class="main-menu">
+        <div class="menu-btn" tabindex="1" onclick="loadPortal('get_live_categories')"><h2>قنوات مباشرة</h2></div>
+        <div class="menu-btn" tabindex="2" onclick="loadPortal('get_vod_categories')"><h2>أفلام</h2></div>
+        <div class="menu-btn" tabindex="3" onclick="loadPortal('get_series_categories')"><h2>مسلسلات</h2></div>
     </div>
 
-    <div id="list-screen">
-        <div class="sidebar" id="sidebar"></div>
-        <div class="content-area" id="content-area"></div>
+    <div id="view-main" class="hulk-container" style="display:none;">
+        <div id="sidebar" class="sidebar"></div>
+        <div id="content" class="content"></div>
     </div>
 
-<script>
-    const CONFIG = {
-        host: "http://aseaf1.me:8080",
-        user: "292737757579",
-        pass: "196384823579"
-    };
+    <script>
+        const CONFIG = { host: "http://aseaf1.me:8080", user: "292737757579", pass: "196384823579" };
+        let currentMode = '';
 
-    let currentType = '';
-    let cache = {};
+        // نظام الذاكرة المؤقتة (Cache)
+        function getCache(key) { return localStorage.getItem(key); }
+        function setCache(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-    async function apiRequest(action) {
-        const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}`;
-        const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
-        return await res.json();
-    }
-
-    async function loadCategories(type) {
-        document.getElementById('loader').style.display = 'flex';
-        currentType = type;
-        const action = type === 'live' ? 'get_live_categories' : (type === 'movie' ? 'get_vod_categories' : 'get_series_categories');
-        
-        const data = await apiRequest(action);
-        renderSidebar(data);
-    }
-
-    function renderSidebar(categories) {
-        const sidebar = document.getElementById('sidebar');
-        document.getElementById('home-screen').style.display = 'none';
-        document.getElementById('list-screen').style.display = 'grid';
-        sidebar.innerHTML = '';
-
-        categories.forEach(cat => {
-            const div = document.createElement('div');
-            div.className = 'category-item';
-            div.tabIndex = 0;
-            div.innerText = cat.category_name;
-            div.onclick = () => loadItems(cat.category_id);
-            sidebar.appendChild(div);
-        });
-        document.getElementById('loader').style.display = 'none';
-        sidebar.firstChild.focus();
-    }
-
-    async function loadItems(catId) {
-        document.getElementById('loader').style.display = 'flex';
-        const action = currentType === 'live' ? 'get_live_streams' : (currentType === 'movie' ? 'get_vod_streams' : 'get_series');
-        const data = await apiRequest(`${action}&category_id=${catId}`);
-        renderContent(data);
-    }
-
-    function renderContent(items) {
-        const container = document.getElementById('content-area');
-        container.innerHTML = '';
-
-        items.slice(0, 200).forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'poster-card';
-            div.tabIndex = 0;
-            const img = item.stream_icon || item.cover || 'https://raw.githubusercontent.com/azooz152/family-app/main/home.png';
+        async function loadPortal(action) {
+            document.getElementById('loader').style.display = 'block';
+            currentMode = action.includes('live') ? 'live' : (action.includes('vod') ? 'movie' : 'series');
             
-            div.innerHTML = `<img src="${img}" loading="lazy"><div class="title">${item.name}</div>`;
+            const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}`;
+            
+            try {
+                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                const categories = await res.json();
+                
+                document.getElementById('view-home').style.display = 'none';
+                document.getElementById('view-main').style.display = 'flex';
+                document.getElementById('sidebar').style.display = 'block';
+                
+                let html = '';
+                categories.forEach(c => {
+                    html += `<div class="cat-item" tabindex="0" onclick="loadItems('${c.category_id}')">${c.category_name}</div>`;
+                });
+                document.getElementById('sidebar').innerHTML = html;
+                document.getElementById('loader').style.display = 'none';
+                document.querySelector('.cat-item').focus();
+            } catch (e) { alert("خطأ في الاتصال"); document.getElementById('loader').style.display = 'none'; }
+        }
 
-            div.onclick = () => {
-                const id = item.stream_id || item.series_id;
-                const ext = item.container_extension || 'ts';
-                const streamUrl = `${CONFIG.host}/${currentType === 'live' ? 'live' : 'movie'}/${CONFIG.user}/${CONFIG.pass}/${id}.${ext}`;
-                if (window.AppInventor) window.AppInventor.setWebViewString(streamUrl);
-            };
-            container.appendChild(div);
-        });
-        document.getElementById('loader').style.display = 'none';
-        container.firstChild.focus();
-    }
+        async function loadItems(catId) {
+            document.getElementById('loader').style.display = 'block';
+            const action = currentMode === 'live' ? 'get_live_streams' : (currentMode === 'movie' ? 'get_vod_streams' : 'get_series');
+            
+            // محاولة جلب من الكاش أولاً للسرعة
+            const cacheKey = `${action}_${catId}`;
+            let data = getCache(cacheKey);
 
-    // زر الرجوع بالريموت
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace') {
-            if (document.getElementById('list-screen').style.display === 'grid') {
-                location.reload();
+            if (!data) {
+                const url = `${CONFIG.host}/player_api.php?username=${CONFIG.user}&password=${CONFIG.pass}&action=${action}&category_id=${catId}`;
+                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                data = await res.json();
+                setCache(cacheKey, data);
+            } else { data = JSON.parse(data); }
+            
+            document.getElementById('content').style.display = 'grid';
+            let html = '';
+            data.slice(0, 100).forEach(i => {
+                let img = i.stream_icon || i.cover || 'home.png';
+                html += `<div class="item-card" tabindex="0" onclick="sendToApp('${i.stream_id || i.series_id}')">
+                            <img src="${img}" onerror="this.src='home.png'">
+                            <p>${i.name}</p>
+                         </div>`;
+            });
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function sendToApp(id) {
+            const stream = `${CONFIG.host}/${currentMode === 'movie' ? 'movie' : currentMode}/${CONFIG.user}/${CONFIG.pass}/${id}.ts`;
+            if(window.AppInventor) {
+                window.AppInventor.setWebViewString(stream);
             }
         }
-    });
-</script>
+
+        // معالجة زر الرجوع في الريموت
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' || e.keyCode === 8) {
+                if (document.getElementById('view-main').style.display === 'flex') {
+                    e.preventDefault();
+                    location.reload(); // العودة للشاشة الرئيسية
+                }
+            }
+        });
+    </script>
 </body>
 </html>
