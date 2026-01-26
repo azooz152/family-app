@@ -62,7 +62,7 @@
         .diff-label { font-size: 0.75rem; color: var(--text-sec); }
         .diff-val { font-size: 1.2rem; font-weight: bold; color: white; }
 
-        /* --- 2. السجل (Lana wa Lahum Style) --- */
+        /* --- 2. السجل --- */
         .history-area {
             flex-grow: 1; overflow-y: auto; display: flex; position: relative;
             padding-top: 10px; -webkit-overflow-scrolling: touch;
@@ -235,63 +235,135 @@
         function submitRound() {
             let valLana = parseInt(inpLana.value);
             let valLahum = parseInt(inpLahum.value);
-            let hasChange = false;
+            // إذا الحقل فارغ نعتبره صفر
+            if (isNaN(valLana)) valLana = 0;
+            if (isNaN(valLahum)) valLahum = 0;
 
-            if (!isNaN(valLana) && valLana !== 0) { applyScore('lana', valLana); hasChange = true; }
-            if (!isNaN(valLahum) && valLahum !== 0) { applyScore('lahum', valLahum); hasChange = true; }
-
-            if (hasChange) {
+            if (valLana === 0 && valLahum === 0) {
                 closeModal();
-                checkWin();
-            } else { closeModal(); }
+                return;
+            }
+
+            // تطبيق النقاط وتحديث الواجهة فوراً
+            applyScore(valLana, valLahum);
+            
+            // تشغيل سلسلة الأصوات (Queue)
+            playRoundSequence(valLana, valLahum);
+
+            closeModal();
+            checkWin();
         }
 
-        function applyScore(team, val) {
-            let oldScore = gameState[team];
-            let newScore = oldScore + val;
-            let entry = { team: team, val: val, oldScore: oldScore, newScore: newScore };
-            gameState.history.push(entry);
-            gameState[team] = newScore;
-            
-            // تشغيل الأصوات من مجلد sounds
-            playVoice(team, val);
+        function applyScore(valLana, valLahum) {
+            let oldLana = gameState.lana;
+            let oldLahum = gameState.lahum;
 
-            // تشغيل التفاعلات (الطقطقة)
-            setTimeout(() => {
-                checkReaction(team, val);
-            }, 2000); 
+            // تحديث الأرقام
+            gameState.lana += valLana;
+            gameState.lahum += valLahum;
+
+            // إضافة للسجل (نضيف فقط إذا فيه قيمة)
+            if (valLana > 0) {
+                gameState.history.push({ team: 'lana', val: valLana, oldScore: oldLana, newScore: gameState.lana });
+            }
+            if (valLahum > 0) {
+                gameState.history.push({ team: 'lahum', val: valLahum, oldScore: oldLahum, newScore: gameState.lahum });
+            }
 
             updateUI();
         }
 
-        // --- مخ الطقطقة (Logic) مع مسار المجلد sounds ---
-        function checkReaction(team, val) {
+        // --- نظام الصوت المتتابع (Sequencer) ---
+        function playRoundSequence(valLana, valLahum) {
+            // التسلسل: لنا -> الرقم -> (سكتة) -> لهم -> الرقم -> (التفاعل)
+
+            // الخطوة 1: هل سجل "لنا"؟
+            if (valLana > 0) {
+                playVoice('lana', valLana, function() {
+                    // بعد ما يخلص صوت لنا ورقمها..
+                    startLahumPart(valLahum, valLana);
+                });
+            } else {
+                // ما سجلنا، نروح للخطوة الثانية مباشرة
+                startLahumPart(valLahum, valLana);
+            }
+        }
+
+        function startLahumPart(valLahum, valLana) {
+            // الخطوة 2: هل سجل "لهم"؟
+            if (valLahum > 0) {
+                // إذا كان "لنا" مسجل قبل شوي، ننتظر ثانيتين (سكتة)
+                let delay = (valLana > 0) ? 2000 : 0;
+                
+                setTimeout(() => {
+                    playVoice('lahum', valLahum, function() {
+                        // بعد ما يخلص صوت لهم.. نشيك التفاعل
+                        checkReaction(valLana, valLahum);
+                    });
+                }, delay);
+            } else {
+                // ما سجلوا، نشيك التفاعل علطول
+                checkReaction(valLana, valLahum);
+            }
+        }
+
+        // دالة تشغيل الصوت (تقبل Callback لما تخلص)
+        function playVoice(team, number, onComplete) {
+            let teamFile = (team === 'lana') ? 'sounds/lana.mp3' : 'sounds/lahum.mp3';
+            let audioTeam = new Audio(teamFile);
+
+            audioTeam.play().catch(e => {
+                // لو ما اشتغل الاسم، شغل الرقم مباشرة
+                playNumber(number, onComplete);
+            });
+
+            audioTeam.onended = function() {
+                playNumber(number, onComplete);
+            };
+        }
+
+        function playNumber(number, onComplete) {
+            let numFile = 'sounds/' + number + '.mp3';
+            let audioNum = new Audio(numFile);
+            
+            audioNum.play().catch(e => {
+                if (onComplete) onComplete();
+            });
+
+            audioNum.onended = function() {
+                if (onComplete) onComplete();
+            };
+        }
+
+        // --- مخ الطقطقة (Reaction Logic) ---
+        function checkReaction(valLana, valLahum) {
+            // نحسب الفارق الحالي
             let diff = gameState.lana - gameState.lahum;
 
-            // القم يا غشيم
-            if (team === 'lana' && (diff > 30 || val >= 25)) {
-                let audio = new Audio('sounds/algum.mp3'); 
-                audio.play().catch(e => console.log('Algum sound error'));
+            // 1. القم يا غشيم (أبو دقيينه): تشتغل إذا تقدمنا بفارق كبير (فوق 30) أو سجلنا كبوت
+            // الشرط: لازم نكون "لنا" مسجلين في هذي النشرة عشان نذب عليهم
+            if (valLana > 0 && (diff >= 30 || valLana >= 25)) {
+                let audio = new Audio('sounds/algum.mp3');
+                audio.play().catch(e => {});
                 return;
             }
 
-            // كفو
-            if (team === 'lana' && val >= 16) {
-                 if (!(diff > 30 || val >= 25)) {
-                    let audio = new Audio('sounds/kafoo.mp3'); 
-                    audio.play().catch(e => {});
-                 }
+            // 2. كفو (لنا): إذا سجلنا نشرة قوية
+            if (valLana >= 16 && diff < 30) { 
+                let audio = new Audio('sounds/kafoo.mp3');
+                audio.play().catch(e => {});
                 return;
             }
 
-            // يا ساتر
-            if (team === 'lahum' && val >= 20) {
-                let audio = new Audio('sounds/yasater.mp3'); 
+            // 3. يا ساتر (لهم): إذا سجلوا واجد
+            if (valLahum >= 20) {
+                let audio = new Audio('sounds/yasater.mp3');
                 audio.play().catch(e => {});
                 return;
             }
         }
 
+        // --- باقي الدوال (UI, Logic) ---
         function changeMode(mode) {
             gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
@@ -311,8 +383,13 @@
 
         function undo() {
             if (gameState.history.length === 0) return;
+            // التراجع يسحب آخر عملية فقط
             let lastEntry = gameState.history.pop();
-            gameState[lastEntry.team] = lastEntry.oldScore;
+            
+            // نخصم القيمة
+            if (lastEntry.team === 'lana') gameState.lana -= lastEntry.val;
+            else gameState.lahum -= lastEntry.val;
+            
             updateUI();
         }
 
@@ -343,7 +420,6 @@
                 if (entry.team === 'lana') { logLanaDiv.appendChild(item); } 
                 else { logLahumDiv.appendChild(item); }
             });
-            
             let spacer = document.createElement('div'); spacer.style.height = "80px";
             logLahumDiv.appendChild(spacer.cloneNode()); logLanaDiv.appendChild(spacer.cloneNode());
         }
@@ -367,24 +443,6 @@
                 let audio = new Audio(soundFile);
                 audio.play().catch(e => {});
             }
-        }
-
-        function playVoice(team, number) {
-            // إضافة sounds/ قبل اسم الملف
-            const teamFile = team === 'lana' ? 'sounds/lana.mp3' : 'sounds/lahum.mp3'; 
-            let audioTeam = new Audio(teamFile);
-            
-            audioTeam.play().then(() => {
-                audioTeam.onended = () => {
-                    let numFile = 'sounds/' + number + '.mp3';
-                    let audioNum = new Audio(numFile);
-                    audioNum.play().catch(e => console.log('Number sound missing: ' + numFile));
-                };
-            }).catch(e => {
-                let numFile = 'sounds/' + number + '.mp3';
-                let audioNum = new Audio(numFile);
-                audioNum.play().catch(e => {});
-            });
         }
     </script>
 </body>
