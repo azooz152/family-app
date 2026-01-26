@@ -18,7 +18,7 @@
             --hilal-accent: #3388ff;
             --bg-dark: #000000;
             --text-main: #ffffff;
-            --text-sec: #e0e0e0; /* تفتيح النص الثانوي ليكون واضح مع الخلفية */
+            --text-sec: #e0e0e0;
         }
 
         * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -26,20 +26,18 @@
         body {
             margin: 0; padding: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
-            
-            /* تعديل الخلفية لتوضيح الشعار */
-            background-image: linear-gradient(rgba(0, 20, 50, 0.4), rgba(0, 10, 30, 0.6)), url('hilal.png');
-            background-size: 130%; /* تكبير الشعار */
+            /* خلفية الهلال كبيرة وواضحة جداً */
+            background-image: linear-gradient(rgba(0, 20, 50, 0.3), rgba(0, 10, 30, 0.5)), url('hilal.png');
+            background-size: 140%; /* تكبير الشعار */
             background-position: center center;
             background-attachment: fixed; 
             background-repeat: no-repeat;
-            
             height: 100vh; color: var(--text-main);
             display: flex; flex-direction: column; overflow: hidden;
             position: fixed; width: 100%;
         }
 
-        /* --- 1. الرأس --- */
+        /* --- الرأس --- */
         .top-section {
             background: rgba(0, 27, 61, 0.5); backdrop-filter: blur(8px);
             border-bottom: 1px solid rgba(255,255,255,0.15);
@@ -67,12 +65,11 @@
         .diff-label { font-size: 0.8rem; color: #ddd; }
         .diff-val { font-size: 1.4rem; font-weight: bold; color: white; }
 
-        /* --- 2. السجل --- */
+        /* --- السجل --- */
         .history-area {
             flex-grow: 1; overflow-y: auto; display: flex; position: relative;
             padding-top: 10px; -webkit-overflow-scrolling: touch;
         }
-        /* الخط الفاصل */
         .history-area::before {
             content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; 
             background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent);
@@ -84,7 +81,7 @@
             display: flex; flex-direction: column; align-items: center; 
             color: #fff; font-size: 1.1rem; font-weight: bold;
             animation: popIn 0.3s ease; 
-            background: rgba(0, 27, 61, 0.4); /* خلفية كحلية شفافة للنص ليكون واضح */
+            background: rgba(0, 27, 61, 0.4);
             padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
         }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -94,7 +91,7 @@
         .log-line { width: 50px; height: 1px; background: rgba(255,255,255,0.4); margin: 4px 0; }
         .log-new { color: white; font-size: 1.5rem; font-weight: 900; }
 
-        /* --- 3. التحكم --- */
+        /* --- التحكم --- */
         .controls {
             background: rgba(10, 15, 30, 0.95); backdrop-filter: blur(15px);
             border-top: 1px solid rgba(255,255,255,0.1); padding: 20px;
@@ -116,8 +113,7 @@
         .actions-row { display: flex; justify-content: space-between; gap: 15px; }
         
         .action-btn {
-            flex: 1;
-            background: rgba(255,255,255,0.08); 
+            flex: 1; background: rgba(255,255,255,0.08); 
             border: 1px solid rgba(255,255,255,0.1);
             font-family: 'Tajawal', sans-serif;
             font-weight: bold; font-size: 1.1rem; color: white;
@@ -130,7 +126,7 @@
         .btn-undo { color: #ff6b6b; }
         .btn-new { color: var(--hilal-accent); }
 
-        /* --- 4. النافذة --- */
+        /* --- النافذة --- */
         .score-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 200;
@@ -223,7 +219,7 @@
                 <span>&#8634;</span> تراجع
             </button>
             <button class="action-btn btn-new" onclick="resetGame('current')">
-                <span>&#10227;</span> صكة جديدة
+                <span>&#10227;</span> إعادة
             </button>
         </div>
     </div>
@@ -300,7 +296,7 @@
             gameState.lana += valLana;
             gameState.lahum += valLahum;
 
-            // إضافة للسجل (نحفظ كل عملية حتى لو واحد منهم صفر عشان الترتيب)
+            // نحفظ كل عملية في التاريخ للتراجع
             gameState.history.push({ 
                 lanaVal: valLana, 
                 lahumVal: valLahum, 
@@ -313,27 +309,31 @@
             updateUI();
         }
 
-        // --- نظام المذيع المحترف (الترتيب: لنا -> مجموعهم -> سكتة 1ث -> لهم -> مجموعهم) ---
+        // --- نظام المذيع الصارم (يقرأ المجموع دائماً) ---
         function announceScoresSequence() {
-            // دائماً ينطق "لنا" ثم الرقم
+            // 1. ينطق "لنا"
             playAudioFile('sounds/lana.mp3', function() {
+                
+                // 2. ينطق "مجموع لنا" (الرقم اللي فوق)
                 let lanaTotalFile = 'sounds/' + gameState.lana + '.mp3';
                 playAudioFile(lanaTotalFile, function() {
                     
-                    // سكتة لمدة 1 ثانية
+                    // 3. سكتة لمدة 1 ثانية
                     setTimeout(() => {
                         
-                        // دائماً ينطق "لهم" ثم الرقم
+                        // 4. ينطق "لهم"
                         playAudioFile('sounds/lahum.mp3', function() {
+                            
+                            // 5. ينطق "مجموع لهم" (الرقم اللي فوق)
                             let lahumTotalFile = 'sounds/' + gameState.lahum + '.mp3';
                             playAudioFile(lahumTotalFile, function() {
                                 
-                                // الطقطقة (أبو دقيينه)
+                                // 6. الطقطقة (الفرق 20)
                                 checkReaction();
                             });
                         });
 
-                    }, 1000); // 1 ثانية
+                    }, 1000); 
                 });
             });
         }
@@ -341,7 +341,7 @@
         function playAudioFile(path, callback) {
             let audio = new Audio(path);
             audio.play().catch(e => {
-                if (callback) callback();
+                if (callback) callback(); // إذا الملف مو موجود يكمل
             });
             audio.onended = function() {
                 if (callback) callback();
@@ -350,16 +350,17 @@
 
         function checkReaction() {
             let diff = gameState.lana - gameState.lahum;
-            // نأخذ آخر تسجيل لـ "لنا"
-            let lastEntry = gameState.history[gameState.history.length - 1];
-            let lastLanaVal = lastEntry ? lastEntry.lanaVal : 0;
 
-            if (lastLanaVal > 0 && (diff >= 30 || lastLanaVal >= 25)) {
+            // القم يا غشيم: إذا الفرق 20 أو أكثر لصالحنا
+            if (diff >= 20) {
                 let audio = new Audio('sounds/algum.mp3');
                 audio.play().catch(e => {});
                 return;
             }
-            if (lastLanaVal >= 16) {
+            
+            // كفو: إذا سجلنا نشرة زينة (16 وفوق)
+            let lastEntry = gameState.history[gameState.history.length - 1];
+            if (lastEntry && lastEntry.lanaVal >= 16) {
                 let audio = new Audio('sounds/kafoo.mp3');
                 audio.play().catch(e => {});
                 return;
@@ -413,14 +414,14 @@
             gameState.lana = startScore; gameState.lahum = startScore; gameState.history = []; updateUI();
         }
 
-        // --- زر التراجع الاحترافي (سجل كامل) ---
+        // --- زر التراجع الكامل ---
         function undo() {
             if (gameState.history.length === 0) return;
             
             // استرجاع آخر عملية وحذفها من السجل
             let lastEntry = gameState.history.pop();
             
-            // إرجاع النقاط للحالة السابقة
+            // إرجاع النقاط للحالة السابقة بالضبط
             gameState.lana = lastEntry.oldLana;
             gameState.lahum = lastEntry.oldLahum;
             
@@ -455,9 +456,8 @@
                     `;
                     logLanaDiv.appendChild(item);
                 } else {
-                    // مساحة فارغة للحفاظ على الترتيب إذا لم يسجلوا
                     let spacer = document.createElement('div');
-                    spacer.style.height = "100px"; // نفس ارتفاع الكرت تقريباً
+                    spacer.style.height = "100px"; 
                     logLanaDiv.appendChild(spacer);
                 }
 
