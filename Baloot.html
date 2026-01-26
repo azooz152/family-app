@@ -145,14 +145,28 @@
         .btn-confirm { flex: 2; background: var(--hilal-blue); color: white; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .btn-cancel { flex: 1; background: #333; color: #ccc; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
-        /* --- شاشة الفوز --- */
+        /* --- شاشة الفوز الجديدة (أزرار الاختصار) --- */
         #winnerModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 10, 20, 0.95); z-index: 300;
             flex-direction: column; justify-content: center; align-items: center;
         }
-        #winnerModal h1 { color: var(--hilal-accent); font-size: 2.5rem; margin-bottom: 20px; text-align: center; line-height: 1.4; padding: 20px; }
-        #winnerModal button { padding: 15px 40px; font-size: 1.3rem; border-radius: 50px; border: none; cursor: pointer; background: white; color: black; font-weight: bold; }
+        #winnerModal h1 { color: var(--hilal-accent); font-size: 2.5rem; margin-bottom: 30px; text-align: center; line-height: 1.4; padding: 20px; text-shadow: 0 0 20px rgba(0,86,149,0.8); }
+        
+        .winner-actions {
+            display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px;
+        }
+
+        .btn-win-action {
+            padding: 15px; font-size: 1.2rem; border-radius: 50px; border: none; cursor: pointer; font-weight: bold;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            transition: transform 0.2s;
+        }
+        .btn-win-action:active { transform: scale(0.95); }
+
+        .btn-khat { background: white; color: var(--hilal-blue); }
+        .btn-mafroosh { background: var(--hilal-blue); color: white; border: 2px solid white; }
+
     </style>
 </head>
 <body>
@@ -164,8 +178,8 @@
         </div>
         <div class="scoreboard">
             <div class="team">
-                <div class="team-name">لهم</div>
-                <div class="total-score" id="scoreLahum">0</div>
+                <div class="team-name">لنا</div>
+                <div class="total-score" id="scoreLana">0</div>
             </div>
             <div class="center-info">
                 <div class="diff-label">الفارق</div>
@@ -173,22 +187,22 @@
                 <div style="margin-top:5px; color:rgba(255,255,255,0.5)">&#8595;</div> 
             </div>
             <div class="team">
-                <div class="team-name">لنا</div>
-                <div class="total-score" id="scoreLana">0</div>
+                <div class="team-name">لهم</div>
+                <div class="total-score" id="scoreLahum">0</div>
             </div>
         </div>
     </div>
 
     <div class="history-area" id="historyArea">
-        <div class="col-log" id="logLahum"></div>
         <div class="col-log" id="logLana"></div>
+        <div class="col-log" id="logLahum"></div>
     </div>
 
     <div class="controls">
         <button class="btn-record-main" onclick="openModal()"><span>&#9998;</span> تسجيل النشرة</button>
         <div class="actions-row">
             <button class="action-btn btn-undo" onclick="undo()"><span>&#8634;</span> تراجع</button>
-            <button class="action-btn btn-new" onclick="resetGame()"><span>&#10227;</span> صكة جديدة</button>
+            <button class="action-btn btn-new" onclick="resetGame('current')"><span>&#10227;</span> إعادة</button>
         </div>
     </div>
 
@@ -214,7 +228,14 @@
 
     <div id="winnerModal">
         <h1 id="winnerText"></h1>
-        <button onclick="resetGame()">لعبة جديدة</button>
+        <div class="winner-actions">
+            <button class="btn-win-action btn-khat" onclick="resetGame('khat')">
+                <span>&#10227;</span> صكة جديدة (خط)
+            </button>
+            <button class="btn-win-action btn-mafroosh" onclick="resetGame('mafroosh')">
+                <span>&#9824;</span> لعب مفروش
+            </button>
+        </div>
     </div>
 
     <script>
@@ -222,6 +243,8 @@
         const modal = document.getElementById('scoreModal');
         const inpLana = document.getElementById('inputLana');
         const inpLahum = document.getElementById('inputLahum');
+
+        let isPlayingAudio = false;
 
         window.onload = function() { 
             changeMode('mafroosh'); 
@@ -235,146 +258,121 @@
         function submitRound() {
             let valLana = parseInt(inpLana.value);
             let valLahum = parseInt(inpLahum.value);
-            // إذا الحقل فارغ نعتبره صفر
             if (isNaN(valLana)) valLana = 0;
             if (isNaN(valLahum)) valLahum = 0;
 
-            if (valLana === 0 && valLahum === 0) {
-                closeModal();
-                return;
-            }
+            if (valLana === 0 && valLahum === 0) { closeModal(); return; }
 
-            // تطبيق النقاط وتحديث الواجهة فوراً
             applyScore(valLana, valLahum);
-            
-            // تشغيل سلسلة الأصوات (Queue)
-            playRoundSequence(valLana, valLahum);
-
             closeModal();
-            checkWin();
+
+            if (checkWinCondition()) {
+                playWinSequence();
+            } else {
+                announceScoresSequence();
+            }
         }
 
         function applyScore(valLana, valLahum) {
             let oldLana = gameState.lana;
             let oldLahum = gameState.lahum;
 
-            // تحديث الأرقام
             gameState.lana += valLana;
             gameState.lahum += valLahum;
 
-            // إضافة للسجل (نضيف فقط إذا فيه قيمة)
-            if (valLana > 0) {
-                gameState.history.push({ team: 'lana', val: valLana, oldScore: oldLana, newScore: gameState.lana });
-            }
-            if (valLahum > 0) {
-                gameState.history.push({ team: 'lahum', val: valLahum, oldScore: oldLahum, newScore: gameState.lahum });
-            }
+            if (valLana > 0) gameState.history.push({ team: 'lana', val: valLana, oldScore: oldLana, newScore: gameState.lana });
+            if (valLahum > 0) gameState.history.push({ team: 'lahum', val: valLahum, oldScore: oldLahum, newScore: gameState.lahum });
 
             updateUI();
         }
 
-        // --- نظام الصوت المتتابع (Sequencer) ---
-        function playRoundSequence(valLana, valLahum) {
-            // التسلسل: لنا -> الرقم -> (سكتة) -> لهم -> الرقم -> (التفاعل)
+        function announceScoresSequence() {
+            playAudioFile('sounds/lana.mp3', function() {
+                let lanaTotalFile = 'sounds/' + gameState.lana + '.mp3';
+                playAudioFile(lanaTotalFile, function() {
+                    
+                    setTimeout(() => {
+                        
+                        playAudioFile('sounds/lahum.mp3', function() {
+                            let lahumTotalFile = 'sounds/' + gameState.lahum + '.mp3';
+                            playAudioFile(lahumTotalFile, function() {
+                                checkReaction();
+                            });
+                        });
 
-            // الخطوة 1: هل سجل "لنا"؟
-            if (valLana > 0) {
-                playVoice('lana', valLana, function() {
-                    // بعد ما يخلص صوت لنا ورقمها..
-                    startLahumPart(valLahum, valLana);
+                    }, 2000); 
                 });
-            } else {
-                // ما سجلنا، نروح للخطوة الثانية مباشرة
-                startLahumPart(valLahum, valLana);
-            }
-        }
-
-        function startLahumPart(valLahum, valLana) {
-            // الخطوة 2: هل سجل "لهم"؟
-            if (valLahum > 0) {
-                // إذا كان "لنا" مسجل قبل شوي، ننتظر ثانيتين (سكتة)
-                let delay = (valLana > 0) ? 2000 : 0;
-                
-                setTimeout(() => {
-                    playVoice('lahum', valLahum, function() {
-                        // بعد ما يخلص صوت لهم.. نشيك التفاعل
-                        checkReaction(valLana, valLahum);
-                    });
-                }, delay);
-            } else {
-                // ما سجلوا، نشيك التفاعل علطول
-                checkReaction(valLana, valLahum);
-            }
-        }
-
-        // دالة تشغيل الصوت (تقبل Callback لما تخلص)
-        function playVoice(team, number, onComplete) {
-            let teamFile = (team === 'lana') ? 'sounds/lana.mp3' : 'sounds/lahum.mp3';
-            let audioTeam = new Audio(teamFile);
-
-            audioTeam.play().catch(e => {
-                // لو ما اشتغل الاسم، شغل الرقم مباشرة
-                playNumber(number, onComplete);
             });
+        }
 
-            audioTeam.onended = function() {
-                playNumber(number, onComplete);
+        function playAudioFile(path, callback) {
+            let audio = new Audio(path);
+            audio.play().catch(e => {
+                if (callback) callback();
+            });
+            audio.onended = function() {
+                if (callback) callback();
             };
         }
 
-        function playNumber(number, onComplete) {
-            let numFile = 'sounds/' + number + '.mp3';
-            let audioNum = new Audio(numFile);
-            
-            audioNum.play().catch(e => {
-                if (onComplete) onComplete();
-            });
-
-            audioNum.onended = function() {
-                if (onComplete) onComplete();
-            };
-        }
-
-        // --- مخ الطقطقة (Reaction Logic) ---
-        function checkReaction(valLana, valLahum) {
-            // نحسب الفارق الحالي
+        function checkReaction() {
             let diff = gameState.lana - gameState.lahum;
+            let lastEntry = gameState.history[gameState.history.length - 1];
+            let lastLanaVal = (lastEntry && lastEntry.team === 'lana') ? lastEntry.val : 0;
 
-            // 1. القم يا غشيم (أبو دقيينه): تشتغل إذا تقدمنا بفارق كبير (فوق 30) أو سجلنا كبوت
-            // الشرط: لازم نكون "لنا" مسجلين في هذي النشرة عشان نذب عليهم
-            if (valLana > 0 && (diff >= 30 || valLana >= 25)) {
+            if (diff >= 30 || lastLanaVal >= 25) {
                 let audio = new Audio('sounds/algum.mp3');
                 audio.play().catch(e => {});
                 return;
             }
-
-            // 2. كفو (لنا): إذا سجلنا نشرة قوية
-            if (valLana >= 16 && diff < 30) { 
+            if (lastLanaVal >= 16) {
                 let audio = new Audio('sounds/kafoo.mp3');
-                audio.play().catch(e => {});
-                return;
-            }
-
-            // 3. يا ساتر (لهم): إذا سجلوا واجد
-            if (valLahum >= 20) {
-                let audio = new Audio('sounds/yasater.mp3');
                 audio.play().catch(e => {});
                 return;
             }
         }
 
-        // --- باقي الدوال (UI, Logic) ---
+        function checkWinCondition() {
+            return (gameState.lana >= gameState.winLimit || gameState.lahum >= gameState.winLimit);
+        }
+
+        function playWinSequence() {
+            let winnerText = "";
+            let soundFile = "";
+            
+            if (gameState.lana >= gameState.winLimit) {
+                winnerText = "مبروك يا زعماء 💙\n الفوز هلالي";
+                soundFile = "sounds/win.mp3"; 
+            } else {
+                winnerText = "هاردلك .. \n معوضين خير";
+                soundFile = "sounds/lose.mp3"; 
+            }
+
+            document.getElementById('winnerText').innerText = winnerText;
+            document.getElementById('winnerModal').style.display = 'flex';
+            
+            let audio = new Audio(soundFile);
+            audio.play().catch(e => {});
+        }
+
         function changeMode(mode) {
             gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
             document.getElementById('btnMafroosh').classList.remove('active');
             if (mode === 'khat') {
                 document.getElementById('btnKhat').classList.add('active');
-                gameState.winLimit = 52; resetData(0); 
+                gameState.winLimit = 152; resetData(0); 
             } else {
                 document.getElementById('btnMafroosh').classList.add('active');
-                gameState.winLimit = 152; resetData(52);
+                gameState.winLimit = 152; resetData(52); 
             }
+        }
+
+        function resetGame(type) {
+            document.getElementById('winnerModal').style.display = 'none';
+            if (type === 'khat') { changeMode('khat'); } 
+            else if (type === 'mafroosh') { changeMode('mafroosh'); } 
+            else { changeMode(gameState.mode); }
         }
 
         function resetData(startScore) {
@@ -383,13 +381,9 @@
 
         function undo() {
             if (gameState.history.length === 0) return;
-            // التراجع يسحب آخر عملية فقط
             let lastEntry = gameState.history.pop();
-            
-            // نخصم القيمة
             if (lastEntry.team === 'lana') gameState.lana -= lastEntry.val;
             else gameState.lahum -= lastEntry.val;
-            
             updateUI();
         }
 
@@ -422,27 +416,6 @@
             });
             let spacer = document.createElement('div'); spacer.style.height = "80px";
             logLahumDiv.appendChild(spacer.cloneNode()); logLanaDiv.appendChild(spacer.cloneNode());
-        }
-
-        function checkWin() {
-            if (gameState.lana >= gameState.winLimit || gameState.lahum >= gameState.winLimit) {
-                let winnerText = "";
-                let soundFile = "";
-                
-                if (gameState.lana >= gameState.winLimit) {
-                    winnerText = "مبروك يا زعماء 💙\n الفوز هلالي";
-                    soundFile = "sounds/win.mp3"; 
-                } else {
-                    winnerText = "هاردلك .. \n معوضين خير";
-                    soundFile = "sounds/lose.mp3"; 
-                }
-
-                document.getElementById('winnerText').innerText = winnerText;
-                document.getElementById('winnerModal').style.display = 'flex';
-                
-                let audio = new Audio(soundFile);
-                audio.play().catch(e => {});
-            }
         }
     </script>
 </body>
