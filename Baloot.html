@@ -26,9 +26,9 @@
         body {
             margin: 0; padding: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
-            /* خلفية الهلال كبيرة وواضحة جداً */
-            background-image: linear-gradient(rgba(0, 20, 50, 0.3), rgba(0, 10, 30, 0.5)), url('hilal.png');
-            background-size: 140%; /* تكبير الشعار */
+            /* خلفية الهلال مكبرة وواضحة جداً */
+            background-image: linear-gradient(rgba(0, 10, 30, 0.3), rgba(0, 5, 20, 0.4)), url('hilal.png');
+            background-size: 150%; /* تكبير الشعار */
             background-position: center center;
             background-attachment: fixed; 
             background-repeat: no-repeat;
@@ -39,7 +39,7 @@
 
         /* --- الرأس --- */
         .top-section {
-            background: rgba(0, 27, 61, 0.5); backdrop-filter: blur(8px);
+            background: rgba(0, 27, 61, 0.5); backdrop-filter: blur(5px);
             border-bottom: 1px solid rgba(255,255,255,0.15);
             padding: 15px 10px 20px 10px; border-radius: 0 0 30px 30px;
             z-index: 10; flex-shrink: 0;
@@ -219,7 +219,7 @@
                 <span>&#8634;</span> تراجع
             </button>
             <button class="action-btn btn-new" onclick="resetGame('current')">
-                <span>&#10227;</span> إعادة
+                <span>&#10227;</span> صكة جديدة
             </button>
         </div>
     </div>
@@ -296,7 +296,6 @@
             gameState.lana += valLana;
             gameState.lahum += valLahum;
 
-            // نحفظ كل عملية في التاريخ للتراجع
             gameState.history.push({ 
                 lanaVal: valLana, 
                 lahumVal: valLahum, 
@@ -309,12 +308,11 @@
             updateUI();
         }
 
-        // --- نظام المذيع الصارم (يقرأ المجموع دائماً) ---
+        // --- نظام المذيع المحترف (مع كل تسجيل) ---
         function announceScoresSequence() {
             // 1. ينطق "لنا"
             playAudioFile('sounds/lana.mp3', function() {
-                
-                // 2. ينطق "مجموع لنا" (الرقم اللي فوق)
+                // 2. ينطق مجموع لنا (الناتج اللي فوق)
                 let lanaTotalFile = 'sounds/' + gameState.lana + '.mp3';
                 playAudioFile(lanaTotalFile, function() {
                     
@@ -323,12 +321,11 @@
                         
                         // 4. ينطق "لهم"
                         playAudioFile('sounds/lahum.mp3', function() {
-                            
-                            // 5. ينطق "مجموع لهم" (الرقم اللي فوق)
+                            // 5. ينطق مجموع لهم (الناتج اللي فوق)
                             let lahumTotalFile = 'sounds/' + gameState.lahum + '.mp3';
                             playAudioFile(lahumTotalFile, function() {
                                 
-                                // 6. الطقطقة (الفرق 20)
+                                // 6. التفاعلات (أبو دقيينه وغيره)
                                 checkReaction();
                             });
                         });
@@ -341,7 +338,7 @@
         function playAudioFile(path, callback) {
             let audio = new Audio(path);
             audio.play().catch(e => {
-                if (callback) callback(); // إذا الملف مو موجود يكمل
+                if (callback) callback(); 
             });
             audio.onended = function() {
                 if (callback) callback();
@@ -351,7 +348,7 @@
         function checkReaction() {
             let diff = gameState.lana - gameState.lahum;
 
-            // القم يا غشيم: إذا الفرق 20 أو أكثر لصالحنا
+            // القم يا غشيم: كل مرة يكون الفرق 20 أو أكثر لصالحنا
             if (diff >= 20) {
                 let audio = new Audio('sounds/algum.mp3');
                 audio.play().catch(e => {});
@@ -414,17 +411,11 @@
             gameState.lana = startScore; gameState.lahum = startScore; gameState.history = []; updateUI();
         }
 
-        // --- زر التراجع الكامل ---
         function undo() {
             if (gameState.history.length === 0) return;
-            
-            // استرجاع آخر عملية وحذفها من السجل
             let lastEntry = gameState.history.pop();
-            
-            // إرجاع النقاط للحالة السابقة بالضبط
             gameState.lana = lastEntry.oldLana;
             gameState.lahum = lastEntry.oldLahum;
-            
             updateUI();
         }
 
@@ -444,7 +435,6 @@
             logLahumDiv.innerHTML = ''; logLanaDiv.innerHTML = '';
             
             gameState.history.forEach((entry) => {
-                // إضافة سجل لنا
                 if (entry.lanaVal > 0) {
                     let item = document.createElement('div');
                     item.className = 'log-item';
@@ -461,7 +451,6 @@
                     logLanaDiv.appendChild(spacer);
                 }
 
-                // إضافة سجل لهم
                 if (entry.lahumVal > 0) {
                     let item = document.createElement('div');
                     item.className = 'log-item';
@@ -479,7 +468,6 @@
                 }
             });
 
-            // مساحة في الأسفل
             let footerSpace = document.createElement('div'); footerSpace.style.height = "80px";
             logLahumDiv.appendChild(footerSpace.cloneNode()); logLanaDiv.appendChild(footerSpace.cloneNode());
         }
