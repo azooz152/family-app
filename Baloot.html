@@ -7,11 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hilal-dark: #001B3D;   /* كحلي غامق جداً */
-            --hilal-blue: #00458f;   /* أزرق الهلال */
-            --silver: #d1d1d1;       /* فضي */
+            --hilal-dark: #001B3D;
+            --hilal-blue: #00458f;
+            --silver: #d1d1d1;
             --white: #ffffff;
-            --bg-log: #f0f2f5;       /* خلفية السجل فاتحة لوضوح الأرقام */
+            --bg-log: #f0f2f5;
             --text-log: #333;
         }
 
@@ -28,19 +28,17 @@
             overflow: hidden;
         }
 
-        /* --- 1. رأس التطبيق (النتيجة الكلية) --- */
+        /* --- 1. رأس التطبيق --- */
         .top-section {
             background: linear-gradient(160deg, var(--hilal-blue), var(--hilal-dark));
             color: white;
-            padding: 15px 10px 30px 10px; /* مساحة إضافية من تحت للشكل المقوس */
+            padding: 15px 10px 30px 10px;
             border-radius: 0 0 40px 40px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             z-index: 10;
-            position: relative;
             flex-shrink: 0;
         }
 
-        /* أزرار الوضع في الأعلى */
         .mode-switcher {
             display: flex;
             justify-content: center;
@@ -68,7 +66,6 @@
             opacity: 1;
         }
 
-        /* لوحة النتائج الكبيرة */
         .scoreboard {
             display: flex;
             justify-content: space-between;
@@ -76,30 +73,15 @@
             padding: 0 20px;
         }
 
-        .team {
-            text-align: center;
-            width: 40%;
-        }
-
+        .team { text-align: center; width: 40%; }
         .team-name { font-size: 1.4rem; margin-bottom: 5px; color: var(--silver); }
-        
-        .total-score {
-            font-size: 4.5rem;
-            font-weight: 900;
-            line-height: 1;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
+        .total-score { font-size: 4.5rem; font-weight: 900; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
 
-        /* الفارق في الوسط */
-        .center-info {
-            text-align: center;
-            padding-top: 40px;
-            opacity: 0.8;
-        }
+        .center-info { text-align: center; padding-top: 40px; opacity: 0.8; }
         .diff-label { font-size: 0.8rem; }
         .diff-val { font-size: 1.2rem; font-weight: bold; }
 
-        /* --- 2. منطقة السجل (History Log) --- */
+        /* --- 2. السجل --- */
         .history-area {
             flex-grow: 1;
             overflow-y: auto;
@@ -109,58 +91,34 @@
             background: var(--bg-log);
         }
 
-        /* خط فاصل في النص */
         .history-area::before {
             content: '';
             position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: #e0e0e0;
+            left: 50%; top: 0; bottom: 0;
+            width: 2px; background: #e0e0e0;
             transform: translateX(-50%);
         }
 
         .col-log {
-            width: 50%;
-            padding: 10px;
-            display: flex;
-            flex-direction: column-reverse; /* الجديد يجي تحت */
-            align-items: center;
+            width: 50%; padding: 10px;
+            display: flex; flex-direction: column;
             gap: 15px;
         }
 
-        /* كرت التسجيل الواحد */
         .log-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #555;
-            font-size: 1.1rem;
-            font-weight: bold;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column;
+            align-items: center; color: #555;
+            font-size: 1.1rem; font-weight: bold;
+            animation: popIn 0.3s ease;
         }
-
-        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .log-old { font-size: 1rem; opacity: 0.6; }
         .log-add { color: var(--hilal-blue); font-size: 1.2rem; margin: 2px 0; }
         .log-line { width: 40px; height: 2px; background: #ccc; margin: 2px 0; }
         .log-new { color: #000; font-size: 1.4rem; }
 
-        /* سهم يوضح آخر تسجيل */
-        .last-action-arrow {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 2rem;
-            color: var(--hilal-blue);
-            z-index: 5;
-            top: 10px; /* سيتحرك بالجافاسكربت */
-            transition: top 0.3s ease;
-        }
-
-        /* --- 3. منطقة التحكم (أزرار) --- */
+        /* --- 3. التحكم الجديد --- */
         .controls {
             background: white;
             border-top: 1px solid #ddd;
@@ -171,70 +129,118 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
         }
 
-        .input-row {
-            display: flex;
-            gap: 10px;
-            height: 60px;
-        }
-
-        input[type="number"] {
-            width: 80px;
-            font-size: 1.8rem;
-            text-align: center;
-            border: 2px solid #eee;
-            border-radius: 15px;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            color: var(--hilal-dark);
-            outline: none;
-        }
-        input:focus { border-color: var(--hilal-blue); }
-
-        .btn-add {
-            flex: 1;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            font-weight: 900;
+        /* زر التسجيل الكبير */
+        .btn-record-main {
+            width: 100%;
+            background: linear-gradient(135deg, var(--hilal-blue), var(--hilal-dark));
             color: white;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .btn-add:active { transform: scale(0.95); }
-        .btn-lahum { background: #333; }
-        .btn-lana { background: var(--hilal-blue); }
-
-        .actions-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 10px;
-        }
-
-        .action-btn {
-            background: none;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 900;
             border: none;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            font-size: 1rem;
-            color: #666;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-record-main:active { transform: scale(0.98); }
+
+        .actions-row {
+            display: flex; justify-content: space-between; padding: 0 10px;
+        }
+        .action-btn {
+            background: none; border: none;
+            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 1rem;
+            color: #666; cursor: pointer; display: flex; align-items: center; gap: 5px;
         }
         .btn-undo { color: #e74c3c; }
         .btn-new { color: var(--hilal-blue); }
 
-        /* --- شاشة الفوز --- */
-        #winnerModal {
+        /* --- 4. نافذة التسجيل المنبثقة (Modal) --- */
+        .score-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,27,61,0.95);
-            z-index: 100;
-            flex-direction: column;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 200;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end; /* تظهر من الأسفل أو الوسط */
+        }
+        
+        /* تحسين الظهور */
+        .score-modal.show { display: flex; }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 25px 20px;
+            border-radius: 25px 25px 0 0;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+        }
+        
+        @media (min-width: 600px) {
+            .score-modal { align-items: center; }
+            .modal-content { border-radius: 25px; margin: 20px; }
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .modal-header {
+            text-align: center; font-size: 1.5rem; font-weight: bold;
+            color: var(--hilal-dark); margin-bottom: 20px;
+        }
+
+        .inputs-container {
+            display: flex; gap: 15px; justify-content: center; margin-bottom: 25px;
+        }
+
+        .input-group {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+        }
+
+        .input-label {
+            font-size: 1.2rem; font-weight: bold; margin-bottom: 8px;
+        }
+        .lbl-lana { color: var(--hilal-blue); }
+        .lbl-lahum { color: #333; }
+
+        .score-input {
+            width: 100%; height: 70px;
+            text-align: center; font-size: 2.2rem; font-weight: bold;
+            border-radius: 15px; border: 2px solid #ddd;
+            outline: none; font-family: 'Tajawal', sans-serif;
+            background: #f9f9f9;
+        }
+
+        .score-input:focus { background: white; border-color: var(--hilal-blue); }
+        .inp-lana:focus { border-color: var(--hilal-blue); box-shadow: 0 0 10px rgba(0,69,143,0.2); }
+        .inp-lahum:focus { border-color: #333; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        .modal-actions { display: flex; gap: 10px; }
+        
+        .btn-confirm {
+            flex: 2; background: var(--hilal-blue); color: white;
+            padding: 15px; border-radius: 12px; border: none;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+        }
+        .btn-cancel {
+            flex: 1; background: #eee; color: #555;
+            padding: 15px; border-radius: 12px; border: none;
+            font-size: 1.2rem; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- شاشة الفوز --- */
+        #winnerModal {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,27,61,0.95); z-index: 300;
+            flex-direction: column; justify-content: center; align-items: center;
         }
         #winnerModal h1 { color: white; font-size: 3rem; margin-bottom: 20px; }
         #winnerModal button {
@@ -248,14 +254,8 @@
 
     <div class="top-section">
         <div class="mode-switcher">
-            <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12h18v2H3z"/></svg>
-                خط (152)
-            </button>
-            <button class="mode-btn active" id="btnMafroosh" onclick="changeMode('mafroosh')">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
-                مفروش (52-152)
-            </button>
+            <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">خط (152)</button>
+            <button class="mode-btn active" id="btnMafroosh" onclick="changeMode('mafroosh')">مفروش (52-152)</button>
         </div>
 
         <div class="scoreboard">
@@ -263,13 +263,11 @@
                 <div class="team-name">لهم</div>
                 <div class="total-score" id="scoreLahum">0</div>
             </div>
-
             <div class="center-info">
                 <div class="diff-label">الفارق</div>
                 <div class="diff-val" id="scoreDiff">0</div>
-                <div style="margin-top:5px; font-size:1.5rem;">&#8595;</div> 
+                <div style="margin-top:5px;">&#8595;</div> 
             </div>
-
             <div class="team">
                 <div class="team-name">لنا</div>
                 <div class="total-score" id="scoreLana">0</div>
@@ -283,11 +281,9 @@
     </div>
 
     <div class="controls">
-        <div class="input-row">
-            <button class="btn-add btn-lahum" onclick="addScore('lahum')">لهم +</button>
-            <input type="number" id="inputScore" placeholder="-" inputmode="numeric">
-            <button class="btn-add btn-lana" onclick="addScore('lana')">لنا +</button>
-        </div>
+        <button class="btn-record-main" onclick="openModal()">
+            <span>&#9998;</span> تسجيل النشرة
+        </button>
 
         <div class="actions-row">
             <button class="action-btn btn-undo" onclick="undo()">
@@ -299,42 +295,128 @@
         </div>
     </div>
 
+    <div id="scoreModal" class="score-modal">
+        <div class="modal-content">
+            <div class="modal-header">تسجيل النتيجة</div>
+            
+            <div class="inputs-container">
+                <div class="input-group">
+                    <span class="input-label lbl-lana">لنا</span>
+                    <input type="number" id="inputLana" class="score-input inp-lana" placeholder="0" inputmode="numeric">
+                </div>
+                <div class="input-group">
+                    <span class="input-label lbl-lahum">لهم</span>
+                    <input type="number" id="inputLahum" class="score-input inp-lahum" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+                <button class="btn-confirm" onclick="submitRound()">اعتماد</button>
+            </div>
+        </div>
+    </div>
+
     <div id="winnerModal">
         <h1 id="winnerText"></h1>
         <button onclick="resetGame()">لعبة جديدة</button>
     </div>
 
     <script>
-        // --- إعدادات اللعبة ---
+        // إعدادات الحالة
         let gameState = {
             lana: 0,
             lahum: 0,
-            history: [], // قائمة العمليات (للتراجع وللعرض)
-            mode: 'mafroosh', // or 'khat'
+            history: [],
+            mode: 'mafroosh',
             winLimit: 152
         };
 
-        const logLahumDiv = document.getElementById('logLahum');
-        const logLanaDiv = document.getElementById('logLana');
-        const inputField = document.getElementById('inputScore');
+        window.onload = function() { changeMode('mafroosh'); };
 
-        // عند تحميل الصفحة
-        window.onload = function() {
-            changeMode('mafroosh'); // الوضع الافتراضي
-        };
+        // --- دوال النافذة (Modal) ---
+        const modal = document.getElementById('scoreModal');
+        const inpLana = document.getElementById('inputLana');
+        const inpLahum = document.getElementById('inputLahum');
 
-        // --- 1. تغيير الوضع ---
+        function openModal() {
+            modal.classList.add('show');
+            inpLana.value = '';
+            inpLahum.value = '';
+            // التركيز تلقائياً على حقل "لنا"
+            setTimeout(() => inpLana.focus(), 100);
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        // إغلاق النافذة عند الضغط خارجها
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeModal();
+        });
+
+        // --- تنفيذ التسجيل ---
+        function submitRound() {
+            let valLana = parseInt(inpLana.value);
+            let valLahum = parseInt(inpLahum.value);
+
+            let hasChange = false;
+
+            // تسجيل لنا
+            if (!isNaN(valLana) && valLana !== 0) {
+                applyScore('lana', valLana);
+                hasChange = true;
+            }
+
+            // تسجيل لهم
+            if (!isNaN(valLahum) && valLahum !== 0) {
+                applyScore('lahum', valLahum);
+                hasChange = true;
+            }
+
+            if (hasChange) {
+                closeModal();
+                checkWin();
+            } else {
+                // إذا لم يدخل أرقام، فقط أغلق
+                closeModal();
+            }
+        }
+
+        // دالة مساعدة لتطبيق النتيجة
+        function applyScore(team, val) {
+            let oldScore = gameState[team];
+            let newScore = oldScore + val;
+
+            // إضافة للسجل
+            let entry = {
+                team: team,
+                val: val,
+                oldScore: oldScore,
+                newScore: newScore
+            };
+            gameState.history.push(entry);
+
+            // تحديث الحالة
+            gameState[team] = newScore;
+            
+            // صوت
+            playVoice(team, val);
+
+            // تحديث الشاشة
+            updateUI();
+        }
+
+        // --- باقي المنطق (كما هو) ---
         function changeMode(mode) {
             gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
             document.getElementById('btnMafroosh').classList.remove('active');
-
             if (mode === 'khat') {
-                // خط طويل 0 - 152
                 document.getElementById('btnKhat').classList.add('active');
                 resetData(0); 
             } else {
-                // مفروش 52 - 152
                 document.getElementById('btnMafroosh').classList.add('active');
                 resetData(52);
             }
@@ -344,115 +426,49 @@
             gameState.lana = startScore;
             gameState.lahum = startScore;
             gameState.history = [];
-            
-            // إضافة الحالة الأولية للسجل (بداية اللعبة)
-            // لن نظهرها كعملية جمع، بل هي نقطة البداية
-            
             updateUI();
         }
 
-        // --- 2. إضافة النتيجة ---
-        function addScore(team) {
-            let val = parseInt(inputField.value);
-            if (isNaN(val)) return;
-
-            // حفظ الحالة الحالية قبل التعديل (للسجل)
-            let oldScore = gameState[team];
-            let newScore = oldScore + val;
-
-            // تسجيل العملية
-            let entry = {
-                team: team,
-                val: val,
-                oldScore: oldScore,
-                newScore: newScore,
-                // نحفظ حالة الفريق الآخر أيضاً عشان التراجع الشامل لو احتجنا
-                otherTeamScore: team === 'lana' ? gameState.lahum : gameState.lana
-            };
-            gameState.history.push(entry);
-
-            // تحديث النتيجة
-            gameState[team] = newScore;
-
-            // تشغيل الصوت
-            playVoice(team, val);
-
-            // تحديث الواجهة
-            updateUI();
-            
-            // تنظيف الحقل
-            inputField.value = '';
-            inputField.focus();
-
-            checkWin();
-        }
-
-        // --- 3. التراجع ---
         function undo() {
             if (gameState.history.length === 0) return;
-
-            // حذف آخر عملية
             let lastEntry = gameState.history.pop();
-            
-            // إرجاع النتيجة
             gameState[lastEntry.team] = lastEntry.oldScore;
-
             updateUI();
         }
 
-        // --- 4. تحديث الشاشة (المنطق الجديد) ---
         function updateUI() {
-            // تحديث الأرقام الكبيرة
             document.getElementById('scoreLana').innerText = gameState.lana;
             document.getElementById('scoreLahum').innerText = gameState.lahum;
-
-            // تحديث الفارق
             let diff = Math.abs(gameState.lana - gameState.lahum);
             document.getElementById('scoreDiff').innerText = diff;
-
-            // إعادة رسم السجل (Log)
             renderLog();
-
-            // تمرير السجل للأسفل تلقائياً
             let historyArea = document.getElementById('historyArea');
-            setTimeout(() => {
-                historyArea.scrollTop = historyArea.scrollHeight;
-            }, 50);
+            setTimeout(() => { historyArea.scrollTop = historyArea.scrollHeight; }, 50);
         }
 
-        // دالة رسم السجل (مثل الصورة)
         function renderLog() {
+            const logLahumDiv = document.getElementById('logLahum');
+            const logLanaDiv = document.getElementById('logLana');
             logLahumDiv.innerHTML = '';
             logLanaDiv.innerHTML = '';
 
-            // نمر على كل العمليات في التاريخ ونرسمها
-            gameState.history.forEach((entry, index) => {
-                // إنشاء عنصر HTML
+            gameState.history.forEach((entry) => {
                 let item = document.createElement('div');
                 item.className = 'log-item';
-                
-                // تصميم البلوك: القديم + الإضافة = الجديد
                 item.innerHTML = `
                     <span class="log-old">${entry.oldScore}</span>
                     <span class="log-add">+${entry.val}</span>
                     <div class="log-line"></div>
                     <span class="log-new">${entry.newScore}</span>
                 `;
-
                 if (entry.team === 'lana') {
-                    // عشان الترتيب يكون صحيح (من فوق لتحت)، نستخدم prepend أو append حسب flex-direction
-                    // هنا flex-direction: column-reverse يعني آخر عنصر هو اللي فوق؟ لا
-                    // في التصميم الشائع: القديم فوق والجديد تحت.
-                    // دعنا نستخدم append عادي ونخلي scroll ينزل تحت
                     logLanaDiv.appendChild(item);
                 } else {
                     logLahumDiv.appendChild(item);
                 }
             });
-            
-            // إضافة مساحة فارغة في الأسفل عشان الرؤية
-            let spacer = document.createElement('div');
-            spacer.style.height = "20px";
+            // مساحة فارغة في الأسفل
+            let spacer = document.createElement('div'); spacer.style.height = "50px";
             logLahumDiv.appendChild(spacer.cloneNode());
             logLanaDiv.appendChild(spacer.cloneNode());
         }
@@ -467,15 +483,12 @@
 
         function resetGame() {
             document.getElementById('winnerModal').style.display = 'none';
-            // إعادة التعيين حسب الوضع الحالي
             changeMode(gameState.mode);
         }
 
-        // --- الصوت ---
         function playVoice(team, number) {
             const teamFile = team === 'lana' ? 'lana.mp3' : 'lahum.mp3';
             let audioTeam = new Audio('sounds/' + teamFile);
-            
             audioTeam.play().then(() => {
                 audioTeam.onended = () => {
                     let audioNum = new Audio('sounds/' + number + '.mp3');
