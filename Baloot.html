@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* ألوان الهلال والوضع الداكن */
             --hilal-dark: #001B3D;
             --hilal-blue: #005695;
             --hilal-accent: #3388ff;
@@ -25,264 +24,135 @@
         * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
+            margin: 0; padding: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
-            /* الخلفية: صورة الهلال مع تعتيم */
             background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 27, 61, 0.9)), url('hilal.png');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            height: 100vh;
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
+            background-size: cover; background-position: center;
+            background-attachment: fixed; background-repeat: no-repeat;
+            height: 100vh; color: var(--text-main);
+            display: flex; flex-direction: column; overflow: hidden;
+            position: fixed; width: 100%;
         }
 
-        /* --- 1. رأس التطبيق --- */
+        /* --- 1. الرأس --- */
         .top-section {
-            background: rgba(0, 27, 61, 0.6);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 27, 61, 0.6); backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding: 15px 10px 20px 10px;
-            border-radius: 0 0 30px 30px;
-            z-index: 10;
-            flex-shrink: 0;
+            padding: 15px 10px 20px 10px; border-radius: 0 0 30px 30px;
+            z-index: 10; flex-shrink: 0;
             padding-top: env(safe-area-inset-top, 15px); 
         }
 
-        .mode-switcher {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
+        .mode-switcher { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .mode-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-sec);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            color: var(--text-sec); padding: 6px 16px; border-radius: 20px;
+            font-size: 0.9rem; cursor: pointer; transition: 0.3s;
         }
-
         .mode-btn.active {
-            background: var(--hilal-blue);
-            border-color: var(--hilal-blue);
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 86, 149, 0.4);
+            background: var(--hilal-blue); border-color: var(--hilal-blue);
+            color: white; font-weight: bold; box-shadow: 0 0 15px rgba(0, 86, 149, 0.4);
         }
 
-        .scoreboard {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 0 15px;
-        }
-
+        .scoreboard { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 15px; }
         .team { text-align: center; width: 40%; }
         .team-name { font-size: 1.3rem; margin-bottom: 5px; color: var(--text-sec); }
-        .total-score { 
-            font-size: 4.5rem; 
-            font-weight: 900; 
-            line-height: 1; 
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
-            font-variant-numeric: tabular-nums;
-        }
-
+        .total-score { font-size: 4.5rem; font-weight: 900; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.8); font-variant-numeric: tabular-nums; }
         .center-info { text-align: center; padding-top: 35px; opacity: 0.7; }
         .diff-label { font-size: 0.75rem; color: var(--text-sec); }
         .diff-val { font-size: 1.2rem; font-weight: bold; color: white; }
 
-        /* --- 2. السجل (History) --- */
+        /* --- 2. السجل (Lana wa Lahum Style) --- */
         .history-area {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            position: relative;
-            padding-top: 10px;
-            -webkit-overflow-scrolling: touch;
+            flex-grow: 1; overflow-y: auto; display: flex; position: relative;
+            padding-top: 10px; -webkit-overflow-scrolling: touch;
         }
-
         .history-area::before {
-            content: '';
-            position: absolute;
-            left: 50%; top: 0; bottom: 0;
-            width: 1px; 
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; 
             background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
             transform: translateX(-50%);
         }
-
-        .col-log {
-            width: 50%; padding: 10px;
-            display: flex; flex-direction: column;
-            gap: 12px;
-        }
-
+        .col-log { width: 50%; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
+        
         .log-item {
-            display: flex; flex-direction: column;
-            align-items: center; 
-            color: var(--text-sec);
-            font-size: 1.1rem; font-weight: bold;
-            animation: popIn 0.3s ease;
-            background: rgba(0,0,0,0.2);
-            padding: 5px;
-            border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; 
+            color: var(--text-sec); font-size: 1.1rem; font-weight: bold;
+            animation: popIn 0.3s ease; background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);
         }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .log-old { font-size: 0.9rem; opacity: 0.6; }
+        .log-add { color: var(--hilal-accent); font-size: 1.3rem; margin: 2px 0; }
+        .log-line { width: 50px; height: 1px; background: rgba(255,255,255,0.3); margin: 4px 0; }
+        .log-new { color: white; font-size: 1.5rem; font-weight: 900; }
 
-        .log-old { font-size: 0.9rem; opacity: 0.5; }
-        .log-add { color: var(--hilal-accent); font-size: 1.1rem; margin: 1px 0; }
-        .log-line { width: 30px; height: 1px; background: rgba(255,255,255,0.2); margin: 2px 0; }
-        .log-new { color: white; font-size: 1.3rem; }
-
-        /* --- 3. منطقة التحكم السفلية --- */
+        /* --- 3. التحكم --- */
         .controls {
-            background: rgba(18, 18, 18, 0.95);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border-radius: 25px 25px 0 0;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.1); padding: 20px;
+            display: flex; flex-direction: column; gap: 12px;
+            border-radius: 25px 25px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
-
         .btn-record-main {
-            width: 100%;
-            background: linear-gradient(135deg, var(--hilal-blue), #002a5c);
-            color: white;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 1.4rem;
-            font-weight: 900;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 15px rgba(0, 86, 149, 0.3);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            width: 100%; background: linear-gradient(135deg, var(--hilal-blue), #002a5c);
+            color: white; padding: 16px; border-radius: 16px;
+            font-size: 1.4rem; font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0, 86, 149, 0.3); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-record-main:active { transform: scale(0.98); }
-
-        .actions-row {
-            display: flex; justify-content: space-between; padding: 0 10px;
-        }
+        .actions-row { display: flex; justify-content: space-between; padding: 0 10px; }
         .action-btn {
-            background: none; border: none;
-            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 1rem;
-            color: var(--text-sec); cursor: pointer; display: flex; align-items: center; gap: 8px;
-            padding: 10px;
-            border-radius: 10px;
+            background: none; border: none; font-family: 'Tajawal', sans-serif;
+            font-weight: bold; font-size: 1rem; color: var(--text-sec);
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            padding: 10px; border-radius: 10px;
         }
         .action-btn:hover { background: rgba(255,255,255,0.05); }
-        .btn-undo { color: #ff5f5f; } /* لون أحمر للتراجع */
+        .btn-undo { color: #ff5f5f; }
         .btn-new { color: var(--hilal-accent); }
 
-        /* --- 4. نافذة التسجيل (Popup) --- */
+        /* --- 4. النافذة --- */
         .score-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            z-index: 200;
-            justify-content: center;
-            align-items: flex-end;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200;
+            justify-content: center; align-items: flex-end;
         }
-        
         .score-modal.show { display: flex; }
-
         .modal-content {
-            background: #1a1a1a;
-            width: 100%;
-            max-width: 500px;
-            padding: 30px 20px;
-            border-radius: 30px 30px 0 0;
-            animation: slideUp 0.3s ease;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: env(safe-area-inset-bottom, 30px);
+            background: #1a1a1a; width: 100%; max-width: 500px;
+            padding: 30px 20px; border-radius: 30px 30px 0 0;
+            animation: slideUp 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1); padding-bottom: env(safe-area-inset-bottom, 30px);
         }
-        
-        @media (min-width: 600px) {
-            .score-modal { align-items: center; }
-            .modal-content { border-radius: 25px; margin: 20px; padding-bottom: 30px; }
-        }
-
+        @media (min-width: 600px) { .score-modal { align-items: center; } .modal-content { border-radius: 25px; margin: 20px; padding-bottom: 30px; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-        .modal-header {
-            text-align: center; font-size: 1.4rem; font-weight: bold;
-            color: white; margin-bottom: 25px;
-        }
-
-        .inputs-container {
-            display: flex; gap: 15px; justify-content: center; margin-bottom: 30px;
-        }
-
-        .input-group {
-            flex: 1; display: flex; flex-direction: column; align-items: center;
-        }
-
-        .input-label {
-            font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;
-        }
+        .modal-header { text-align: center; font-size: 1.4rem; font-weight: bold; color: white; margin-bottom: 25px; }
+        .inputs-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; }
+        .input-group { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .input-label { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; }
         .lbl-lana { color: var(--hilal-accent); }
         .lbl-lahum { color: var(--text-sec); }
-
         .score-input {
-            width: 100%; height: 75px;
-            text-align: center; font-size: 2.5rem; font-weight: bold;
-            border-radius: 18px; 
-            border: 2px solid #333;
-            outline: none; font-family: 'Tajawal', sans-serif;
-            background: #000;
-            color: white;
-            transition: 0.3s;
+            width: 100%; height: 75px; text-align: center; font-size: 2.5rem; font-weight: bold;
+            border-radius: 18px; border: 2px solid #333; outline: none;
+            font-family: 'Tajawal', sans-serif; background: #000; color: white; transition: 0.3s;
         }
-
         .score-input:focus { border-color: var(--hilal-blue); box-shadow: 0 0 15px rgba(0, 86, 149, 0.3); }
-
         .modal-actions { display: flex; gap: 12px; }
-        
-        .btn-confirm {
-            flex: 2; background: var(--hilal-blue); color: white;
-            padding: 16px; border-radius: 14px; border: none;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .btn-cancel {
-            flex: 1; background: #333; color: #ccc;
-            padding: 16px; border-radius: 14px; border: none;
-            font-size: 1.1rem; font-weight: bold; cursor: pointer;
-        }
+        .btn-confirm { flex: 2; background: var(--hilal-blue); color: white; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .btn-cancel { flex: 1; background: #333; color: #ccc; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
         /* --- شاشة الفوز --- */
         #winnerModal {
-            display: none; position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 10, 20, 0.95); z-index: 300;
             flex-direction: column; justify-content: center; align-items: center;
         }
-        #winnerModal h1 { color: var(--hilal-accent); font-size: 3rem; margin-bottom: 20px; text-align: center;}
-        #winnerModal button {
-            padding: 15px 40px; font-size: 1.3rem; border-radius: 50px;
-            border: none; cursor: pointer; background: white; color: black; font-weight: bold;
-        }
-
+        #winnerModal h1 { color: var(--hilal-accent); font-size: 2.5rem; margin-bottom: 20px; text-align: center; line-height: 1.4; padding: 20px; }
+        #winnerModal button { padding: 15px 40px; font-size: 1.3rem; border-radius: 50px; border: none; cursor: pointer; background: white; color: black; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -292,7 +162,6 @@
             <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">خط (0-52)</button>
             <button class="mode-btn active" id="btnMafroosh" onclick="changeMode('mafroosh')">مفروش (52-152)</button>
         </div>
-
         <div class="scoreboard">
             <div class="team">
                 <div class="team-name">لهم</div>
@@ -316,24 +185,16 @@
     </div>
 
     <div class="controls">
-        <button class="btn-record-main" onclick="openModal()">
-            <span>&#9998;</span> تسجيل النشرة
-        </button>
-
+        <button class="btn-record-main" onclick="openModal()"><span>&#9998;</span> تسجيل النشرة</button>
         <div class="actions-row">
-            <button class="action-btn btn-undo" onclick="undo()">
-                <span>&#8634;</span> تراجع
-            </button>
-            <button class="action-btn btn-new" onclick="resetGame()">
-                <span>&#10227;</span> صكة جديدة
-            </button>
+            <button class="action-btn btn-undo" onclick="undo()"><span>&#8634;</span> تراجع</button>
+            <button class="action-btn btn-new" onclick="resetGame()"><span>&#10227;</span> صكة جديدة</button>
         </div>
     </div>
 
     <div id="scoreModal" class="score-modal">
         <div class="modal-content">
             <div class="modal-header">تسجيل النتيجة</div>
-            
             <div class="inputs-container">
                 <div class="input-group">
                     <span class="input-label lbl-lana">لنا</span>
@@ -344,7 +205,6 @@
                     <input type="number" id="inputLahum" class="score-input inp-lahum" placeholder="-" inputmode="numeric">
                 </div>
             </div>
-
             <div class="modal-actions">
                 <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
                 <button class="btn-confirm" onclick="submitRound()">اعتماد</button>
@@ -358,121 +218,101 @@
     </div>
 
     <script>
-        // إعدادات الحالة
-        let gameState = {
-            lana: 0,
-            lahum: 0,
-            history: [], // هنا يُحفظ السجل بالكامل
-            mode: 'mafroosh', 
-            winLimit: 152
-        };
-
-        window.onload = function() { 
-            changeMode('mafroosh'); 
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        };
-        
-        // --- دوال النافذة ---
+        let gameState = { lana: 0, lahum: 0, history: [], mode: 'mafroosh', winLimit: 152 };
         const modal = document.getElementById('scoreModal');
         const inpLana = document.getElementById('inputLana');
         const inpLahum = document.getElementById('inputLahum');
 
-        function openModal() {
-            modal.classList.add('show');
-            inpLana.value = '';
-            inpLahum.value = '';
-            setTimeout(() => inpLana.focus(), 100);
-        }
+        window.onload = function() { 
+            changeMode('mafroosh'); 
+            let vh = window.innerHeight * 0.01; document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
 
-        function closeModal() {
-            modal.classList.remove('show');
-        }
+        function openModal() { modal.classList.add('show'); inpLana.value = ''; inpLahum.value = ''; setTimeout(() => inpLana.focus(), 100); }
+        function closeModal() { modal.classList.remove('show'); }
+        modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
 
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeModal();
-        });
-
-        // --- تنفيذ التسجيل ---
         function submitRound() {
             let valLana = parseInt(inpLana.value);
             let valLahum = parseInt(inpLahum.value);
             let hasChange = false;
 
-            if (!isNaN(valLana) && valLana !== 0) {
-                applyScore('lana', valLana);
-                hasChange = true;
-            }
-            if (!isNaN(valLahum) && valLahum !== 0) {
-                applyScore('lahum', valLahum);
-                hasChange = true;
-            }
+            if (!isNaN(valLana) && valLana !== 0) { applyScore('lana', valLana); hasChange = true; }
+            if (!isNaN(valLahum) && valLahum !== 0) { applyScore('lahum', valLahum); hasChange = true; }
 
             if (hasChange) {
                 closeModal();
                 checkWin();
-            } else {
-                closeModal();
-            }
+            } else { closeModal(); }
         }
 
-        // دالة تطبيق النتيجة وإضافتها للسجل
         function applyScore(team, val) {
             let oldScore = gameState[team];
             let newScore = oldScore + val;
-
-            // حفظ العملية في التاريخ (للتراجع)
-            let entry = {
-                team: team,
-                val: val,
-                oldScore: oldScore,
-                newScore: newScore
-            };
+            let entry = { team: team, val: val, oldScore: oldScore, newScore: newScore };
             gameState.history.push(entry);
-
             gameState[team] = newScore;
+            
+            // تشغيل الأصوات من مجلد sounds
             playVoice(team, val);
+
+            // تشغيل التفاعلات (الطقطقة)
+            setTimeout(() => {
+                checkReaction(team, val);
+            }, 2000); 
+
             updateUI();
         }
 
-        // --- تغيير الوضع (خط / مفروش) ---
+        // --- مخ الطقطقة (Logic) مع مسار المجلد sounds ---
+        function checkReaction(team, val) {
+            let diff = gameState.lana - gameState.lahum;
+
+            // القم يا غشيم
+            if (team === 'lana' && (diff > 30 || val >= 25)) {
+                let audio = new Audio('sounds/algum.mp3'); 
+                audio.play().catch(e => console.log('Algum sound error'));
+                return;
+            }
+
+            // كفو
+            if (team === 'lana' && val >= 16) {
+                 if (!(diff > 30 || val >= 25)) {
+                    let audio = new Audio('sounds/kafoo.mp3'); 
+                    audio.play().catch(e => {});
+                 }
+                return;
+            }
+
+            // يا ساتر
+            if (team === 'lahum' && val >= 20) {
+                let audio = new Audio('sounds/yasater.mp3'); 
+                audio.play().catch(e => {});
+                return;
+            }
+        }
+
         function changeMode(mode) {
             gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
             document.getElementById('btnMafroosh').classList.remove('active');
-            
             if (mode === 'khat') {
-                // وضع الخط: من 0 إلى 52
                 document.getElementById('btnKhat').classList.add('active');
-                gameState.winLimit = 52; 
-                resetData(0); 
+                gameState.winLimit = 52; resetData(0); 
             } else {
-                // وضع المفروش: من 52 إلى 152
                 document.getElementById('btnMafroosh').classList.add('active');
-                gameState.winLimit = 152;
-                resetData(52);
+                gameState.winLimit = 152; resetData(52);
             }
         }
 
         function resetData(startScore) {
-            gameState.lana = startScore;
-            gameState.lahum = startScore;
-            gameState.history = []; // تصفير السجل عند بداية اللعبة
-            updateUI();
+            gameState.lana = startScore; gameState.lahum = startScore; gameState.history = []; updateUI();
         }
 
-        // --- دالة التراجع الذكية ---
         function undo() {
-            // إذا السجل فاضي، ما يسوي شيء
             if (gameState.history.length === 0) return;
-
-            // استرجاع آخر عملية (حذفها من السجل)
             let lastEntry = gameState.history.pop();
-            
-            // إرجاع النتيجة كما كانت قبل التسجيل
             gameState[lastEntry.team] = lastEntry.oldScore;
-
-            // تحديث الشاشة
             updateUI();
         }
 
@@ -489,9 +329,8 @@
         function renderLog() {
             const logLahumDiv = document.getElementById('logLahum');
             const logLanaDiv = document.getElementById('logLana');
-            logLahumDiv.innerHTML = '';
-            logLanaDiv.innerHTML = '';
-
+            logLahumDiv.innerHTML = ''; logLanaDiv.innerHTML = '';
+            
             gameState.history.forEach((entry) => {
                 let item = document.createElement('div');
                 item.className = 'log-item';
@@ -501,40 +340,49 @@
                     <div class="log-line"></div>
                     <span class="log-new">${entry.newScore}</span>
                 `;
-                if (entry.team === 'lana') {
-                    logLanaDiv.appendChild(item);
-                } else {
-                    logLahumDiv.appendChild(item);
-                }
+                if (entry.team === 'lana') { logLanaDiv.appendChild(item); } 
+                else { logLahumDiv.appendChild(item); }
             });
-            let spacer = document.createElement('div'); spacer.style.height = "50px";
-            logLahumDiv.appendChild(spacer.cloneNode());
-            logLanaDiv.appendChild(spacer.cloneNode());
+            
+            let spacer = document.createElement('div'); spacer.style.height = "80px";
+            logLahumDiv.appendChild(spacer.cloneNode()); logLanaDiv.appendChild(spacer.cloneNode());
         }
 
         function checkWin() {
             if (gameState.lana >= gameState.winLimit || gameState.lahum >= gameState.winLimit) {
-                let winner = gameState.lana >= gameState.winLimit ? "مبروك للفايزين 💙" : "هاردلك للخاسرين";
-                document.getElementById('winnerText').innerText = winner;
+                let winnerText = "";
+                let soundFile = "";
+                
+                if (gameState.lana >= gameState.winLimit) {
+                    winnerText = "مبروك يا زعماء 💙\n الفوز هلالي";
+                    soundFile = "sounds/win.mp3"; 
+                } else {
+                    winnerText = "هاردلك .. \n معوضين خير";
+                    soundFile = "sounds/lose.mp3"; 
+                }
+
+                document.getElementById('winnerText').innerText = winnerText;
                 document.getElementById('winnerModal').style.display = 'flex';
+                
+                let audio = new Audio(soundFile);
+                audio.play().catch(e => {});
             }
         }
 
-        function resetGame() {
-            document.getElementById('winnerModal').style.display = 'none';
-            changeMode(gameState.mode);
-        }
-
         function playVoice(team, number) {
-            const teamFile = team === 'lana' ? 'lana.mp3' : 'lahum.mp3';
-            let audioTeam = new Audio('sounds/' + teamFile);
+            // إضافة sounds/ قبل اسم الملف
+            const teamFile = team === 'lana' ? 'sounds/lana.mp3' : 'sounds/lahum.mp3'; 
+            let audioTeam = new Audio(teamFile);
+            
             audioTeam.play().then(() => {
                 audioTeam.onended = () => {
-                    let audioNum = new Audio('sounds/' + number + '.mp3');
-                    audioNum.play().catch(e => {});
+                    let numFile = 'sounds/' + number + '.mp3';
+                    let audioNum = new Audio(numFile);
+                    audioNum.play().catch(e => console.log('Number sound missing: ' + numFile));
                 };
             }).catch(e => {
-                let audioNum = new Audio('sounds/' + number + '.mp3');
+                let numFile = 'sounds/' + number + '.mp3';
+                let audioNum = new Audio(numFile);
                 audioNum.play().catch(e => {});
             });
         }
