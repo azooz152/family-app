@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="بلوت الزعيم">
+
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -28,7 +29,7 @@
             padding: 0;
             font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
-            /* الخلفية: طبقة داكنة + صورة الهلال */
+            /* الخلفية: صورة الهلال مع تعتيم */
             background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 27, 61, 0.9)), url('hilal.png');
             background-size: cover;
             background-position: center;
@@ -39,7 +40,6 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            /* تحسين لمنع تحرك الخلفية عند فتح الكيبورد في الايفون */
             position: fixed;
             width: 100%;
         }
@@ -53,7 +53,6 @@
             border-radius: 0 0 30px 30px;
             z-index: 10;
             flex-shrink: 0;
-            /* تعديل للآيفون لترك مساحة للشريط العلوي */
             padding-top: env(safe-area-inset-top, 15px); 
         }
 
@@ -70,7 +69,7 @@
             color: var(--text-sec);
             padding: 6px 16px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -111,7 +110,7 @@
             display: flex;
             position: relative;
             padding-top: 10px;
-            -webkit-overflow-scrolling: touch; /* سلاسة السكرول في الايفون */
+            -webkit-overflow-scrolling: touch;
         }
 
         .history-area::before {
@@ -148,7 +147,7 @@
 
         /* --- 3. منطقة التحكم السفلية --- */
         .controls {
-            background: rgba(18, 18, 18, 0.9);
+            background: rgba(18, 18, 18, 0.95);
             backdrop-filter: blur(15px);
             border-top: 1px solid rgba(255,255,255,0.1);
             padding: 20px;
@@ -157,7 +156,6 @@
             gap: 12px;
             border-radius: 25px 25px 0 0;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-            /* تعديل للآيفون لترك مساحة للشريط السفلي */
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
@@ -184,13 +182,13 @@
         }
         .action-btn {
             background: none; border: none;
-            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 0.95rem;
-            color: var(--text-sec); cursor: pointer; display: flex; align-items: center; gap: 6px;
+            font-family: 'Tajawal', sans-serif; font-weight: bold; font-size: 1rem;
+            color: var(--text-sec); cursor: pointer; display: flex; align-items: center; gap: 8px;
             padding: 10px;
             border-radius: 10px;
         }
         .action-btn:hover { background: rgba(255,255,255,0.05); }
-        .btn-undo { color: #ff5f5f; }
+        .btn-undo { color: #ff5f5f; } /* لون أحمر للتراجع */
         .btn-new { color: var(--hilal-accent); }
 
         /* --- 4. نافذة التسجيل (Popup) --- */
@@ -216,7 +214,6 @@
             animation: slideUp 0.3s ease;
             box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
-            /* تعديل للآيفون */
             padding-bottom: env(safe-area-inset-bottom, 30px);
         }
         
@@ -258,7 +255,6 @@
         }
 
         .score-input:focus { border-color: var(--hilal-blue); box-shadow: 0 0 15px rgba(0, 86, 149, 0.3); }
-        .score-input::placeholder { color: #333; }
 
         .modal-actions { display: flex; gap: 12px; }
         
@@ -293,7 +289,7 @@
 
     <div class="top-section">
         <div class="mode-switcher">
-            <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">خط (152)</button>
+            <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">خط (0-52)</button>
             <button class="mode-btn active" id="btnMafroosh" onclick="changeMode('mafroosh')">مفروش (52-152)</button>
         </div>
 
@@ -366,24 +362,18 @@
         let gameState = {
             lana: 0,
             lahum: 0,
-            history: [],
-            mode: 'mafroosh',
+            history: [], // هنا يُحفظ السجل بالكامل
+            mode: 'mafroosh', 
             winLimit: 152
         };
 
         window.onload = function() { 
             changeMode('mafroosh'); 
-            // إصلاح لمشكلة ارتفاع الشاشة في بعض الجوالات
             let vh = window.innerHeight * 0.01;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         };
         
-        window.addEventListener('resize', () => {
-            let vh = window.innerHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-        });
-
-        // --- دوال النافذة (Modal) ---
+        // --- دوال النافذة ---
         const modal = document.getElementById('scoreModal');
         const inpLana = document.getElementById('inputLana');
         const inpLahum = document.getElementById('inputLahum');
@@ -392,7 +382,6 @@
             modal.classList.add('show');
             inpLana.value = '';
             inpLahum.value = '';
-            // التركيز تلقائياً على حقل "لنا"
             setTimeout(() => inpLana.focus(), 100);
         }
 
@@ -400,7 +389,6 @@
             modal.classList.remove('show');
         }
 
-        // إغلاق النافذة عند الضغط خارجها
         modal.addEventListener('click', function(e) {
             if (e.target === modal) closeModal();
         });
@@ -409,16 +397,12 @@
         function submitRound() {
             let valLana = parseInt(inpLana.value);
             let valLahum = parseInt(inpLahum.value);
-
             let hasChange = false;
 
-            // تسجيل لنا
             if (!isNaN(valLana) && valLana !== 0) {
                 applyScore('lana', valLana);
                 hasChange = true;
             }
-
-            // تسجيل لهم
             if (!isNaN(valLahum) && valLahum !== 0) {
                 applyScore('lahum', valLahum);
                 hasChange = true;
@@ -432,12 +416,12 @@
             }
         }
 
-        // دالة مساعدة لتطبيق النتيجة
+        // دالة تطبيق النتيجة وإضافتها للسجل
         function applyScore(team, val) {
             let oldScore = gameState[team];
             let newScore = oldScore + val;
 
-            // إضافة للسجل
+            // حفظ العملية في التاريخ (للتراجع)
             let entry = {
                 team: team,
                 val: val,
@@ -446,26 +430,26 @@
             };
             gameState.history.push(entry);
 
-            // تحديث الحالة
             gameState[team] = newScore;
-            
-            // صوت
             playVoice(team, val);
-
-            // تحديث الشاشة
             updateUI();
         }
 
-        // --- باقي المنطق ---
+        // --- تغيير الوضع (خط / مفروش) ---
         function changeMode(mode) {
             gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
             document.getElementById('btnMafroosh').classList.remove('active');
+            
             if (mode === 'khat') {
+                // وضع الخط: من 0 إلى 52
                 document.getElementById('btnKhat').classList.add('active');
+                gameState.winLimit = 52; 
                 resetData(0); 
             } else {
+                // وضع المفروش: من 52 إلى 152
                 document.getElementById('btnMafroosh').classList.add('active');
+                gameState.winLimit = 152;
                 resetData(52);
             }
         }
@@ -473,14 +457,22 @@
         function resetData(startScore) {
             gameState.lana = startScore;
             gameState.lahum = startScore;
-            gameState.history = [];
+            gameState.history = []; // تصفير السجل عند بداية اللعبة
             updateUI();
         }
 
+        // --- دالة التراجع الذكية ---
         function undo() {
+            // إذا السجل فاضي، ما يسوي شيء
             if (gameState.history.length === 0) return;
+
+            // استرجاع آخر عملية (حذفها من السجل)
             let lastEntry = gameState.history.pop();
+            
+            // إرجاع النتيجة كما كانت قبل التسجيل
             gameState[lastEntry.team] = lastEntry.oldScore;
+
+            // تحديث الشاشة
             updateUI();
         }
 
@@ -515,7 +507,6 @@
                     logLahumDiv.appendChild(item);
                 }
             });
-            // مساحة فارغة في الأسفل
             let spacer = document.createElement('div'); spacer.style.height = "50px";
             logLahumDiv.appendChild(spacer.cloneNode());
             logLanaDiv.appendChild(spacer.cloneNode());
