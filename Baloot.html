@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>حاسبة بلوت الهلال</title>
+    <title>بلوت الزعيم</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hilal-blue: #002654;
-            --hilal-light: #005695;
-            --silver: #C0C0C0;
-            --bg-dark: #0a0e17;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --text-main: #ffffff;
-            --danger: #e74c3c;
+            --hilal-dark: #001B3D;   /* كحلي غامق جداً */
+            --hilal-blue: #00458f;   /* أزرق الهلال */
+            --silver: #d1d1d1;       /* فضي */
+            --white: #ffffff;
+            --bg-log: #f0f2f5;       /* خلفية السجل فاتحة لوضوح الأرقام */
+            --text-log: #333;
         }
 
         * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -22,247 +21,265 @@
             margin: 0;
             padding: 0;
             font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-dark);
-            /* تدرج لوني احترافي يحاكي ألوان الهلال */
-            background: radial-gradient(circle at top, #003875 0%, #001835 60%, #000000 100%);
-            color: var(--text-main);
+            background-color: var(--bg-log);
             height: 100vh;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            user-select: none;
         }
 
-        /* --- Header & Modes --- */
-        .header {
-            padding: 15px 10px;
-            background: rgba(0, 38, 84, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(192, 192, 192, 0.2);
+        /* --- 1. رأس التطبيق (النتيجة الكلية) --- */
+        .top-section {
+            background: linear-gradient(160deg, var(--hilal-blue), var(--hilal-dark));
+            color: white;
+            padding: 15px 10px 30px 10px; /* مساحة إضافية من تحت للشكل المقوس */
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* أزرار الوضع في الأعلى */
+        .mode-switcher {
             display: flex;
             justify-content: center;
             gap: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 10;
+            margin-bottom: 20px;
         }
 
         .mode-btn {
-            background: transparent;
-            border: 1px solid var(--silver);
-            color: var(--silver);
-            padding: 10px 15px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            opacity: 0.6;
+            gap: 5px;
         }
-
-        .mode-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
         .mode-btn.active {
-            background: var(--hilal-light);
-            border-color: var(--hilal-light);
-            color: white;
+            background: var(--white);
+            color: var(--hilal-blue);
+            font-weight: bold;
             opacity: 1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 86, 149, 0.4);
         }
 
-        /* --- Score Board --- */
+        /* لوحة النتائج الكبيرة */
         .scoreboard {
-            flex-grow: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            gap: 15px;
-            position: relative;
-        }
-
-        /* فاصل عمودي بسيط */
-        .scoreboard::after {
-            content: '';
-            position: absolute;
-            width: 1px;
-            height: 60%;
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
-            left: 50%;
-            top: 20%;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 20px;
         }
 
         .team {
-            width: 48%;
             text-align: center;
-            padding: 20px 5px;
-            transition: transform 0.2s;
+            width: 40%;
         }
 
-        .team-title {
-            font-size: 1.8rem;
-            color: var(--silver);
-            margin-bottom: 10px;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .score-val {
-            font-size: 5.5rem;
+        .team-name { font-size: 1.4rem; margin-bottom: 5px; color: var(--silver); }
+        
+        .total-score {
+            font-size: 4.5rem;
             font-weight: 900;
             line-height: 1;
-            text-shadow: 0 5px 15px rgba(0,0,0,0.6);
-            font-variant-numeric: tabular-nums; /* ثبات الأرقام */
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        /* --- Controls Area --- */
+        /* الفارق في الوسط */
+        .center-info {
+            text-align: center;
+            padding-top: 40px;
+            opacity: 0.8;
+        }
+        .diff-label { font-size: 0.8rem; }
+        .diff-val { font-size: 1.2rem; font-weight: bold; }
+
+        /* --- 2. منطقة السجل (History Log) --- */
+        .history-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            position: relative;
+            padding-top: 10px;
+            background: var(--bg-log);
+        }
+
+        /* خط فاصل في النص */
+        .history-area::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e0e0e0;
+            transform: translateX(-50%);
+        }
+
+        .col-log {
+            width: 50%;
+            padding: 10px;
+            display: flex;
+            flex-direction: column-reverse; /* الجديد يجي تحت */
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* كرت التسجيل الواحد */
+        .log-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #555;
+            font-size: 1.1rem;
+            font-weight: bold;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .log-old { font-size: 1rem; opacity: 0.6; }
+        .log-add { color: var(--hilal-blue); font-size: 1.2rem; margin: 2px 0; }
+        .log-line { width: 40px; height: 2px; background: #ccc; margin: 2px 0; }
+        .log-new { color: #000; font-size: 1.4rem; }
+
+        /* سهم يوضح آخر تسجيل */
+        .last-action-arrow {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: var(--hilal-blue);
+            z-index: 5;
+            top: 10px; /* سيتحرك بالجافاسكربت */
+            transition: top 0.3s ease;
+        }
+
+        /* --- 3. منطقة التحكم (أزرار) --- */
         .controls {
-            background: rgba(20, 20, 30, 0.95);
-            border-radius: 30px 30px 0 0;
-            padding: 25px 20px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.4);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background: white;
+            border-top: 1px solid #ddd;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
         }
 
         .input-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            height: 60px;
         }
 
-        /* أزرار الإضافة الكبيرة */
+        input[type="number"] {
+            width: 80px;
+            font-size: 1.8rem;
+            text-align: center;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            color: var(--hilal-dark);
+            outline: none;
+        }
+        input:focus { border-color: var(--hilal-blue); }
+
         .btn-add {
             flex: 1;
-            height: 65px;
             border: none;
             border-radius: 15px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 900;
             color: white;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
             transition: transform 0.1s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        
-        .btn-add:active { transform: scale(0.96); }
+        .btn-add:active { transform: scale(0.95); }
+        .btn-lahum { background: #333; }
+        .btn-lana { background: var(--hilal-blue); }
 
-        .btn-lana { 
-            background: linear-gradient(135deg, #005695, #002654); 
-        }
-        .btn-lahum { 
-            background: linear-gradient(135deg, #4a4a4a, #2b2b2b); 
-        }
-
-        /* حقل الإدخال */
-        #inputScore {
-            width: 90px;
-            height: 65px;
-            background: #000;
-            border: 2px solid #333;
-            border-radius: 15px;
-            color: var(--silver);
-            font-size: 2rem;
-            text-align: center;
-            font-weight: bold;
-            outline: none;
-        }
-        #inputScore:focus { border-color: var(--hilal-light); color: white; }
-
-        /* زر التراجع */
-        .undo-row {
+        .actions-row {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 0 10px;
         }
 
-        .btn-undo {
-            background: transparent;
-            border: 1px solid rgba(231, 76, 60, 0.5);
-            color: var(--danger);
-            padding: 10px 40px;
-            border-radius: 50px;
-            font-size: 1rem;
+        .action-btn {
+            background: none;
+            border: none;
+            font-family: 'Tajawal', sans-serif;
             font-weight: bold;
+            font-size: 1rem;
+            color: #666;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: 0.3s;
+            gap: 5px;
         }
-        
-        .btn-undo:hover {
-            background: rgba(231, 76, 60, 0.1);
-            border-color: var(--danger);
-        }
+        .btn-undo { color: #e74c3c; }
+        .btn-new { color: var(--hilal-blue); }
 
-        .btn-undo svg { width: 18px; fill: currentColor; }
-
-        /* --- Winner Modal --- */
-        .modal {
+        /* --- شاشة الفوز --- */
+        #winnerModal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0,27,61,0.95);
             z-index: 100;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            animation: fadeIn 0.3s ease;
         }
-
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-
-        .modal h1 {
-            font-size: 3.5rem;
-            color: var(--hilal-light);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .modal p { color: var(--silver); font-size: 1.5rem; margin-top: 0; }
-
-        .btn-reset {
-            background: white;
-            color: var(--hilal-blue);
-            padding: 15px 50px;
-            font-size: 1.3rem;
-            border-radius: 50px;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        #winnerModal h1 { color: white; font-size: 3rem; margin-bottom: 20px; }
+        #winnerModal button {
+            padding: 15px 40px; font-size: 1.5rem; border-radius: 50px;
+            border: none; cursor: pointer; background: white; color: var(--hilal-blue);
         }
 
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="mode-btn" id="btnKhat" onclick="switchMode('khat')">
-            <svg viewBox="0 0 24 24"><path d="M3 12h18v2H3z"/></svg>
-            خط (52)
-        </button>
-        <button class="mode-btn active" id="btnMafroosh" onclick="switchMode('mafroosh')">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
-            مفروش (152)
-        </button>
+    <div class="top-section">
+        <div class="mode-switcher">
+            <button class="mode-btn" id="btnKhat" onclick="changeMode('khat')">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 12h18v2H3z"/></svg>
+                خط (152)
+            </button>
+            <button class="mode-btn active" id="btnMafroosh" onclick="changeMode('mafroosh')">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                مفروش (52-152)
+            </button>
+        </div>
+
+        <div class="scoreboard">
+            <div class="team">
+                <div class="team-name">لهم</div>
+                <div class="total-score" id="scoreLahum">0</div>
+            </div>
+
+            <div class="center-info">
+                <div class="diff-label">الفارق</div>
+                <div class="diff-val" id="scoreDiff">0</div>
+                <div style="margin-top:5px; font-size:1.5rem;">&#8595;</div> 
+            </div>
+
+            <div class="team">
+                <div class="team-name">لنا</div>
+                <div class="total-score" id="scoreLana">0</div>
+            </div>
+        </div>
     </div>
 
-    <div class="scoreboard">
-        <div class="team">
-            <div class="team-title">لهم</div>
-            <div class="score-val" id="scoreLahum">0</div>
-        </div>
-        <div class="team">
-            <div class="team-title">لنا</div>
-            <div class="score-val" id="scoreLana">0</div>
-        </div>
+    <div class="history-area" id="historyArea">
+        <div class="col-log" id="logLahum"></div>
+        <div class="col-log" id="logLana"></div>
     </div>
 
     <div class="controls">
@@ -271,136 +288,202 @@
             <input type="number" id="inputScore" placeholder="-" inputmode="numeric">
             <button class="btn-add btn-lana" onclick="addScore('lana')">لنا +</button>
         </div>
-        
-        <div class="undo-row">
-            <button class="btn-undo" onclick="undo()">
-                <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
-                تراجع عن النشرة
+
+        <div class="actions-row">
+            <button class="action-btn btn-undo" onclick="undo()">
+                <span>&#8634;</span> تراجع
+            </button>
+            <button class="action-btn btn-new" onclick="resetGame()">
+                <span>&#10227;</span> صكة جديدة
             </button>
         </div>
     </div>
 
-    <div id="winnerModal" class="modal">
-        <h1 id="winnerTitle"></h1>
-        <p>انتهت اللعبة</p>
-        <br>
-        <button class="btn-reset" onclick="resetGame()">لعبة جديدة</button>
+    <div id="winnerModal">
+        <h1 id="winnerText"></h1>
+        <button onclick="resetGame()">لعبة جديدة</button>
     </div>
 
     <script>
-        // إعدادات اللعبة
-        let state = {
+        // --- إعدادات اللعبة ---
+        let gameState = {
             lana: 0,
             lahum: 0,
-            history: [],
+            history: [], // قائمة العمليات (للتراجع وللعرض)
             mode: 'mafroosh', // or 'khat'
-            limit: 152
+            winLimit: 152
         };
 
+        const logLahumDiv = document.getElementById('logLahum');
+        const logLanaDiv = document.getElementById('logLana');
         const inputField = document.getElementById('inputScore');
 
-        // تبديل الوضع (خط / مفروش)
-        function switchMode(newMode) {
-            state.mode = newMode;
-            
-            // تحديث الأزرار
+        // عند تحميل الصفحة
+        window.onload = function() {
+            changeMode('mafroosh'); // الوضع الافتراضي
+        };
+
+        // --- 1. تغيير الوضع ---
+        function changeMode(mode) {
+            gameState.mode = mode;
             document.getElementById('btnKhat').classList.remove('active');
             document.getElementById('btnMafroosh').classList.remove('active');
-            
-            if (newMode === 'khat') {
+
+            if (mode === 'khat') {
+                // خط طويل 0 - 152
                 document.getElementById('btnKhat').classList.add('active');
-                state.limit = 52;
-                state.lana = 0; state.lahum = 0; // تصفير عند التغيير
+                resetData(0); 
             } else {
+                // مفروش 52 - 152
                 document.getElementById('btnMafroosh').classList.add('active');
-                state.limit = 152;
-                state.lana = 0; state.lahum = 0;
-                // في اللعب المفروش نبدأ غالباً من 0، لكن إذا أردت البداية من 52 كعداد بصري
-                // الشائع: العداد من 0 والهدف 152
+                resetData(52);
             }
-            resetGame();
         }
 
-        // إضافة نشرة
+        function resetData(startScore) {
+            gameState.lana = startScore;
+            gameState.lahum = startScore;
+            gameState.history = [];
+            
+            // إضافة الحالة الأولية للسجل (بداية اللعبة)
+            // لن نظهرها كعملية جمع، بل هي نقطة البداية
+            
+            updateUI();
+        }
+
+        // --- 2. إضافة النتيجة ---
         function addScore(team) {
             let val = parseInt(inputField.value);
-            if (isNaN(val)) return; // لا تفعل شيئاً إذا الحقل فارغ
+            if (isNaN(val)) return;
 
-            // حفظ الحالة للتراجع (Deep Copy)
-            state.history.push({ lana: state.lana, lahum: state.lahum });
+            // حفظ الحالة الحالية قبل التعديل (للسجل)
+            let oldScore = gameState[team];
+            let newScore = oldScore + val;
 
-            // إضافة النتيجة
-            state[team] += val;
+            // تسجيل العملية
+            let entry = {
+                team: team,
+                val: val,
+                oldScore: oldScore,
+                newScore: newScore,
+                // نحفظ حالة الفريق الآخر أيضاً عشان التراجع الشامل لو احتجنا
+                otherTeamScore: team === 'lana' ? gameState.lahum : gameState.lana
+            };
+            gameState.history.push(entry);
+
+            // تحديث النتيجة
+            gameState[team] = newScore;
 
             // تشغيل الصوت
             playVoice(team, val);
 
-            // تحديث الشاشة
+            // تحديث الواجهة
             updateUI();
             
-            // مسح الحقل والتركيز عليه
+            // تنظيف الحقل
             inputField.value = '';
             inputField.focus();
 
-            // فحص الفوز
-            checkWinner();
+            checkWin();
         }
 
-        // التراجع
+        // --- 3. التراجع ---
         function undo() {
-            if (state.history.length === 0) return;
+            if (gameState.history.length === 0) return;
+
+            // حذف آخر عملية
+            let lastEntry = gameState.history.pop();
             
-            const lastState = state.history.pop();
-            state.lana = lastState.lana;
-            state.lahum = lastState.lahum;
-            
+            // إرجاع النتيجة
+            gameState[lastEntry.team] = lastEntry.oldScore;
+
             updateUI();
         }
 
-        // تحديث الواجهة
+        // --- 4. تحديث الشاشة (المنطق الجديد) ---
         function updateUI() {
-            document.getElementById('scoreLana').textContent = state.lana;
-            document.getElementById('scoreLahum').textContent = state.lahum;
+            // تحديث الأرقام الكبيرة
+            document.getElementById('scoreLana').innerText = gameState.lana;
+            document.getElementById('scoreLahum').innerText = gameState.lahum;
+
+            // تحديث الفارق
+            let diff = Math.abs(gameState.lana - gameState.lahum);
+            document.getElementById('scoreDiff').innerText = diff;
+
+            // إعادة رسم السجل (Log)
+            renderLog();
+
+            // تمرير السجل للأسفل تلقائياً
+            let historyArea = document.getElementById('historyArea');
+            setTimeout(() => {
+                historyArea.scrollTop = historyArea.scrollHeight;
+            }, 50);
         }
 
-        // فحص الفائز
-        function checkWinner() {
-            if (state.lana >= state.limit || state.lahum >= state.limit) {
-                const winnerName = state.lana >= state.limit ? "لنا فازوا 💙" : "لهم فازوا";
-                document.getElementById('winnerTitle').textContent = winnerName;
+        // دالة رسم السجل (مثل الصورة)
+        function renderLog() {
+            logLahumDiv.innerHTML = '';
+            logLanaDiv.innerHTML = '';
+
+            // نمر على كل العمليات في التاريخ ونرسمها
+            gameState.history.forEach((entry, index) => {
+                // إنشاء عنصر HTML
+                let item = document.createElement('div');
+                item.className = 'log-item';
+                
+                // تصميم البلوك: القديم + الإضافة = الجديد
+                item.innerHTML = `
+                    <span class="log-old">${entry.oldScore}</span>
+                    <span class="log-add">+${entry.val}</span>
+                    <div class="log-line"></div>
+                    <span class="log-new">${entry.newScore}</span>
+                `;
+
+                if (entry.team === 'lana') {
+                    // عشان الترتيب يكون صحيح (من فوق لتحت)، نستخدم prepend أو append حسب flex-direction
+                    // هنا flex-direction: column-reverse يعني آخر عنصر هو اللي فوق؟ لا
+                    // في التصميم الشائع: القديم فوق والجديد تحت.
+                    // دعنا نستخدم append عادي ونخلي scroll ينزل تحت
+                    logLanaDiv.appendChild(item);
+                } else {
+                    logLahumDiv.appendChild(item);
+                }
+            });
+            
+            // إضافة مساحة فارغة في الأسفل عشان الرؤية
+            let spacer = document.createElement('div');
+            spacer.style.height = "20px";
+            logLahumDiv.appendChild(spacer.cloneNode());
+            logLanaDiv.appendChild(spacer.cloneNode());
+        }
+
+        function checkWin() {
+            if (gameState.lana >= gameState.winLimit || gameState.lahum >= gameState.winLimit) {
+                let winner = gameState.lana >= gameState.winLimit ? "فازوا الزعماء 💙" : "فازوا الخصم";
+                document.getElementById('winnerText').innerText = winner;
                 document.getElementById('winnerModal').style.display = 'flex';
-                // صوت صافرة أو تشجيع يمكن إضافته هنا
             }
         }
 
-        // إعادة اللعبة
         function resetGame() {
-            state.lana = 0;
-            state.lahum = 0;
-            state.history = [];
             document.getElementById('winnerModal').style.display = 'none';
-            updateUI();
+            // إعادة التعيين حسب الوضع الحالي
+            changeMode(gameState.mode);
         }
 
-        // --- نظام الصوت ---
+        // --- الصوت ---
         function playVoice(team, number) {
-            // المسار: sounds/lana.mp3 ثم sounds/20.mp3
             const teamFile = team === 'lana' ? 'lana.mp3' : 'lahum.mp3';
-            
-            // حاول تشغيل اسم الفريق
             let audioTeam = new Audio('sounds/' + teamFile);
             
             audioTeam.play().then(() => {
-                // بعد انتهاء اسم الفريق، شغل الرقم
                 audioTeam.onended = () => {
                     let audioNum = new Audio('sounds/' + number + '.mp3');
-                    audioNum.play().catch(err => console.log('رقم الصوت غير موجود:', number));
+                    audioNum.play().catch(e => {});
                 };
-            }).catch(err => {
-                console.log('صوت الفريق غير موجود، محاولة تشغيل الرقم فقط');
-                // إذا لم يوجد صوت "لنا/لهم"، شغل الرقم مباشرة
+            }).catch(e => {
                 let audioNum = new Audio('sounds/' + number + '.mp3');
-                audioNum.play().catch(e => console.log('لا يوجد ملف صوتي'));
+                audioNum.play().catch(e => {});
             });
         }
     </script>
