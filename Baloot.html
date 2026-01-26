@@ -18,7 +18,7 @@
             --hilal-accent: #3388ff;
             --bg-dark: #000000;
             --text-main: #ffffff;
-            --text-sec: #b0b0b0;
+            --text-sec: #e0e0e0; /* تفتيح النص الثانوي ليكون واضح مع الخلفية */
         }
 
         * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -26,9 +26,14 @@
         body {
             margin: 0; padding: 0; font-family: 'Tajawal', sans-serif;
             background-color: var(--bg-dark);
-            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 27, 61, 0.9)), url('hilal.png');
-            background-size: cover; background-position: center;
-            background-attachment: fixed; background-repeat: no-repeat;
+            
+            /* تعديل الخلفية لتوضيح الشعار */
+            background-image: linear-gradient(rgba(0, 20, 50, 0.4), rgba(0, 10, 30, 0.6)), url('hilal.png');
+            background-size: 130%; /* تكبير الشعار */
+            background-position: center center;
+            background-attachment: fixed; 
+            background-repeat: no-repeat;
+            
             height: 100vh; color: var(--text-main);
             display: flex; flex-direction: column; overflow: hidden;
             position: fixed; width: 100%;
@@ -36,8 +41,8 @@
 
         /* --- 1. الرأس --- */
         .top-section {
-            background: rgba(0, 27, 61, 0.6); backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0, 27, 61, 0.5); backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
             padding: 15px 10px 20px 10px; border-radius: 0 0 30px 30px;
             z-index: 10; flex-shrink: 0;
             padding-top: env(safe-area-inset-top, 15px); 
@@ -45,86 +50,97 @@
 
         .mode-switcher { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
         .mode-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
-            color: var(--text-sec); padding: 6px 16px; border-radius: 20px;
-            font-size: 0.9rem; cursor: pointer; transition: 0.3s;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.4);
+            color: white; padding: 6px 20px; border-radius: 20px;
+            font-size: 0.95rem; cursor: pointer; transition: 0.3s; font-weight: bold;
         }
         .mode-btn.active {
-            background: var(--hilal-blue); border-color: var(--hilal-blue);
-            color: white; font-weight: bold; box-shadow: 0 0 15px rgba(0, 86, 149, 0.4);
+            background: var(--hilal-blue); border-color: var(--hilal-accent);
+            color: white; box-shadow: 0 0 15px rgba(0, 86, 149, 0.6);
         }
 
         .scoreboard { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 15px; }
-        .team { text-align: center; width: 40%; }
-        .team-name { font-size: 1.3rem; margin-bottom: 5px; color: var(--text-sec); }
-        .total-score { font-size: 4.5rem; font-weight: 900; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.8); font-variant-numeric: tabular-nums; }
-        .center-info { text-align: center; padding-top: 35px; opacity: 0.7; }
-        .diff-label { font-size: 0.75rem; color: var(--text-sec); }
-        .diff-val { font-size: 1.2rem; font-weight: bold; color: white; }
+        .team { text-align: center; width: 40%; text-shadow: 0 2px 5px black; }
+        .team-name { font-size: 1.5rem; margin-bottom: 5px; color: #fff; font-weight: bold; }
+        .total-score { font-size: 4.8rem; font-weight: 900; line-height: 1; text-shadow: 0 4px 15px rgba(0,0,0,0.9); font-variant-numeric: tabular-nums; }
+        .center-info { text-align: center; padding-top: 35px; opacity: 0.9; text-shadow: 0 2px 4px black; }
+        .diff-label { font-size: 0.8rem; color: #ddd; }
+        .diff-val { font-size: 1.4rem; font-weight: bold; color: white; }
 
         /* --- 2. السجل --- */
         .history-area {
             flex-grow: 1; overflow-y: auto; display: flex; position: relative;
             padding-top: 10px; -webkit-overflow-scrolling: touch;
         }
+        /* الخط الفاصل */
         .history-area::before {
-            content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; 
-            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; 
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent);
             transform: translateX(-50%);
         }
         .col-log { width: 50%; padding: 10px; display: flex; flex-direction: column; gap: 12px; }
         
         .log-item {
             display: flex; flex-direction: column; align-items: center; 
-            color: var(--text-sec); font-size: 1.1rem; font-weight: bold;
-            animation: popIn 0.3s ease; background: rgba(255,255,255,0.05);
-            padding: 10px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);
+            color: #fff; font-size: 1.1rem; font-weight: bold;
+            animation: popIn 0.3s ease; 
+            background: rgba(0, 27, 61, 0.4); /* خلفية كحلية شفافة للنص ليكون واضح */
+            padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
         }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .log-old { font-size: 0.9rem; opacity: 0.6; }
-        .log-add { color: var(--hilal-accent); font-size: 1.3rem; margin: 2px 0; }
-        .log-line { width: 50px; height: 1px; background: rgba(255,255,255,0.3); margin: 4px 0; }
+        .log-old { font-size: 0.9rem; opacity: 0.7; }
+        .log-add { color: var(--hilal-accent); font-size: 1.3rem; margin: 2px 0; text-shadow: 0 0 5px rgba(51, 136, 255, 0.5); }
+        .log-line { width: 50px; height: 1px; background: rgba(255,255,255,0.4); margin: 4px 0; }
         .log-new { color: white; font-size: 1.5rem; font-weight: 900; }
 
         /* --- 3. التحكم --- */
         .controls {
-            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px);
+            background: rgba(10, 15, 30, 0.95); backdrop-filter: blur(15px);
             border-top: 1px solid rgba(255,255,255,0.1); padding: 20px;
-            display: flex; flex-direction: column; gap: 12px;
-            border-radius: 25px 25px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 15px;
+            border-radius: 25px 25px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.6);
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
+        
         .btn-record-main {
             width: 100%; background: linear-gradient(135deg, var(--hilal-blue), #002a5c);
-            color: white; padding: 16px; border-radius: 16px;
-            font-size: 1.4rem; font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 4px 15px rgba(0, 86, 149, 0.3); cursor: pointer;
+            color: white; padding: 18px; border-radius: 18px;
+            font-size: 1.5rem; font-weight: 900; border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 20px rgba(0, 86, 149, 0.4); cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.1s;
         }
         .btn-record-main:active { transform: scale(0.98); }
-        .actions-row { display: flex; justify-content: space-between; padding: 0 10px; }
+
+        .actions-row { display: flex; justify-content: space-between; gap: 15px; }
+        
         .action-btn {
-            background: none; border: none; font-family: 'Tajawal', sans-serif;
-            font-weight: bold; font-size: 1rem; color: var(--text-sec);
-            cursor: pointer; display: flex; align-items: center; gap: 8px;
-            padding: 10px; border-radius: 10px;
+            flex: 1;
+            background: rgba(255,255,255,0.08); 
+            border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold; font-size: 1.1rem; color: white;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 15px; border-radius: 15px;
+            transition: background 0.2s;
         }
-        .action-btn:hover { background: rgba(255,255,255,0.05); }
-        .btn-undo { color: #ff5f5f; }
+        .action-btn:active { background: rgba(255,255,255,0.15); }
+        
+        .btn-undo { color: #ff6b6b; }
         .btn-new { color: var(--hilal-accent); }
 
         /* --- 4. النافذة --- */
         .score-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 200;
             justify-content: center; align-items: flex-end;
         }
         .score-modal.show { display: flex; }
         .modal-content {
-            background: #1a1a1a; width: 100%; max-width: 500px;
+            background: #151515; width: 100%; max-width: 500px;
             padding: 30px 20px; border-radius: 30px 30px 0 0;
-            animation: slideUp 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
             border: 1px solid rgba(255,255,255,0.1); padding-bottom: env(safe-area-inset-bottom, 30px);
         }
         @media (min-width: 600px) { .score-modal { align-items: center; } .modal-content { border-radius: 25px; margin: 20px; padding-bottom: 30px; } }
@@ -132,23 +148,23 @@
         .modal-header { text-align: center; font-size: 1.4rem; font-weight: bold; color: white; margin-bottom: 25px; }
         .inputs-container { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; }
         .input-group { flex: 1; display: flex; flex-direction: column; align-items: center; }
-        .input-label { font-size: 1.1rem; font-weight: bold; margin-bottom: 10px; }
+        .input-label { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; }
         .lbl-lana { color: var(--hilal-accent); }
-        .lbl-lahum { color: var(--text-sec); }
+        .lbl-lahum { color: #ccc; }
         .score-input {
             width: 100%; height: 75px; text-align: center; font-size: 2.5rem; font-weight: bold;
-            border-radius: 18px; border: 2px solid #333; outline: none;
-            font-family: 'Tajawal', sans-serif; background: #000; color: white; transition: 0.3s;
+            border-radius: 18px; border: 2px solid #444; outline: none;
+            font-family: 'Tajawal', sans-serif; background: #222; color: white; transition: 0.3s;
         }
-        .score-input:focus { border-color: var(--hilal-blue); box-shadow: 0 0 15px rgba(0, 86, 149, 0.3); }
+        .score-input:focus { border-color: var(--hilal-blue); box-shadow: 0 0 15px rgba(0, 86, 149, 0.3); background: black; }
         .modal-actions { display: flex; gap: 12px; }
         .btn-confirm { flex: 2; background: var(--hilal-blue); color: white; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .btn-cancel { flex: 1; background: #333; color: #ccc; padding: 16px; border-radius: 14px; border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
-        /* --- شاشة الفوز الجديدة (أزرار الاختصار) --- */
+        /* --- شاشة الفوز --- */
         #winnerModal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 10, 20, 0.95); z-index: 300;
+            background: rgba(0, 10, 20, 0.98); z-index: 300;
             flex-direction: column; justify-content: center; align-items: center;
         }
         #winnerModal h1 { color: var(--hilal-accent); font-size: 2.5rem; margin-bottom: 30px; text-align: center; line-height: 1.4; padding: 20px; text-shadow: 0 0 20px rgba(0,86,149,0.8); }
@@ -158,9 +174,9 @@
         }
 
         .btn-win-action {
-            padding: 15px; font-size: 1.2rem; border-radius: 50px; border: none; cursor: pointer; font-weight: bold;
+            padding: 18px; font-size: 1.3rem; border-radius: 50px; border: none; cursor: pointer; font-weight: bold;
             display: flex; justify-content: center; align-items: center; gap: 10px;
-            transition: transform 0.2s;
+            transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .btn-win-action:active { transform: scale(0.95); }
 
@@ -184,7 +200,7 @@
             <div class="center-info">
                 <div class="diff-label">الفارق</div>
                 <div class="diff-val" id="scoreDiff">0</div>
-                <div style="margin-top:5px; color:rgba(255,255,255,0.5)">&#8595;</div> 
+                <div style="margin-top:5px; color:rgba(255,255,255,0.7)">&#8595;</div> 
             </div>
             <div class="team">
                 <div class="team-name">لهم</div>
@@ -199,10 +215,16 @@
     </div>
 
     <div class="controls">
-        <button class="btn-record-main" onclick="openModal()"><span>&#9998;</span> تسجيل النشرة</button>
+        <button class="btn-record-main" onclick="openModal()">
+            <span>&#9998;</span> تسجيل النشرة
+        </button>
         <div class="actions-row">
-            <button class="action-btn btn-undo" onclick="undo()"><span>&#8634;</span> تراجع</button>
-            <button class="action-btn btn-new" onclick="resetGame('current')"><span>&#10227;</span> إعادة</button>
+            <button class="action-btn btn-undo" onclick="undo()">
+                <span>&#8634;</span> تراجع
+            </button>
+            <button class="action-btn btn-new" onclick="resetGame('current')">
+                <span>&#10227;</span> صكة جديدة
+            </button>
         </div>
     </div>
 
@@ -244,8 +266,6 @@
         const inpLana = document.getElementById('inputLana');
         const inpLahum = document.getElementById('inputLahum');
 
-        let isPlayingAudio = false;
-
         window.onload = function() { 
             changeMode('mafroosh'); 
             let vh = window.innerHeight * 0.01; document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -280,27 +300,40 @@
             gameState.lana += valLana;
             gameState.lahum += valLahum;
 
-            if (valLana > 0) gameState.history.push({ team: 'lana', val: valLana, oldScore: oldLana, newScore: gameState.lana });
-            if (valLahum > 0) gameState.history.push({ team: 'lahum', val: valLahum, oldScore: oldLahum, newScore: gameState.lahum });
+            // إضافة للسجل (نحفظ كل عملية حتى لو واحد منهم صفر عشان الترتيب)
+            gameState.history.push({ 
+                lanaVal: valLana, 
+                lahumVal: valLahum, 
+                oldLana: oldLana, 
+                oldLahum: oldLahum,
+                newLana: gameState.lana,
+                newLahum: gameState.lahum
+            });
 
             updateUI();
         }
 
+        // --- نظام المذيع المحترف (الترتيب: لنا -> مجموعهم -> سكتة 1ث -> لهم -> مجموعهم) ---
         function announceScoresSequence() {
+            // دائماً ينطق "لنا" ثم الرقم
             playAudioFile('sounds/lana.mp3', function() {
                 let lanaTotalFile = 'sounds/' + gameState.lana + '.mp3';
                 playAudioFile(lanaTotalFile, function() {
                     
+                    // سكتة لمدة 1 ثانية
                     setTimeout(() => {
                         
+                        // دائماً ينطق "لهم" ثم الرقم
                         playAudioFile('sounds/lahum.mp3', function() {
                             let lahumTotalFile = 'sounds/' + gameState.lahum + '.mp3';
                             playAudioFile(lahumTotalFile, function() {
+                                
+                                // الطقطقة (أبو دقيينه)
                                 checkReaction();
                             });
                         });
 
-                    }, 2000); 
+                    }, 1000); // 1 ثانية
                 });
             });
         }
@@ -317,10 +350,11 @@
 
         function checkReaction() {
             let diff = gameState.lana - gameState.lahum;
+            // نأخذ آخر تسجيل لـ "لنا"
             let lastEntry = gameState.history[gameState.history.length - 1];
-            let lastLanaVal = (lastEntry && lastEntry.team === 'lana') ? lastEntry.val : 0;
+            let lastLanaVal = lastEntry ? lastEntry.lanaVal : 0;
 
-            if (diff >= 30 || lastLanaVal >= 25) {
+            if (lastLanaVal > 0 && (diff >= 30 || lastLanaVal >= 25)) {
                 let audio = new Audio('sounds/algum.mp3');
                 audio.play().catch(e => {});
                 return;
@@ -370,20 +404,26 @@
 
         function resetGame(type) {
             document.getElementById('winnerModal').style.display = 'none';
-            if (type === 'khat') { changeMode('khat'); } 
-            else if (type === 'mafroosh') { changeMode('mafroosh'); } 
-            else { changeMode(gameState.mode); }
+            if (type === 'khat') changeMode('khat');
+            else if (type === 'mafroosh') changeMode('mafroosh');
+            else changeMode(gameState.mode);
         }
 
         function resetData(startScore) {
             gameState.lana = startScore; gameState.lahum = startScore; gameState.history = []; updateUI();
         }
 
+        // --- زر التراجع الاحترافي (سجل كامل) ---
         function undo() {
             if (gameState.history.length === 0) return;
+            
+            // استرجاع آخر عملية وحذفها من السجل
             let lastEntry = gameState.history.pop();
-            if (lastEntry.team === 'lana') gameState.lana -= lastEntry.val;
-            else gameState.lahum -= lastEntry.val;
+            
+            // إرجاع النقاط للحالة السابقة
+            gameState.lana = lastEntry.oldLana;
+            gameState.lahum = lastEntry.oldLahum;
+            
             updateUI();
         }
 
@@ -403,19 +443,45 @@
             logLahumDiv.innerHTML = ''; logLanaDiv.innerHTML = '';
             
             gameState.history.forEach((entry) => {
-                let item = document.createElement('div');
-                item.className = 'log-item';
-                item.innerHTML = `
-                    <span class="log-old">${entry.oldScore}</span>
-                    <span class="log-add">+${entry.val}</span>
-                    <div class="log-line"></div>
-                    <span class="log-new">${entry.newScore}</span>
-                `;
-                if (entry.team === 'lana') { logLanaDiv.appendChild(item); } 
-                else { logLahumDiv.appendChild(item); }
+                // إضافة سجل لنا
+                if (entry.lanaVal > 0) {
+                    let item = document.createElement('div');
+                    item.className = 'log-item';
+                    item.innerHTML = `
+                        <span class="log-old">${entry.oldLana}</span>
+                        <span class="log-add">+${entry.lanaVal}</span>
+                        <div class="log-line"></div>
+                        <span class="log-new">${entry.newLana}</span>
+                    `;
+                    logLanaDiv.appendChild(item);
+                } else {
+                    // مساحة فارغة للحفاظ على الترتيب إذا لم يسجلوا
+                    let spacer = document.createElement('div');
+                    spacer.style.height = "100px"; // نفس ارتفاع الكرت تقريباً
+                    logLanaDiv.appendChild(spacer);
+                }
+
+                // إضافة سجل لهم
+                if (entry.lahumVal > 0) {
+                    let item = document.createElement('div');
+                    item.className = 'log-item';
+                    item.innerHTML = `
+                        <span class="log-old">${entry.oldLahum}</span>
+                        <span class="log-add">+${entry.lahumVal}</span>
+                        <div class="log-line"></div>
+                        <span class="log-new">${entry.newLahum}</span>
+                    `;
+                    logLahumDiv.appendChild(item);
+                } else {
+                    let spacer = document.createElement('div');
+                    spacer.style.height = "100px";
+                    logLahumDiv.appendChild(spacer);
+                }
             });
-            let spacer = document.createElement('div'); spacer.style.height = "80px";
-            logLahumDiv.appendChild(spacer.cloneNode()); logLanaDiv.appendChild(spacer.cloneNode());
+
+            // مساحة في الأسفل
+            let footerSpace = document.createElement('div'); footerSpace.style.height = "80px";
+            logLahumDiv.appendChild(footerSpace.cloneNode()); logLanaDiv.appendChild(footerSpace.cloneNode());
         }
     </script>
 </body>
